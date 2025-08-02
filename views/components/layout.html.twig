@@ -1,0 +1,50 @@
+ {% extends "base.html.twig" %}
+  {% block body %}
+
+     <!-- Navigation -->
+   <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <button class="btn btn-outline-light me-3" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Incidencias RD
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle position-relative" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-info-circle text-info me-2"></i>Nueva incidencia reportada</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-check-circle text-success me-2"></i>Reporte aprobado</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit text-warning me-2"></i>Corrección sugerida</a></li>
+                    </ul>
+                </div>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> Usuario
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="showSection('profile')"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showSection('login')"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+  <main class="container-fluid py-4">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+
+  {% endblock %} 
+
+   
+
+

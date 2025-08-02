@@ -10,22 +10,22 @@ define('BASE_PATH', dirname(__DIR__));
 
 require_once(BASE_PATH . '/vendor/autoload.php');
 
-//TODO: Enable this when database integration is required
-// FrameworkBootstrap::boot();
+// TODO: Enable this when database integration is required
+FrameworkBootstrap::boot();
 
 $request = Request::create();
 
 //TODO: And this too
-// $redirectPath = FrameworkBootstrap::handleSetupRedirect($request);
-// if ($redirectPath) {
-//   header("Location: $redirectPath");
-//   exit;
-// }
+$redirectPath = FrameworkBootstrap::handleSetupRedirect($request);
+if ($redirectPath) {
+  header("Location: $redirectPath");
+  exit;
+}
 
 $routeLoader = new RouteLoader();
 
 //TODO: And this
-// FrameworkBootstrap::registerSystemRoutes($routeLoader);
+FrameworkBootstrap::registerSystemRoutes($routeLoader);
 
 $kernel = new Kernel($routeLoader);
 
