@@ -9,6 +9,8 @@ class MapController extends AbstractController
 {
   public function index(): Response
   {
-    return $this->render("index.html.twig");
+    return $this->renderWithFlash("index.html.twig", [
+      'user' => $this->user()
+    ]);
   }
 }
