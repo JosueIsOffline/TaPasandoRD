@@ -3,10 +3,11 @@
 use App\Controllers\Api\AuthController;
 
 return [
-  ['POST', '/register', [AuthController::class, 'register']],
-  ['POST', '/login', [AuthController::class, 'login']],
+  ['POST', '/api/register', [AuthController::class, 'register']],
+  ['POST', '/api/login', [AuthController::class, 'login']],
+  ['POST', '/api/logout', [AuthController::class, 'logout']],
 
   // Providers routes
-  ['GET', '/auth/google', [AuthController::class, 'proRedirect']],
-  ['GET', '/auth/google/callback', [AuthController::class, 'callback']]
+  ['GET', '/auth/{provider:[a-z]+}', [AuthController::class, 'proRedirect']],
+  ['GET', '/auth/{provider:[a-z]+}/callback', [AuthController::class, 'callback']]
 ];

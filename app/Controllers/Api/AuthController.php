@@ -2,16 +2,17 @@
 
 namespace App\Controllers\Api;
 
+use App\Factories\OAuthProviderFactory;
+use App\Interfaces\OAuthProviderInterface;
 use App\Repositories\UserRepository;
 use JosueIsOffline\Framework\Auth\AuthService;
 use JosueIsOffline\Framework\Controllers\AbstractController;
 use JosueIsOffline\Framework\Http\Response;
-use League\OAuth2\Client\Provider\Google;
 
 class AuthController extends AbstractController
 {
   private AuthService $auth;
-  private Google $provider;
+  private OAuthProviderInterface $provider;
   private UserRepository $repoUser;
 
   public function __construct()
@@ -19,35 +20,25 @@ class AuthController extends AbstractController
     parent::__construct();
     $this->auth = new AuthService();
     $this->repoUser = new UserRepository();
-
-    $this->provider = new Google([
-      'clientId'     => $_ENV['GOOGLE_CLIENT_ID'] ?? '',
-      'clientSecret' => $_ENV['GOOGLE_CLIENT_SECRET'] ?? '',
-      'redirectUri'  => $_ENV['GOOGLE_REDIRECT_URI'] ?? '',
-    ]);
   }
 
-  public function proRedirect(): Response
+  public function proRedirect(string $provider)
   {
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-    }
+    // this load the provider needed
+    $this->resolveProvider($provider);
 
-    $authUrl = $this->provider->getAuthorizationUrl([
-      'scope' => ['openid', 'email', 'profile']
-    ]);
-
+    $authUrl = $this->provider->getAuthUrl();
     $_SESSION['oauth2state'] = $this->provider->getState();
 
+    header('Location: ' . $authUrl);
 
     return $this->redirect($authUrl);
   }
 
-  public function callback(): Response
+  public function callback(string $provider): Response
   {
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-    }
+    // this load the provider needed
+    $this->resolveProvider($provider);
 
     if (empty($_GET['state']) || ($_GET['state'] !== ($_SESSION['oauth2state'] ?? ''))) {
       unset($_SESSION['oauth2state']);
@@ -56,56 +47,52 @@ class AuthController extends AbstractController
 
     unset($_SESSION['oauth2state']);
 
-    error_log('Estado recibido: ' . ($_GET['state'] ?? 'n/a'));
-    error_log('Estado esperado: ' . ($_SESSION['oauth2state'] ?? 'n/a'));
-
-
     if (empty($_GET['code'])) {
       return $this->redirect('/login?error=no_authorization_code');
     }
 
     try {
       // Get access token
-      $token = $this->provider->getAccessToken('authorization_code', [
-        'code' => $_GET['code']
-      ]);
+      $token = $this->provider->getAccessToken($_GET['code']);
 
       // Get user details from Google
-      $googleUser = $this->provider->getResourceOwner($token);
-      $googleUserData = $googleUser->toArray();
+      $userProvider = $this->provider->getUserData($token);
 
-      $user = $this->findOrCreateUser($googleUserData);
+      $user = $this->findOrCreateUser($userProvider, $provider);
 
       $this->auth->loginById($user['id']);
 
       return $this->redirect('/');
     } catch (\Exception $e) {
-      // Handle error
-      error_log('Google OAuth Error: ' . $e->getMessage());
+      error_log($provider . ' OAuth Error: ' . $e->getMessage());
       return $this->redirect('/login?error=oauth_failed');
     }
   }
 
-  public function findOrCreateUser(array $googleData): array
+  private function resolveProvider(string $provider): void
   {
-    $existingUser = $this->repoUser->findByEmail($googleData['email']);
+    $this->provider = OAuthProviderFactory::create($provider);
+  }
 
+  public function findOrCreateUser(array $userProviderData, ?string $provider): array
+  {
+    $existingUser = $this->repoUser->findByEmail($userProviderData['email']);
     if ($existingUser) {
       $this->repoUser->update([
         'id' => $existingUser['id'],
-        'proveedor_auth' => 'google',
-        'foto' => $googleData['picture'] ?? null
+        'proveedor_auth' => $provider,
+        'photo_url' => $userProviderData['picture'] ?? null
       ]);
 
       return $existingUser;
     }
 
     $userData = [
-      'nombre' => $googleData['name'],
-      'email' => $googleData['email'],
-      'foto' => $googleData['picture'] ?? null,
+      'name' => $userProviderData['name'],
+      'email' => $userProviderData['email'],
+      'photo_url' => $userProviderData['picture'] ?? null,
       'rol' => 'reportero',
-      'proveedor_auth' => 'google',
+      'proveedor_auth' => $provider,
       'password' => null,
     ];
 
@@ -118,18 +105,25 @@ class AuthController extends AbstractController
   public function login(): Response
   {
     $params = $this->request->getAllPost();
-
+    $required = $this->validateRequired($params, ['email', 'password']);
 
     if ($this->auth->attempt($params['email'], $params['password'])) {
-      return $this->smartResponse([
-        'message' => 'Inicia de session exitoso',
-        'user' => $this->auth->user(),
-        '/',
-        302
-      ]);
+      return $this->success(
+        [
+          'user' => $this->auth->user(),
+        ],
+        'Inicio de sesion exitoso',
+        302,
+        '/'
+      );
     }
 
-    return $this->smartResponse(['error' => "Error al iniciar session"], '/login', 400);
+    if (empty($required['email'])) {
+      $required['emailPersist'] = $params['email'];
+      return $this->error($required, 'Error al iniciar session');
+    }
+
+    return $this->error($required, 'Error al iniciar session');
   }
 
   public function register(): Response
@@ -137,7 +131,7 @@ class AuthController extends AbstractController
     $params = $this->request->getAllPost();
 
     $data = [
-      'nombre' => $params['nombre'],
+      'name' => $params['nombre'],
       'email' => $params['email'],
       'rol' => $params['rol'],
       'password' => password_hash($params['password'], PASSWORD_DEFAULT)
@@ -145,12 +139,20 @@ class AuthController extends AbstractController
 
     $repo = new UserRepository();
     $repo->create($data);
-    return $this->smartResponse(
-      [
-        'message' => "Usuario creado exitosamente, inicia session",
-      ],
-      '/login',
+    return $this->success(
+      [],
+      "Usuario creado exitosamente, inicia session",
       200,
+      '/login',
+    );
+  }
+
+  public function logout(): Response
+  {
+    $this->auth->logout();
+
+    return $this->redirect(
+      '/login',
     );
   }
 }

@@ -25,3 +25,6 @@
 /vendors/*
 
 /config/database.json
+
+.env
+

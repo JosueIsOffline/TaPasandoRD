@@ -3,5 +3,5 @@
 use App\Controllers\Web\MapController;
 
 return [
-  ['GET', '/', [MapController::class, 'index'], 'auth']
+  ['GET', '/', [MapController::class, 'index'], 'auth'],
 ];

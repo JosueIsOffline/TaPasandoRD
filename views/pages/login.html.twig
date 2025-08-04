@@ -49,19 +49,22 @@
                         <p class="text-muted">Inicia sesión para continuar</p>
                     </div> 
                     
-                    <form method="POST" action="/login">
+                    <form method="POST" action="/api/login">
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="text" class="form-control" name="email" placeholder="jhondoe@example.com">
+                            <input type="text" class="form-control" name="email" placeholder="jhondoe@example.com" value="{{error.details.emailPersist}}">
+                            {{error.details.email}}
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
                             <input type="password" class="form-control" name="password" placeholder="Ingrese su contraseña">
+                            {{error.details.password}}
                         </div>
                         <button type="submit" class="btn btn-primary w-100">
                             Iniciar Sesión
                         </button>
                     </form>
+                    {{error.message}}
                     
                     <div class="text-center mt-3">
                         <a href="/register" onclick="showSection('login')" class="text-muted">
@@ -78,7 +81,7 @@
                         Continuar con Google
                     </a>
                     
-                    <a href="#" class="social-btn" onclick="">
+                    <a href="/auth/microsoft" class="social-btn" onclick="">
                         <i class="fab fa-microsoft text-primary me-2"></i>
                         Continuar con Office 365
                     </a>

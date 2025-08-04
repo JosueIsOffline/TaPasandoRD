@@ -1,60 +1,8 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TaPasandoRD</title>
-    <style>
-      body{
-        margin: 0;
-        padding: 0;
-        background-color: #060606;
-      }
+{% extends "layout.html.twig" %}
 
-      .parent{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-sizing: content-box;
-        padding: 5px;
-        height: 100vh;
-      }
+{% block content %}
+      {{user.name}} 
+      {{user.rol}} 
 
-      .child {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-      }
-
-      h1{
-        font-size: 5rem;
-        font-weight: bold;
-        color: #fff;
-      }
-
-      span {
-        font-size: 5rem;
-        width: auto;
-        color: #000;
-        background-color: #FF9900;
-        border-radius: 0.75rem;
-        margin-left: 12px;
-        padding: 1rem;
-      }
-
-      footer {
-        font-size: 18px;
-        color: #fff;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="parent">
-      <div class="child">
-        <h1>KLOu<span>FRENS</span></h1>
-        <footer>just for fun!</footer>
-      </div>
-    </div>
-  </body>
-</html>
+      <img src="{{user.photo}}"/>
+{% endblock %}
