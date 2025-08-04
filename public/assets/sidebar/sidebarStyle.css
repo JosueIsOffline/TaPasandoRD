@@ -1,0 +1,457 @@
+/* Estilos para el SideBar Responsive */
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  transition: width 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+  overflow-y: auto; /* DESPLAZAMIENTO DEL CONTENIDO*/
+  overflow-x: visible;
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed-width);
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+
+/* Todo: Tengo una duda, si quitarlo o no.*/
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: var(--light-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Main toggle button (outside menu list, in header) */
+.sidebar-toggle {
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--toggle-button-bg);
+  border: 1px solid var(--toggle-button-border);
+  box-shadow: 0 2px 4px var(--toggle-button-shadow);
+  display: flex; /* Show by default (expanded desktop) */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease, top 0.3s ease, left 0.3s ease, right 0.3s ease;
+  z-index: 9999;
+  border-left: none; 
+  transform: rotate(0deg); /* Rotación predeterminada para el estado expandido */
+}
+
+/* Cuando se contraiga, se ocultará el boton */
+.sidebar.collapsed .sidebar-toggle {
+  display: none;
+}
+
+/* Rotaación del icono al lugar correspondiente */
+.sidebar-toggle svg {
+  transition: transform 0.3s ease;
+  color: var(--light-text-color);
+}
+
+/* Los sub-items se abriran automaticamente */
+.toggle-menu-item-collapsed {
+  display: none;
+  width: 100%; 
+}
+
+.sidebar.collapsed .toggle-menu-item-collapsed {
+  display: block;
+}
+
+/* Style the button inside the new menu item toggle */
+.toggle-menu-item-collapsed .menu-link {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Rotate icon for the menu item toggle when sidebar is collapsed */
+.sidebar.collapsed .toggle-menu-item-collapsed .menu-link svg {
+  transform: rotate(180deg);
+}
+
+.sidebar-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-footer {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 1.5rem;
+  transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  opacity: 1;
+  pointer-events: auto;
+  height: auto;
+  overflow: visible;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  border-top: none;
+}
+
+.sidebar.collapsed .sidebar-footer .section-title {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  color: var(--light-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+}
+
+.sidebar.collapsed .section-title {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-item {
+  margin-bottom: 0.25rem;
+  position: relative;
+}
+
+/* Tooltip styles */
+.menu-item .menu-link::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(var(--sidebar-collapsed-width) + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text-color);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+  opacity: 0; /* ocultar por default */
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1002;
+}
+
+.sidebar.collapsed .menu-item:hover .menu-link::after {
+  opacity: 1; /* se verán al hacer hover en un item (solo cuando el sidebar esté en estado = contraido)*/
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.menu-link:hover {
+  background-color: var(--hover-bg);
+}
+
+.menu-link.active {
+  background-color: var(--hover-bg);
+  font-weight: 500;
+}
+
+.menu-link svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  transition: margin-right 0.3s ease;
+}
+
+.sidebar.collapsed .menu-link svg {
+  margin-right: 0;
+}
+
+.menu-link span {
+  transition: opacity 0.3s ease, width 0.3s ease;
+}
+
+.sidebar.collapsed .menu-link span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.menu-link .chevron-icon {
+  margin-left: auto;
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.sidebar.collapsed .menu-link .chevron-icon {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Sub-menu styles */
+.sub-menu {
+  list-style: none;
+  padding: 0;
+  margin-left: 2.25rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.menu-item.expanded > .sub-menu {
+  max-height: 200px;
+}
+
+.menu-item.expanded > .menu-link .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.sub-menu-item {
+  margin-top: 0.25rem;
+}
+
+.sub-menu-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--light-text-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sub-menu-link:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-color);
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 2rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed + .main-content {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Mobile Hamburger Button */
+.mobile-hamburger-button {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--toggle-button-bg);
+  border: 1px solid var(--toggle-button-border);
+  box-shadow: 0 2px 4px var(--toggle-button-shadow);
+  display: none; /* Estará oculto, solo se verá en mobile para abrir el sidebar */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  color: var(--light-text-color);
+}
+
+.mobile-hamburger-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive configuraciones */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%); /* Oculto en mobile */
+    border-radius: 0;
+    box-shadow: none;
+    width: 280px;
+    padding: 1.5rem;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar.collapsed {
+    width: 280px;
+    padding: 1.5rem;
+  }
+
+  /* Mobile specific styles for the main toggle button (as a close button) */
+  .sidebar-toggle {
+    position: absolute;
+    top: 2rem;
+    right: 1rem; 
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--toggle-button-bg);
+    border: 1px solid var(--toggle-button-border);
+    box-shadow: 0 2px 4px var(--toggle-button-shadow);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    color: var(--light-text-color);
+    transform: rotate(180deg); /* Siempre girado, para inidicar que es para cerrar*/
+  }
+
+  .sidebar.open .sidebar-toggle {
+    display: flex; /* Show close button when sidebar is open on mobile */
+  }
+
+  .toggle-menu-item-collapsed {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .mobile-hamburger-button {
+    display: flex;
+  }
+
+  .sidebar.open + .main-content .mobile-hamburger-button {
+    display: none; /* ocultar boton hamburguesa cuando el sidebar se abra*/
+  }
+
+  .sidebar-header,
+  .section-title,
+  .menu-link span,
+  .menu-link .chevron-icon,
+  .sidebar-footer {
+    opacity: 1;
+    pointer-events: auto;
+    height: auto;
+    overflow: visible;
+    padding: initial;
+    margin: initial;
+    width: initial;
+  }
+
+  .menu-link svg {
+    margin-right: 0.75rem;
+  }
+
+  /* Ocultar tooltip*/
+  .menu-item .menu-link::after {
+    display: none !important;
+  }
+
+  .sub-menu {
+    margin-left: 2.25rem;
+  }
+
+  .main-nav-section {
+    margin-top: 1.5rem;
+  }
+}

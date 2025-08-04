@@ -1,60 +1,142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TaPasandoRD</title>
-    <style>
-      body{
-        margin: 0;
-        padding: 0;
-        background-color: #060606;
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaPasandoRD 📍</title>
 
-      .parent{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-sizing: content-box;
-        padding: 5px;
-        height: 100vh;
-      }
+    <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
+    <link href="/assets/css/global.css" rel="stylesheet">
 
-      .child {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-      }
+</head>
+<body>
+<div class="app-container">
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="/placeholder.svg?height=48&width=48" alt="User Avatar" class="avatar">
+                <div class="user-info">
+                    <span class="user-role">WEB DEVELOPER</span>
+                    <span class="user-name">Ronny De León</span>
+                </div>
+            </div>
 
-      h1{
-        font-size: 5rem;
-        font-weight: bold;
-        color: #fff;
-      }
+            <!-- Main toggle button (visible cuando se abre el escritorio/dispositivo móvil expandido) -->
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <!-- ChevronLeft icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
 
-      span {
-        font-size: 5rem;
-        width: auto;
-        color: #000;
-        background-color: #FF9900;
-        border-radius: 0.75rem;
-        margin-left: 12px;
-        padding: 1rem;
-      }
+            <div class="sidebar-content">
+                <nav class="sidebar-nav">
+                    <div class="nav-section main-nav-section">
 
-      footer {
-        font-size: 18px;
-        color: #fff;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="parent">
-      <div class="child">
-        <h1>KLOu<span>FRENS</span></h1>
-        <footer>just for fun!</footer>
-      </div>
+                        <h3 class="section-title">PRINCIPAL</h3>
+                        <ul class="menu-list">
+                            <!-- Toggle button as a menu item (visible solo cuando el escritorio está contraído) -->
+                            <li class="menu-item toggle-menu-item-collapsed">
+                                <button class="menu-link" id="sidebar-toggle-menu-item" data-tooltip="Toggle Sidebar">
+                                    <!-- ChevronLeft icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </button>
+                            </li>
+
+                            <li class="menu-item">
+                                <a href="#" class="menu-link active" data-tooltip="Dashboard">
+                                    <!-- Home icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                    <span>Inicio</span>
+                                </a>
+                            </li>
+
+                            <li class="menu-item has-submenu">
+                                <a href="#" class="menu-link" data-tooltip="Audience">
+                                    <!-- Users icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    <span>Audiencia</span>
+                                    <!-- ChevronDown icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="sub-menu-item"><a href="#" class="sub-menu-link">Reportar Incidencia</a></li>
+                                    <li class="sub-menu-item"><a href="#" class="sub-menu-link">Ultimos Reportes</a></li>
+                                </ul>
+                            </li>
+
+                            <li class="menu-item">
+                                <a href="#" class="menu-link" data-tooltip="Posts">
+                                    <!-- FileText icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+                                    <span>Ver Mapa</span>
+                                </a>
+                            </li>
+
+                            <li class="menu-item has-submenu">
+                                <a href="#" class="menu-link" data-tooltip="Income">
+                                    <!-- BarChart2 icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                    <span>Panel</span>
+                                    <!-- ChevronDown icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </a>
+                                
+                                {# Todo: Implementación de dashboard o gráfico que identifique lugares más reportados y que tipos de incidentes #}
+                                <ul class="sub-menu">
+                                    <li class="sub-menu-item"><a href="#" class="sub-menu-link">Reportes</a></li>
+                                    <li class="sub-menu-item"><a href="#" class="sub-menu-link">Analiticas</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <h3 class="section-title">CONFIGURACIÓN</h3>
+                        <ul class="menu-list">
+                            <li class="menu-item">
+                                <a href="#" class="menu-link" data-tooltip="Settings">
+                                    <!-- Settings icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.78 1.22a2 2 0 0 0 .73 2.73l.09.09a2 2 0 0 1 0 2.83l-.08.08a2 2 0 0 0-.73 2.73l.78 1.21a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.78-1.22a2 2 0 0 0-.73-2.73l-.09-.09a2 2 0 0 1 0-2.83l.08-.08a2 2 0 0 0 .73-2.73l-.78-1.21a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    <span>Configurar</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="nav-section">
+                    <h3 class="section-title">ACCOUNT</h3>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" data-tooltip="Help">
+                                <!-- Info icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                <span>Ayuda</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" data-tooltip="Logout">
+                                <!-- LogOut icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                <span>Cerrar Sesión</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button class="mobile-hamburger-button" id="mobile-hamburger-button">
+                <!-- Hamburger icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+            </button>
+            {# <h1>PAZ MENTAL ANTE TODO</h1> #}
+        </main>
     </div>
-  </body>
+
+
+    <script src="/assets/sidebar/sidebarFeatures.js"></script>
+</body>
 </html>
