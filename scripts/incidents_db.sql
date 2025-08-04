@@ -1,3 +1,7 @@
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS tapasandord CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE tapasandord;
+
 -- Users
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,7 +15,7 @@ CREATE TABLE users (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     role ENUM('Reportero', 'Validador', 'Admin'),
     INDEX idx_email (email),
-    INDEX idx_rol (roles),
+    INDEX idx_role (role),
     INDEX idx_active (active)
 );
 
@@ -33,19 +37,19 @@ CREATE TABLE municipalities (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     province_id INT,
     FOREIGN KEY (province_id) REFERENCES provinces(id),
-    UNIQUE INDEX idx_municipalities_name (name, province_id)
+    UNIQUE INDEX idx_municipality_name (name, province_id)
 );
 
 CREATE TABLE neighborhoods (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     municipality_id INT,
-    FOREIGN KEY (municipality_id) REFERENCES municipalities(id)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (municipality_id) REFERENCES municipalities(id)
 );
 
--- type of incidents
+-- Categories
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -56,7 +60,7 @@ CREATE TABLE categories (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- incidents
+-- Incidents
 CREATE TABLE incidents (
     id INT AUTO_INCREMENT PRIMARY KEY,
     occurrence_date DATETIME NOT NULL,
@@ -69,7 +73,7 @@ CREATE TABLE incidents (
     estimated_loss DECIMAL(12,2),
     social_media_url VARCHAR(100),
     photo_url VARCHAR(100),
-    status ENUM('pendiente', 'en revisión', 'validado', 'rechazado')
+    status ENUM('pendiente', 'en revisión', 'validado', 'rechazado'),
     validation_date DATETIME,
     rejection_reason TEXT,
     province_id INT,
@@ -78,21 +82,21 @@ CREATE TABLE incidents (
     category_id INT,
     reported_by INT,
     validated_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (province_id) REFERENCES provinces(id),
     FOREIGN KEY (municipality_id) REFERENCES municipalities(id),
     FOREIGN KEY (neighborhood_id) REFERENCES neighborhoods(id),
     FOREIGN KEY (category_id) REFERENCES categories(id),
     FOREIGN KEY (reported_by) REFERENCES users(id),
     FOREIGN KEY (validated_by) REFERENCES users(id),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_status (status),
     INDEX idx_municipality (municipality_id),
     INDEX idx_category (category_id),
-    INDEX idx_user (reported_by)
+    INDEX idx_reported_by (reported_by)
 );
 
--- Relations: Incidents ↔ Validations & Categories
+-- Incident Validations
 CREATE TABLE incidentValidations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     incident_id INT,
@@ -101,9 +105,10 @@ CREATE TABLE incidentValidations (
     comments TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (incident_id) REFERENCES incidents(id),
-    FOREIGN KEY (validator_id) REFERENCES incident_validations(id)
+    FOREIGN KEY (validator_id) REFERENCES users(id)
 );
 
+-- Incident Categories
 CREATE TABLE incidentCategories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     incident_id INT,
