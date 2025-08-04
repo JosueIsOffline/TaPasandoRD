@@ -1,17 +1,24 @@
+-- Roles
+CREATE TABLE roles(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name varchar(50) NOT NULL
+);
+
 -- Users
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
-    supplier_auth ENUM('Google', 'Microsoft', 'local') NOT NULL,
     password VARCHAR(255) NULL,
     photo_url VARCHAR(255),
+    supplier_auth ENUM('google', 'microsoft', 'local') NOT NULL,
+    role_id INT,
     active BOOLEAN DEFAULT TRUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    role ENUM('Reportero', 'Validador', 'Admin'),
+    FOREIGN KEY (role_id) REFERENCES roles(id),
     INDEX idx_email (email),
-    INDEX idx_role (role),
+    INDEX idx_role (role_id),
     INDEX idx_active (active)
 );
 

@@ -35,7 +35,7 @@ class UserRepository
   {
     $user = new User();
 
-    $result = $user->query()->where('email', $email)->where('proveedor_auth', $provider)->first();
+    $result = $user->query()->where('email', $email)->where('supplier_auth', $provider)->first();
 
     return $result ? $result : null;
   }

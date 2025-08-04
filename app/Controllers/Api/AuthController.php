@@ -80,7 +80,7 @@ class AuthController extends AbstractController
     if ($existingUser) {
       $this->repoUser->update([
         'id' => $existingUser['id'],
-        'proveedor_auth' => $provider,
+        'supplier_auth' => $provider,
         'photo_url' => $userProviderData['picture'] ?? null
       ]);
 
@@ -91,13 +91,13 @@ class AuthController extends AbstractController
       'name' => $userProviderData['name'],
       'email' => $userProviderData['email'],
       'photo_url' => $userProviderData['picture'] ?? null,
-      'rol' => 'reportero',
-      'proveedor_auth' => $provider,
+      'role_id' => 1,
+      'supplier_auth' => $provider,
       'password' => null,
     ];
 
     $this->repoUser->create($userData);
-    $user = $this->repoUser->findByEmailAndProvider($userData['email'], $userData['proveedor_auth']);
+    $user = $this->repoUser->findByEmailAndProvider($userData['email'], $userData['supplier_auth']);
 
     return array_merge($userData, ['id' => $user["id"]]);
   }
@@ -133,7 +133,8 @@ class AuthController extends AbstractController
     $data = [
       'name' => $params['nombre'],
       'email' => $params['email'],
-      'rol' => $params['rol'],
+      'role_id' => $this->getRoleId($params['rol']),
+      'supplier_auth' => 'local',
       'password' => password_hash($params['password'], PASSWORD_DEFAULT)
     ];
 
@@ -154,5 +155,16 @@ class AuthController extends AbstractController
     return $this->redirect(
       '/login',
     );
+  }
+
+  private function getRoleId(string $role): int
+  {
+    $roles = [
+      'reportero' => 1,
+      'validador' => 2,
+      'admin' => 3
+    ];
+
+    return $roles[$role];
   }
 }

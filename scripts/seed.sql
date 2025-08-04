@@ -3,15 +3,23 @@
 --
 
 -- --------------------------------------------------------
+-- Populate the 'roles' table
+-- --------------------------------------------------------
+INSERT INTO roles (name) VALUES
+('reportero'),
+('validador'),
+('admin');
+
+-- --------------------------------------------------------
 -- Populate the 'users' table
 -- --------------------------------------------------------
 -- password for all users is 'password123' (hashed)
-INSERT INTO users (name, email, supplier_auth, password, photo_url, role) VALUES
-('Juan Pérez', 'juan.perez@example.com', 'local', '$2a$10$72T.o/Q4M4e4L5s6D7a8C.1E.2F.3G.4H.5I.6J.7K.8L.9M.0N.1O.2P.3Q.4R', 'https://placehold.co/100x100/A3E4D7/000000?text=JP', 'Reportero'),
-('Ana García', 'ana.garcia@example.com', 'local', '$2a$10$72T.o/Q4M4e4L5s6D7a8C.1E.2F.3G.4H.5I.6J.7K.8L.9M.0N.1O.2P.3Q.4R', 'https://placehold.co/100x100/D7BDE2/000000?text=AG', 'Validador'),
-('Carlos Valdés', 'carlos.valdes@example.com', 'local', '$2a$10$72T.o/Q4M4e4L5s6D7a8C.1E.2F.3G.4H.5I.6J.7K.8L.9M.0N.1O.2P.3Q.4R', 'https://placehold.co/100x100/FAD7A0/000000?text=CV', 'Admin'),
-('Sofía Ramos', 'sofia.ramos@example.com', 'local', '$2a$10$72T.o/Q4M4e4L5s6D7a8C.1E.2F.3G.4H.5I.6J.7K.8L.9M.0N.1O.2P.3Q.4R', 'https://placehold.co/100x100/A9CCE3/000000?text=SR', 'Reportero'),
-('Pedro Sánchez', 'pedro.sanchez@example.com', 'local', '$2a$10$72T.o/Q4M4e4L5s6D7a8C.1E.2F.3G.4H.5I.6J.7K.8L.9M.0N.1O.2P.3Q.4R', 'https://placehold.co/100x100/E8DAEF/000000?text=PS', 'Validador');
+INSERT INTO users (name, email, password, photo_url, supplier_auth, role_id) VALUES
+('Juan Pérez', 'juan.perez@example.com', '$2y$10$eW5z5wMZVcY7gOVYmF/s..eRXLWheRwr6tELhDWkNoHquVKmEhnfG', 'https://placehold.co/100x100/A3E4D7/000000?text=JP', 'local', 1),
+('Ana García', 'ana.garcia@example.com', '$2y$10$eW5z5wMZVcY7gOVYmF/s..eRXLWheRwr6tELhDWkNoHquVKmEhnfG', 'https://placehold.co/100x100/D7BDE2/000000?text=AG', 'local', 2),
+('Carlos Valdés', 'carlos.valdes@example.com', '$2y$10$eW5z5wMZVcY7gOVYmF/s..eRXLWheRwr6tELhDWkNoHquVKmEhnfG', 'https://placehold.co/100x100/FAD7A0/000000?text=CV', 'local', 3),
+('Sofía Ramos', 'sofia.ramos@example.com', '$2y$10$eW5z5wMZVcY7gOVYmF/s..eRXLWheRwr6tELhDWkNoHquVKmEhnfG', 'https://placehold.co/100x100/A9CCE3/000000?text=SR', 'local', 1),
+('Pedro Sánchez', 'pedro.sanchez@example.com', '$2y$10$eW5z5wMZVcY7gOVYmF/s..eRXLWheRwr6tELhDWkNoHquVKmEhnfG', 'https://placehold.co/100x100/E8DAEF/000000?text=PS', 'local', 2);
 
 -- --------------------------------------------------------
 -- Populate the 'provinces' table
@@ -81,4 +89,3 @@ INSERT INTO comments (incident_id, user_id, content) VALUES
 (1, 4, 'Yo pasé por ahí y vi el accidente. Se formó un gran tapón.'),
 (2, 2, 'Necesitamos más detalles y fotos para validar este incidente.'),
 (3, 1, 'Esperemos que los afectados estén bien.');
-

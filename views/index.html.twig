@@ -2,7 +2,10 @@
 
 {% block content %}
       {{user.name}} 
-      {{user.rol}} 
+      {% if user.role_id == 1 %} 
 
-      <img src="{{user.photo}}"/>
+        <p>reportero</p>
+      {% endif %}
+
+      <img src="{{user.photo_url}}"/>
 {% endblock %}
