@@ -1,0 +1,133 @@
+:root {
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 60px;
+  --sidebar-bg: #1a202c; /* Dark background */
+  --main-bg: #4a5568; /* Dark grey from image */
+  --text-color: #e2e8f0; /* Light text for dark background */
+  --light-text-color: #a0aec0; /* Lighter grey for section titles */
+  --hover-bg: #2d3748; /* Darker grey for hover */
+  --border-color: #2d3748;
+  --toggle-button-bg: #2d3748;
+  --toggle-button-border: #4a5568;
+  --toggle-button-shadow: rgba(0, 0, 0, 0.2);
+  --tooltip-bg: #333;
+  --tooltip-text-color: #fff;
+
+  --primary-color: #1e40af;
+  --secondary-color: #f59e0b;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #06b6d4;
+  --dark-color: #1f2937;
+  --light-color: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: #000;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.5;
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--main-bg);
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.incident-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  overflow: hidden;
+}
+
+.incident-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.incident-type-badge {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.map-container {
+  height: 500px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--danger-color);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-container {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.status-pending {
+  color: var(--warning-color);
+}
+.status-approved {
+  color: var(--success-color);
+}
+.status-rejected {
+  color: var(--danger-color);
+}
+
+.incident-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
