@@ -124,6 +124,19 @@
                             <i class="fas fa-user-plus me-2"></i>
                             Crear Cuenta
                         </button>
+
+                        {% if message %}
+                            <div id="register-success-alert" class="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md text-center text-sm" role="alert">
+                                {{ message }}
+                            </div>
+
+                            <script>
+                                setTimeout(function() {
+                                    window.location.href = "/login";
+                                }, 3000); // 3 segundos
+                            </script>
+                        {% endif %}
+
                     </form>
                     
                     <div class="text-center mt-4">
