@@ -3,15 +3,17 @@
 {% block styles %}
  <style>
   .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+     min-height: 100vh;
+     background: linear-gradient(135deg, #232946 0%, #1e3a8a 100%, #fff 100%);
+     display: flex;
+     align-items: flex-end;
+     justify-content: center;
+     padding-bottom: 0px;
+ }
 
         .login-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 20px 20px 0 0;
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             max-width: 400px;
@@ -33,6 +35,16 @@
             border-color: var(--primary-color);
             background-color: #f8fafc;
         } 
+
+ @media (min-width: 768px) {
+     .login-container {
+         align-items: center;
+         padding-bottom: 0;
+     }
+     .login-card {
+         border-radius: 20px;
+     }
+ }
  </style>
 {% endblock %}
  
