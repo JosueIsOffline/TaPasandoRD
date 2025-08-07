@@ -152,7 +152,7 @@ class AuthController extends AbstractController
     $repo->create($data);
     return $this->success(
       [],
-      "Usuario creado exitosamente, ya podrás inciar sesión",
+      "Usuario creado exitosamente, ya podrás iniciar sesión",
       200,
       '/login',
     );
