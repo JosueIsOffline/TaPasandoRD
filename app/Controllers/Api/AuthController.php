@@ -150,10 +150,12 @@ class AuthController extends AbstractController
 
     $repo = new UserRepository();
     $repo->create($data);
-    return $this->render(
-      'pages/register.html.twig',
-       [ 'message' =>
-        'Usuario creado exitosamente, ya podrás iniciar sesión']);
+    return $this->success(
+      [],
+      "Usuario creado exitosamente, ya podrás inciar sesión",
+      200,
+      '/login',
+    );
   }
 
   public function logout(): Response
