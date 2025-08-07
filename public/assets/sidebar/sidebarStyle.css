@@ -19,9 +19,14 @@
     width 0.3s ease,
     transform 0.3s ease;
   flex-shrink: 0;
-  overflow-y: auto; /* DESPLAZAMIENTO DEL CONTENIDO*/
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   overflow-x: visible;
   z-index: 1000;
+}
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar.collapsed {
