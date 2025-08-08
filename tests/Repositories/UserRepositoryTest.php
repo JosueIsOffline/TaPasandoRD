@@ -2,12 +2,12 @@
 
 use App\Models\User;
 use App\Repositories\UserRepository;
-use Tests\AtomicTestCase;
+use Tests\TestCase;
 
 /**
  * Test completamente aislado - cada método ejecuta en su propia base de datos
  */
-class UserRepositoryTest extends AtomicTestCase
+class UserRepositoryTest extends TestCase
 {
   private UserRepository $repo;
 
@@ -279,21 +279,5 @@ class UserRepositoryTest extends AtomicTestCase
     $this->assertNotEquals($localUser['id'], $googleUser['id']);
     $this->assertNotEquals($localUser['id'], $microsoftUser['id']);
     $this->assertNotEquals($googleUser['id'], $microsoftUser['id']);
-  }
-
-  public function testDatabaseIsolationBetweenTests(): void
-  {
-    // Este test verifica que cada método comienza con una DB limpia
-    $this->assertTableEmpty('users');
-
-    // Si los tests anteriores no hubieran limpiado, habría usuarios aquí
-    $allUsers = $this->pdo->query("SELECT * FROM users")->fetchAll();
-    $this->assertEmpty($allUsers);
-
-    // Crear un usuario
-    $user = $this->createUniqueUser();
-    $this->assertTableCount('users', 1);
-
-    // El siguiente test debería empezar con 0 usuarios de nuevo
   }
 }

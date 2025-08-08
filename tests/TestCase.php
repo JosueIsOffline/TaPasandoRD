@@ -10,7 +10,7 @@ use PDO;
 /**
  * TestCase completamente aislado - cada test ejecuta en su propia instancia
  */
-abstract class AtomicTestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
   protected PDO $pdo;
   protected ?DatabaseConnection $connection = null;

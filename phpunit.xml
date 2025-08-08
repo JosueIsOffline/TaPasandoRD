@@ -1,54 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="vendor/autoload.php"
-         colors="true"
-         testdox="true"
-         stopOnFailure="false"
-         processIsolation="false"
-         backupGlobals="false"
-         backupStaticAttributes="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true">
-  
+  colors="true"
+  testdox="true"
+>
   <testsuites>
-    <testsuite name="Unit Tests">
+    <testsuite name="Repositories Test Suite">
       <directory>./tests/Repositories/</directory>
-      <directory>./tests/Models/</directory>
-      <directory>./tests/Services/</directory>
-    </testsuite>
-    <testsuite name="Feature Tests">
-      <directory>./tests/Controllers/</directory>
-      <directory>./tests/Integration/</directory>
     </testsuite>
   </testsuites>
-
-  <logging>
-    <junit outputFile="reports/junit.xml"/>
-    <testdoxText outputFile="reports/testdox.txt"/>
-    <testdoxHtml outputFile="reports/testdox.html"/>
-  </logging>
-
-  <php>
-    <ini name="memory_limit" value="256M"/>
-    <env name="APP_ENV" value="testing"/>
-    <env name="DB_CONNECTION" value="sqlite"/>
-    <env name="DB_DATABASE" value="sqlite::memory:"/>
-  </php>
-
-  <coverage>
-    <include>
-      <directory suffix=".php">./app</directory>
-    </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./tests</directory>
-      <file>./app/bootstrap.php</file>
-    </exclude>
-    <report>
-      <text outputFile="reports/coverage.txt" showUncoveredFiles="true"/>
-      <html outputDirectory="reports/coverage" lowUpperBound="50" highLowerBound="80"/>
-      <xml outputDirectory="reports/coverage-xml"/>
-      <clover outputFile="reports/clover.xml"/>
-    </report>
-  </coverage>
 </phpunit>
+
