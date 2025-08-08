@@ -31,6 +31,12 @@ abstract class TestCase extends BaseTestCase
     $this->connection = null;
     parent::tearDown();
   }
+  protected function getLastInsertId(): int
+  {
+    $result = $this->connection->query("SELECT last_insert_rowid() as last_id");
+    return (int) ($result[0]['last_id'] ?? 0);
+  }
+
 
   /**
    * Crear todas las tablas del esquema
