@@ -29,4 +29,4 @@
 .env
 
 .phpunit.result.cache
-.sqlite::memory
+sqlite::memory
