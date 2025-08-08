@@ -43,12 +43,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run test suite
-        run: |
-          vendor/bin/phpunit \
-          --log-junit reports/junit.xml \
-          --testdox \
-          --colors=always \
-          ./tests
+        run: composer run-script test
 
       - name: 📋 Publish Test Results
         uses: mikepenz/action-junit-report@v4

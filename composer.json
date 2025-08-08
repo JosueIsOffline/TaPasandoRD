@@ -36,14 +36,12 @@
     }
   },
   "scripts": {
-    "test": [
-      "vendor/bin/phpunit --testdox --colors=always"
-    ],
-    "config": {
-      "optimize-autoloader": true,
-      "sort-packages": true
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
-  }
+    "test": "vendor/bin/phpunit --log-junit reports/junit.xml --testdox --colors=always ./tests"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
