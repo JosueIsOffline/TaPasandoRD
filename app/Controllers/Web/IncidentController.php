@@ -5,10 +5,10 @@ namespace App\Controllers\Web;
 use JosueIsOffline\Framework\Controllers\AbstractController;
 use JosueIsOffline\Framework\Http\Response;
 
-class MapController extends AbstractController
+class IncidentController extends AbstractController
 {
   public function index(): Response
   {
-    return $this->renderWithFlash("index.html.twig");
+    return $this->renderWithFlash("incident/index.html.twig");
   }
 }
