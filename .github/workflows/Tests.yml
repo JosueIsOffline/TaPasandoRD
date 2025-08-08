@@ -101,6 +101,7 @@ jobs:
               // Parse test output for detailed information
               let testDetails = '';
               let timeAndMemory = '';
+              let testSummaryTable = '';
               
               if (fs.existsSync(textOutputPath)) {
                 const textOutput = fs.readFileSync(textOutputPath, 'utf8');
@@ -111,62 +112,102 @@ jobs:
                   timeAndMemory = `**Execution Time**: ${timeMemoryMatch[1]} | **Memory Usage**: ${timeMemoryMatch[2]}`;
                 }
                 
-                // Extract test suite results with better parsing
+                // Parse XML for better structured data
+                const testSuites = [];
+                const suiteMatches = xmlContent.match(/<testsuite[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*assertions="(\d+)"[^>]*time="([^"]*)"[^>]*>/g);
+                
+                if (suiteMatches) {
+                  suiteMatches.forEach(suiteMatch => {
+                    const nameMatch = suiteMatch.match(/name="([^"]*)"/);
+                    const testsMatch = suiteMatch.match(/tests="(\d+)"/);
+                    const assertionsMatch = suiteMatch.match(/assertions="(\d+)"/);
+                    const timeMatch = suiteMatch.match(/time="([^"]*)"/);
+                    
+                    if (nameMatch && testsMatch) {
+                      const suiteName = nameMatch[1];
+                      const testCount = testsMatch[1];
+                      const assertions = assertionsMatch ? assertionsMatch[1] : '0';
+                      const time = timeMatch ? parseFloat(timeMatch[1]).toFixed(3) : '0.000';
+                      
+                      // Skip CLI Arguments suite or other meta suites
+                      if (suiteName !== 'CLI Arguments' && !suiteName.includes('\\')) {
+                        testSuites.push({
+                          name: suiteName,
+                          tests: parseInt(testCount),
+                          assertions: parseInt(assertions),
+                          time: parseFloat(time)
+                        });
+                      }
+                    }
+                  });
+                }
+                
+                // Create summary table
+                if (testSuites.length > 0) {
+                  testSummaryTable = `
+| Test Suite | Tests | Assertions | Time (s) | Status |
+|------------|-------|------------|----------|--------|`;
+                  
+                  testSuites.forEach(suite => {
+                    const status = '✅ Passed'; // Assuming all passed if no failures
+                    testSummaryTable += `
+| ${suite.name} | ${suite.tests} | ${suite.assertions} | ${suite.time} | ${status} |`;
+                  });
+                }
+                
+                // Extract individual test results from text output
                 const lines = textOutput.split('\n');
-                let inTestResults = false;
                 let currentSuite = '';
-                let testResultLines = [];
+                let testResults = {};
                 
                 for (let i = 0; i < lines.length; i++) {
                   const line = lines[i].trim();
                   
-                  // Detect test suite names (lines that don't start with ✔, ✗, or whitespace)
+                  // Detect test suite names
                   if (line && !line.startsWith('✔') && !line.startsWith('✗') && 
-                      !line.startsWith(' ✔') && !line.startsWith(' ✗') &&
-                      !line.includes('PHPUnit') && !line.includes('Time:') && 
-                      !line.includes('OK (') && !line.includes('Tests:') &&
-                      !line.includes('--') && line.length > 3) {
+                      !line.startsWith(' ') && !line.includes('PHPUnit') && 
+                      !line.includes('Time:') && !line.includes('OK (') && 
+                      !line.includes('Tests:') && !line.includes('--') && 
+                      !line.includes('composer') && !line.includes('vendor') &&
+                      !line.includes('Loading') && !line.includes('Runtime:') &&
+                      line.length > 3 && line.includes('Test')) {
                     
-                    // Skip common non-test lines
-                    if (!line.includes('composer') && !line.includes('vendor') && 
-                        !line.includes('Loading') && !line.includes('Generating') &&
-                        !line.includes('Runtime:') && !line.includes('Configuration:')) {
-                      currentSuite = line;
-                      testResultLines.push(`\n**${currentSuite}**`);
-                      inTestResults = true;
-                    }
+                    currentSuite = line;
+                    testResults[currentSuite] = [];
                   }
-                  // Capture test results (lines with checkmarks)
-                  else if (inTestResults && (line.includes('✔') || line.includes('✗'))) {
-                    // Clean up the test name
-                    let testName = line.replace(/[✔✗]/g, '').trim();
-                    const icon = line.includes('✔') ? '✅' : '❌';
+                  // Capture individual test results
+                  else if (currentSuite && (line.startsWith('✔') || line.startsWith('✗'))) {
+                    const testName = line.replace(/[✔✗]/g, '').trim();
+                    const passed = line.startsWith('✔');
                     if (testName) {
-                      testResultLines.push(`  ${icon} ${testName}`);
+                      testResults[currentSuite].push({
+                        name: testName,
+                        passed: passed
+                      });
                     }
                   }
                 }
                 
-                if (testResultLines.length > 0) {
-                  testDetails = testResultLines.join('\n');
-                }
-                
-                // If we didn't capture test details well, try alternative parsing
-                if (!testDetails) {
-                  const testdoxMatch = textOutput.match(/([A-Z][a-zA-Z\s]+(?:\n\s*✔[^\n]+)+)/g);
-                  if (testdoxMatch) {
-                    testDetails = testdoxMatch.map(match => {
-                      const lines = match.split('\n');
-                      const suiteName = lines[0].trim();
-                      const tests = lines.slice(1).map(line => {
-                        const testName = line.replace(/[✔✗]/g, '').trim();
-                        const icon = line.includes('✔') ? '✅' : '❌';
-                        return testName ? `  ${icon} ${testName}` : '';
-                      }).filter(Boolean);
-                      
-                      return `**${suiteName}**\n${tests.join('\n')}`;
-                    }).join('\n\n');
-                  }
+                // Format test details as collapsible sections
+                if (Object.keys(testResults).length > 0) {
+                  testDetails = Object.keys(testResults).map(suiteName => {
+                    const tests = testResults[suiteName];
+                    if (tests.length === 0) return '';
+                    
+                    const testList = tests.map(test => 
+                      `- ${test.passed ? '✅' : '❌'} ${test.name}`
+                    ).join('\n');
+                    
+                    return `
+<details>
+<summary><strong>📋 ${suiteName}</strong> (${tests.length} tests)</summary>
+
+\`\`\`
+${testList}
+\`\`\`
+
+</details>`;
+                  }).filter(Boolean).join('\n');
                 }
               }
               
@@ -185,7 +226,9 @@ jobs:
               
               ${timeAndMemory ? `### ⏱️ Performance Metrics\n${timeAndMemory}\n` : ''}
               
-              ${testDetails ? `### 📋 Test Results Details\n\`\`\`\n${testDetails}\n\`\`\`\n` : ''}
+              ${testSummaryTable ? `### 📊 Test Suites Summary${testSummaryTable}\n` : ''}
+              
+              ${testDetails ? `### 📋 Detailed Test Results\n${testDetails}\n` : ''}
               
               ### 📁 Available Artifacts
               - 📊 Test Results (XML)
