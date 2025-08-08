@@ -39,7 +39,7 @@
     "test": [
       "vendor/bin/phpunit --testdox --colors=always"
     ],
-     "config": {
+    "config": {
     "optimize-autoloader": true,
     "sort-packages": true
   },
