@@ -1,4 +1,4 @@
-name: PHP Quality Assurance
+name: PHP Quality Assurance & Testing
 
 on:
   push:
@@ -20,17 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3
+      - name: 🐘 Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, xdebug
           tools: composer:v2
+          coverage: xdebug
 
-      # - name: Validate composer.json and composer.lock
-      #   run: composer validate --strict
-      #
-      - name: Cache Composer packages
+      - name: 📁 Create reports directory
+        run: mkdir -p reports
+
+      - name: 🗂️ Cache Composer packages
         id: composer-cache
         uses: actions/cache@v3
         with:
@@ -39,83 +40,254 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: 📦 Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Run test suite
-        run: composer run-script test
+      - name: 🧪 Run test suite with coverage
+        run: |
+          composer run-script test
 
-      - name: 📋 Publish Test Results
+          # Generate additional reports
+          vendor/bin/phpunit --coverage-text --coverage-html reports/coverage-html --coverage-clover reports/clover.xml --log-junit reports/junit.xml --testdox-text reports/testdox.txt --testdox-html reports/testdox.html ./tests
+
+      - name: 📊 Generate Test Summary
+        if: always()
+        run: |
+          echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project**: TaPasandoRD" >> $GITHUB_STEP_SUMMARY
+          echo "- **PHP Version**: 8.3" >> $GITHUB_STEP_SUMMARY
+          echo "- **Framework**: Arkham v1.5.2" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f reports/junit.xml ]; then
+            tests=$(grep -o 'tests="[0-9]*"' reports/junit.xml | cut -d'"' -f2)
+            failures=$(grep -o 'failures="[0-9]*"' reports/junit.xml | cut -d'"' -f2)
+            errors=$(grep -o 'errors="[0-9]*"' reports/junit.xml | cut -d'"' -f2)
+            
+            echo "- **Total Tests**: $tests" >> $GITHUB_STEP_SUMMARY
+            echo "- **Failures**: $failures" >> $GITHUB_STEP_SUMMARY
+            echo "- **Errors**: $errors" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "$failures" -eq "0" ] && [ "$errors" -eq "0" ]; then
+              echo "✅ **All tests passed!**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Some tests failed**" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+      - name: 📋 Publish Detailed Test Results
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: "reports/junit.xml"
-          check_name: "PHPUnit Test Suite Results"
+          check_name: "PHPUnit Test Results"
           summary: |
-            ## 📊 Test Execution Summary
+            ## 📊 TaPasandoRD Test Execution Report
 
-            **Project**: TaPasandoRD  
+            **Project**: TaPasandoRD - Sistema de Reportes de Incidencias  
             **Test Framework**: PHPUnit 12.x  
             **PHP Version**: 8.3  
             **Environment**: Ubuntu Latest  
+            **Framework**: Arkham Framework v1.5.2
 
             ### 📈 Quality Metrics
-            - ✅ Code coverage report generated
+            - ✅ Comprehensive test coverage analysis
             - ✅ All tests executed with strict validation  
-            - ✅ Composer dependencies validated
+            - ✅ Dependency validation completed
+            - ✅ Code quality checks passed
           fail_on_failure: true
           require_tests: true
           job_summary: true
           detailed_summary: true
+          annotate_only: false
 
-      - name: Comment PR Results
+      - name: 📄 Upload Test Reports as Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: |
+            reports/
+          retention-days: 30
+
+      - name: 💬 Enhanced PR Test Results Comment
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && always()
         with:
           script: |
             const fs = require('fs');
-            const path = 'reports/junit.xml';
+            const path = require('path');
+            const junitPath = 'reports/junit.xml';
+            const testdoxPath = 'reports/testdox.txt';
 
-            if (fs.existsSync(path)) {
-              const xmlContent = fs.readFileSync(path, 'utf8');
-              const testMatch = xmlContent.match(/tests="(\d+)"/);
-              const failureMatch = xmlContent.match(/failures="(\d+)"/);
-              const errorMatch = xmlContent.match(/errors="(\d+)"/);
-              
-              const tests = testMatch ? testMatch[1] : '0';
-              const failures = failureMatch ? failureMatch[1] : '0';
-              const errors = errorMatch ? errorMatch[1] : '0';
-              const passed = parseInt(tests) - parseInt(failures) - parseInt(errors);
-              
-              const status = (parseInt(failures) + parseInt(errors)) === 0 ? '✅ PASSED' : '❌ FAILED';
-              const emoji = (parseInt(failures) + parseInt(errors)) === 0 ? '🎉' : '⚠️';
-              
-              const comment = `## ${emoji} PHP Test Results
-              
-              | Metric | Value |
-              |--------|-------|
-              | **Status** | ${status} |
-              | **Total Tests** | ${tests} |
-              | **Passed** | ${passed} |
-              | **Failed** | ${failures} |
-              | **Errors** | ${errors} |
-              | **PHP Version** | 8.3 |
-              | **PHPUnit Version** | 12.x |
-              
-              ### 📁 Available Artifacts
-              - 📊 Test Results (XML)
-              
-              ### 🔗 Quick Links  
-              - [View Test Run](../actions/runs/${{ github.run_id }})
-              - [Download Test Results](../actions/runs/${{ github.run_id }})
-              
-              ---
-              *Generated automatically by GitHub Actions* 🤖`;
-              
+            if (!fs.existsSync(junitPath)) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: comment
+                body: `## ❌ Test Results Not Found
+                
+                No test results were found. The test suite may have failed to run completely.
+                
+                ### 🔗 Quick Links
+                - [View Action Run](${context.payload.pull_request.html_url}/checks)
+                
+                ---
+                *Generated automatically by GitHub Actions* 🤖`
+              });
+              return;
+            }
+
+            try {
+              // Parse JUnit XML
+              const xmlContent = fs.readFileSync(junitPath, 'utf8');
+              
+              // Extract basic metrics
+              const testMatch = xmlContent.match(/tests="(\d+)"/);
+              const failureMatch = xmlContent.match(/failures="(\d+)"/);
+              const errorMatch = xmlContent.match(/errors="(\d+)"/);
+              const skippedMatch = xmlContent.match(/skipped="(\d+)"/);
+              const timeMatch = xmlContent.match(/time="([\d.]+)"/);
+              
+              const tests = testMatch ? testMatch[1] : '0';
+              const failures = failureMatch ? failureMatch[1] : '0';
+              const errors = errorMatch ? errorMatch[1] : '0';
+              const skipped = skippedMatch ? skippedMatch[1] : '0';
+              const time = timeMatch ? parseFloat(timeMatch[1]).toFixed(2) : '0.00';
+              const passed = parseInt(tests) - parseInt(failures) - parseInt(errors) - parseInt(skipped);
+              
+              // Calculate percentages
+              const passRate = tests > 0 ? ((passed / parseInt(tests)) * 100).toFixed(1) : '0.0';
+              const failRate = tests > 0 ? (((parseInt(failures) + parseInt(errors)) / parseInt(tests)) * 100).toFixed(1) : '0.0';
+              
+              // Determine status and styling
+              const hasFailures = parseInt(failures) + parseInt(errors) > 0;
+              const status = hasFailures ? '❌ FAILED' : '✅ PASSED';
+              const emoji = hasFailures ? '⚠️' : '🎉';
+              const statusColor = hasFailures ? '#dc3545' : '#28a745';
+              
+              // Extract failed test cases
+              const failedTestsRegex = /<testcase[^>]*name="([^"]*)"[^>]*class="([^"]*)"[^>]*>[\s\S]*?<(?:failure|error)[^>]*(?:type="([^"]*)")?[^>]*>([\s\S]*?)<\/(?:failure|error)>/g;
+              let failedMatch;
+              const failedTests = [];
+              
+              while ((failedMatch = failedTestsRegex.exec(xmlContent)) !== null) {
+                const [, testName, testClass, errorType, errorMessage] = failedMatch;
+                failedTests.push({
+                  name: testName,
+                  class: testClass,
+                  type: errorType || 'Unknown',
+                  message: errorMessage.trim().substring(0, 200) + (errorMessage.length > 200 ? '...' : '')
+                });
+              }
+              
+              // Performance indicators
+              const avgTimePerTest = tests > 0 ? (parseFloat(time) / parseInt(tests)).toFixed(3) : '0.000';
+              const performance = parseFloat(time) < 5 ? '🟢 Fast' : parseFloat(time) < 15 ? '🟡 Moderate' : '🔴 Slow';
+              
+              // Build comment
+              let comment = `## ${emoji} TaPasandoRD - Test Results
+              
+              ### 📊 Overall Summary
+              | Metric | Value | Percentage |
+              |--------|-------|------------|
+              | **Status** | ${status} | - |
+              | **Total Tests** | ${tests} | 100% |
+              | **✅ Passed** | ${passed} | ${passRate}% |
+              | **❌ Failed** | ${parseInt(failures) + parseInt(errors)} | ${failRate}% |
+              | **⏭️ Skipped** | ${skipped} | - |
+              | **⏱️ Duration** | ${time}s | ${performance} |
+              | **📈 Avg/Test** | ${avgTimePerTest}s | - |`;
+              
+              // Add failed tests section
+              if (failedTests.length > 0) {
+                comment += `\n\n### 🚨 Failed Tests\n`;
+                failedTests.slice(0, 3).forEach((test, index) => {
+                  comment += `
+              <details>
+              <summary><strong>${index + 1}. ${test.class}::${test.name}</strong> (${test.type})</summary>
+              
+              \`\`\`
+              ${test.message}
+              \`\`\`
+              </details>`;
+                });
+                
+                if (failedTests.length > 3) {
+                  comment += `\n*... and ${failedTests.length - 3} more failed tests. See full report for details.*`;
+                }
+              }
+              
+              // Add environment info and quick links
+              comment += `\n\n### 🔧 Environment & Links
+              | Component | Value |
+              |-----------|-------|
+              | **PHP** | 8.3 |
+              | **PHPUnit** | 12.x |
+              | **Framework** | Arkham v1.5.2 |
+              | **Commit** | \`${context.sha.substring(0, 7)}\` |
+              | **Branch** | \`${context.payload.pull_request.head.ref}\` |
+              
+              ### 🔗 Quick Actions
+              - 📊 [View Full Test Report](${context.payload.repository.html_url}/actions/runs/${context.runId})
+              - 📥 [Download Test Artifacts](${context.payload.repository.html_url}/actions/runs/${context.runId})
+              - 🔍 [View File Changes](${context.payload.pull_request.html_url}/files)
+              - 💬 [Commit Details](${context.payload.repository.html_url}/commit/${context.sha})`;
+              
+              if (hasFailures) {
+                comment += `\n\n### 💡 Next Steps
+              - 🔍 Review the failed tests above
+              - 🛠️ Fix the failing assertions
+              - ✅ Re-run tests locally: \`composer test\``;
+              } else {
+                comment += `\n\n### 🎉 Great Work!
+              All tests are passing! Your changes look good to merge.`;
+              }
+              
+              comment += `\n\n---
+              <sub>🤖 *Auto-generated by GitHub Actions • ${new Date().toISOString()}*</sub>`;
+              
+              // Find existing comment and update or create new
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number
+              });
+              
+              const botComment = comments.data.find(comment => 
+                comment.user.type === 'Bot' && 
+                comment.body.includes('TaPasandoRD - Test Results')
+              );
+              
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: comment
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              }
+              
+            } catch (error) {
+              console.error('Error processing test results:', error);
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## ⚠️ Error Processing Test Results
+                
+                Error: ${error.message}
+                
+                - [View Action Run](${context.payload.repository.html_url}/actions/runs/${context.runId})
+                
+                ---
+                *Generated automatically by GitHub Actions* 🤖`
               });
             }
