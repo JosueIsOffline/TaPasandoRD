@@ -49,9 +49,17 @@
                     </div>
                 </div>
 
-                <!-- Map -->
-                <div id="map">
-                   
+                <!-- Map Container -->
+                <div class="map-container mt-5">
+                    <!-- Loading indicator -->
+                    <div id="map-loading" class="map-loading">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando mapa...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Inicializando mapa...</p>
+                    </div>
+                    <!-- Map -->
+                    <div id="map"></div>
                 </div>
             </div>
         </div>
@@ -236,162 +244,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-// Inicializar el mapa
-var map = L.map('map').setView([18.7357, -70.1627], 8);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Variable para almacenar el marcador actual
-var currentMarker = null;
-
-// Función para actualizar el modal con información de la ubicación clickeada
-function updateModalForNewLocation(lat, lng) {
-    // Actualizar título
-    document.getElementById('modalTitle').innerHTML = 
-        '<i class="fas fa-map-marker-alt me-2"></i>Nueva Ubicación Seleccionada';
-    
-    // Actualizar coordenadas
-    document.getElementById('coordinatesDisplay').textContent = 
-        `Latitud: ${lat.toFixed(6)} | Longitud: ${lng.toFixed(6)}`;
-    
-    // Actualizar información de ubicación
-    document.getElementById('locationInfo').innerHTML = 
-        `<i class="fas fa-map-marker-alt me-1"></i>Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    
-    // Actualizar título del incidente
-    document.getElementById('incidentTitle').textContent = 
-        'Ubicación seleccionada en el mapa';
-    
-    // Actualizar descripción
-    document.getElementById('incidentDescription').textContent = 
-        `Se ha seleccionado una nueva ubicación en el mapa con las coordenadas ${lat.toFixed(6)}, ${lng.toFixed(6)}. Esta ubicación puede ser utilizada para reportar una nueva incidencia.`;
-    
-    // Actualizar información del reporte
-    document.getElementById('reportedBy').textContent = 'Usuario del mapa';
-    document.getElementById('reporterEmail').textContent = 'usuario@sistema.com';
-    document.getElementById('reportDate').textContent = new Date().toLocaleString('es-ES');
-    
-    // Cambiar estado a pendiente
-    const statusElement = document.getElementById('reportStatus');
-    statusElement.textContent = 'Nueva ubicación';
-    statusElement.className = 'badge bg-info';
-    
-    // Actualizar tipo de incidente
-    const typeElement = document.getElementById('incidentType');
-    typeElement.textContent = 'Ubicación';
-    typeElement.className = 'incident-type-badge bg-info text-white';
-    
-    // Actualizar estado del incidente
-    document.getElementById('incidentStatus').textContent = 'Sin validar';
-    document.getElementById('incidentStatus').className = 'badge bg-warning';
-    
-    // Resetear contadores
-    document.getElementById('deathCount').textContent = '0';
-    document.getElementById('injuredCount').textContent = '0';
-    document.getElementById('lossAmount').textContent = '$0';
-    
-    // Actualizar información de tiempo
-    document.getElementById('timeInfo').innerHTML = 
-        `<i class="fas fa-clock me-1"></i>${new Date().toLocaleString('es-ES')}`;
-    
-    // Actualizar campos de corrección con valores por defecto
-    document.getElementById('correctionDeaths').value = '0';
-    document.getElementById('correctionInjured').value = '0';
-    document.getElementById('correctionLoss').value = '0';
-    document.getElementById('correctionComment').value = '';
-}
-
-// Función para obtener el nombre de la provincia basado en las coordenadas (simplificado)
-function getProvinceFromCoordinates(lat, lng) {
-    // Esta es una implementación simple. En producción, usarías un servicio de geocodificación
-    if (lat >= 18.4 && lat <= 18.6 && lng >= -70.0 && lng <= -69.8) {
-        return "Distrito Nacional";
-    } else if (lat >= 18.3 && lat <= 18.7 && lng >= -70.2 && lng <= -69.7) {
-        return "Santo Domingo";
-    } else if (lat >= 19.3 && lat <= 19.6 && lng >= -71.0 && lng <= -70.5) {
-        return "Santiago";
-    } else {
-        return "Otras provincias";
-    }
-}
-
-// Evento de clic en el mapa
-map.on('click', function(e) {
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
-    
-    console.log('Coordenadas seleccionadas:', lat, lng);
-    
-    // Remover marcador anterior si existe
-    if (currentMarker) {
-        map.removeLayer(currentMarker);
-    }
-    
-    // Agregar nuevo marcador
-    currentMarker = L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup(`<strong>Nueva ubicación seleccionada</strong><br>
-                   Latitud: ${lat.toFixed(6)}<br>
-                   Longitud: ${lng.toFixed(6)}<br>
-                   <small>Haga clic para ver detalles</small>`)
-        .openPopup();
-    
-    // Actualizar modal con la nueva información
-    updateModalForNewLocation(lat, lng);
-    
-    // Mostrar el modal
-    var modal = new bootstrap.Modal(document.getElementById('incidentModal'));
-    modal.show();
-});
-
-// Funcionalidad para el botón "Ver en Mapa"
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('viewOnMapBtn').addEventListener('click', function() {
-        var coordsText = document.getElementById('coordinatesDisplay').textContent;
-        var coords = coordsText.match(/Latitud: ([\d.-]+) \| Longitud: ([\d.-]+)/);
-        
-        if (coords) {
-            var lat = parseFloat(coords[1]);
-            var lng = parseFloat(coords[2]);
-            
-            // Centrar el mapa en las coordenadas y hacer zoom
-            map.setView([lat, lng], 15);
-            
-            // Si hay un marcador, hacer que destelle
-            if (currentMarker) {
-                currentMarker.openPopup();
-            }
-            
-            // Cerrar modal
-            var modalInstance = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-        }
-    });
-});
-
-// Opcional: Agregar algunos marcadores de ejemplo al cargar el mapa
-document.addEventListener('DOMContentLoaded', function() {
-    // Marcador de ejemplo en Santo Domingo
-    var exampleMarker = L.marker([18.4861, -69.9312])
-        .addTo(map)
-        .bindPopup('<strong>Accidente en Av. Churchill</strong><br>Clic para ver detalles')
-        .on('click', function() {
-            // Restaurar información original del modal cuando se haga clic en un marcador existente
-            document.getElementById('modalTitle').innerHTML = 
-                '<i class="fas fa-exclamation-triangle me-2"></i>Detalle de Incidencia';
-            document.getElementById('incidentTitle').textContent = 'Accidente de tránsito en Av. Churchill';
-            document.getElementById('coordinatesDisplay').textContent = 'Latitud: 18.4861 | Longitud: -69.9312';
-            
-            var modal = new bootstrap.Modal(document.getElementById('incidentModal'));
-            modal.show();
-        });
-});
-</script>
 {% endblock %}

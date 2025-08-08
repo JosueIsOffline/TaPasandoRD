@@ -1,6 +1,8 @@
  {% extends "base.html.twig" %}
    {% block styles %}
     <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
+    <link href="/assets/map/mapFeature.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
    {% endblock %}
 
 {% block body %}
@@ -140,7 +142,9 @@
   
   {% block scripts %}
      <script src="/assets/sidebar/sidebarFeatures.js"></script>
-    <script>
+     <script src="/assets/map/mapFeature.js"></script>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     const logout = async () => {
       try {
           const response = await fetch("/api/logout", {
