@@ -2,9 +2,9 @@ name: PHP Quality Assurance
 
 on:
   push:
-    branches: [ "main", "dev", "feature/**" ]
+    branches: ["main", "dev", "feature/**"]
   pull_request:
-    branches: [ "main", "dev"]
+    branches: ["main", "dev"]
 
 permissions:
   contents: read
@@ -18,104 +18,104 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup PHP 8.3
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring
-        tools: composer:v2
-        
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring
+          tools: composer:v2
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    - name: Run test suite
-      run: composer run-script test
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
 
-    - name: 📋 Publish Test Results
-      uses: mikepenz/action-junit-report@v4
-      if: always()
-      with:
-        report_paths: './reports/junit.xml'
-        check_name: '🧪 PHPUnit Test Suite Results'
-        summary: |
-          ## 📊 Test Execution Summary
-          
-          **Project**: TaPasandoRD  
-          **Test Framework**: PHPUnit 12.x  
-          **PHP Version**: 8.3  
-          **Environment**: Ubuntu Latest  
-          
-          ### 📈 Quality Metrics
-          - ✅ Code coverage report generated
-          - ✅ All tests executed with strict validation  
-          - ✅ Composer dependencies validated
-        fail_on_failure: true
-        require_tests: true
-        job_summary: true
-        detailed_summary: true
-        
-    - name: Comment PR Results
-      uses: actions/github-script@v7
-      if: github.event_name == 'pull_request' && always()
-      with:
-        script: |
-          const fs = require('fs');
-          const path = 'homework-8/reports/junit.xml';
-          
-          if (fs.existsSync(path)) {
-            const xmlContent = fs.readFileSync(path, 'utf8');
-            const testMatch = xmlContent.match(/tests="(\d+)"/);
-            const failureMatch = xmlContent.match(/failures="(\d+)"/);
-            const errorMatch = xmlContent.match(/errors="(\d+)"/);
-            
-            const tests = testMatch ? testMatch[1] : '0';
-            const failures = failureMatch ? failureMatch[1] : '0';
-            const errors = errorMatch ? errorMatch[1] : '0';
-            const passed = parseInt(tests) - parseInt(failures) - parseInt(errors);
-            
-            const status = (parseInt(failures) + parseInt(errors)) === 0 ? '✅ PASSED' : '❌ FAILED';
-            const emoji = (parseInt(failures) + parseInt(errors)) === 0 ? '🎉' : '⚠️';
-            
-            const comment = `## ${emoji} PHP Test Results
-            
-            | Metric | Value |
-            |--------|-------|
-            | **Status** | ${status} |
-            | **Total Tests** | ${tests} |
-            | **Passed** | ${passed} |
-            | **Failed** | ${failures} |
-            | **Errors** | ${errors} |
-            | **PHP Version** | 8.3 |
-            | **PHPUnit Version** | 12.x |
-            
-            ### 📁 Available Artifacts
-            - 📊 Test Results (XML)
-            
-            ### 🔗 Quick Links  
-            - [View Test Run](../actions/runs/${{ github.run_id }})
-            - [Download Test Results](../actions/runs/${{ github.run_id }})
-            
-            ---
-            *Generated automatically by GitHub Actions* 🤖`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-          }
+      - name: Run test suite
+        run: composer run-script test
+
+      - name: 📋 Publish Test Results
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: "./reports/junit.xml"
+          check_name: "🧪 PHPUnit Test Suite Results"
+          summary: |
+            ## 📊 Test Execution Summary
+
+            **Project**: TaPasandoRD  
+            **Test Framework**: PHPUnit 12.x  
+            **PHP Version**: 8.3  
+            **Environment**: Ubuntu Latest  
+
+            ### 📈 Quality Metrics
+            - ✅ Code coverage report generated
+            - ✅ All tests executed with strict validation  
+            - ✅ Composer dependencies validated
+          fail_on_failure: true
+          require_tests: true
+          job_summary: true
+          detailed_summary: true
+
+      - name: Comment PR Results
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request' && always()
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'homework-8/reports/junit.xml';
+
+            if (fs.existsSync(path)) {
+              const xmlContent = fs.readFileSync(path, 'utf8');
+              const testMatch = xmlContent.match(/tests="(\d+)"/);
+              const failureMatch = xmlContent.match(/failures="(\d+)"/);
+              const errorMatch = xmlContent.match(/errors="(\d+)"/);
+              
+              const tests = testMatch ? testMatch[1] : '0';
+              const failures = failureMatch ? failureMatch[1] : '0';
+              const errors = errorMatch ? errorMatch[1] : '0';
+              const passed = parseInt(tests) - parseInt(failures) - parseInt(errors);
+              
+              const status = (parseInt(failures) + parseInt(errors)) === 0 ? '✅ PASSED' : '❌ FAILED';
+              const emoji = (parseInt(failures) + parseInt(errors)) === 0 ? '🎉' : '⚠️';
+              
+              const comment = `## ${emoji} PHP Test Results
+              
+              | Metric | Value |
+              |--------|-------|
+              | **Status** | ${status} |
+              | **Total Tests** | ${tests} |
+              | **Passed** | ${passed} |
+              | **Failed** | ${failures} |
+              | **Errors** | ${errors} |
+              | **PHP Version** | 8.3 |
+              | **PHPUnit Version** | 12.x |
+              
+              ### 📁 Available Artifacts
+              - 📊 Test Results (XML)
+              
+              ### 🔗 Quick Links  
+              - [View Test Run](../actions/runs/${{ github.run_id }})
+              - [Download Test Results](../actions/runs/${{ github.run_id }})
+              
+              ---
+              *Generated automatically by GitHub Actions* 🤖`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
