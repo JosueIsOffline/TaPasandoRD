@@ -149,7 +149,16 @@ class AuthController extends AbstractController
     ];
 
     $repo = new UserRepository();
-    $repo->create($data);
+    try {
+      $repo->create($data);
+    } catch (\JosueIsOffline\Framework\Database\DatabaseException $e) {
+      
+      // Si ocurre una excepción por correo duplicado, devuelve un error específico para el frontend mostrando el toast
+      if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
+        return $this->error([], 'El correo ya está registrado. Por favor, utiliza otro.', 409);
+      }
+      return $this->error([], 'Error al crear el usuario. Intenta de nuevo más tarde.', 500);
+    }
     return $this->success(
       [],
       "Usuario creado exitosamente, ya podrás iniciar sesión",
