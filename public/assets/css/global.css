@@ -29,6 +29,12 @@
   padding: 0;
 }
 
+/* #map { */
+/*   height: 60rem; */
+/*   margin-top: 2rem; */
+/*   border-radius: 0.75rem; */
+/* } */
+
 h1,
 h2,
 h3,
@@ -42,7 +48,8 @@ body {
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.5;
   color: var(--text-color);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-container {
@@ -130,4 +137,3 @@ body {
   object-fit: cover;
   border-radius: 10px;
 }
-

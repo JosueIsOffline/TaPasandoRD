@@ -1,7 +1,7 @@
  {% extends "base.html.twig" %}
    {% block styles %}
     <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
-    {% endblock %}
+   {% endblock %}
 
 {% block body %}
  <aside class="sidebar" id="sidebar">
@@ -62,7 +62,13 @@
                                     <span>Ver Mapa</span>
                                 </a>
                             </li>
-
+                                
+                            <li class="menu-item">
+                                <a href="/report-incident" class="menu-link" data-tooltip="Posts">
+                                    <i class="fas fa-plus-circle me-2"></i>
+                                    <span>Reportar una incidencia</span>
+                                </a>
+                            </li>
                             <li class="menu-item has-submenu">
                                 <a href="#" class="menu-link" data-tooltip="Income">
                                     <!-- BarChart2 icon -->
