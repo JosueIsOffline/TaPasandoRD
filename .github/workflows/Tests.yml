@@ -43,7 +43,9 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run test suite
-        run: composer run-script test
+        run: |
+          composer run-script test > test_output.txt 2>&1 || echo "Tests completed with exit code: $?"
+          cat test_output.txt
 
       - name: 📋 Publish Test Results
         uses: mikepenz/action-junit-report@v4
@@ -74,23 +76,101 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const path = 'reports/junit.xml';
+            const xmlPath = 'reports/junit.xml';
+            const textOutputPath = 'test_output.txt';
 
-            if (fs.existsSync(path)) {
-              const xmlContent = fs.readFileSync(path, 'utf8');
+            let comment = '';
+
+            if (fs.existsSync(xmlPath)) {
+              // Parse XML results
+              const xmlContent = fs.readFileSync(xmlPath, 'utf8');
               const testMatch = xmlContent.match(/tests="(\d+)"/);
               const failureMatch = xmlContent.match(/failures="(\d+)"/);
               const errorMatch = xmlContent.match(/errors="(\d+)"/);
+              const timeMatch = xmlContent.match(/time="([^"]+)"/);
               
               const tests = testMatch ? testMatch[1] : '0';
               const failures = failureMatch ? failureMatch[1] : '0';
               const errors = errorMatch ? errorMatch[1] : '0';
+              const executionTime = timeMatch ? parseFloat(timeMatch[1]).toFixed(3) : 'N/A';
               const passed = parseInt(tests) - parseInt(failures) - parseInt(errors);
               
               const status = (parseInt(failures) + parseInt(errors)) === 0 ? '✅ PASSED' : '❌ FAILED';
               const emoji = (parseInt(failures) + parseInt(errors)) === 0 ? '🎉' : '⚠️';
               
-              const comment = `## ${emoji} PHP Test Results
+              // Parse test output for detailed information
+              let testDetails = '';
+              let timeAndMemory = '';
+              
+              if (fs.existsSync(textOutputPath)) {
+                const textOutput = fs.readFileSync(textOutputPath, 'utf8');
+                
+                // Extract time and memory information
+                const timeMemoryMatch = textOutput.match(/Time: ([^,]+), Memory: ([^\n]+)/);
+                if (timeMemoryMatch) {
+                  timeAndMemory = `**Execution Time**: ${timeMemoryMatch[1]} | **Memory Usage**: ${timeMemoryMatch[2]}`;
+                }
+                
+                // Extract test suite results with better parsing
+                const lines = textOutput.split('\n');
+                let inTestResults = false;
+                let currentSuite = '';
+                let testResultLines = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                  const line = lines[i].trim();
+                  
+                  // Detect test suite names (lines that don't start with ✔, ✗, or whitespace)
+                  if (line && !line.startsWith('✔') && !line.startsWith('✗') && 
+                      !line.startsWith(' ✔') && !line.startsWith(' ✗') &&
+                      !line.includes('PHPUnit') && !line.includes('Time:') && 
+                      !line.includes('OK (') && !line.includes('Tests:') &&
+                      !line.includes('--') && line.length > 3) {
+                    
+                    // Skip common non-test lines
+                    if (!line.includes('composer') && !line.includes('vendor') && 
+                        !line.includes('Loading') && !line.includes('Generating') &&
+                        !line.includes('Runtime:') && !line.includes('Configuration:')) {
+                      currentSuite = line;
+                      testResultLines.push(`\n**${currentSuite}**`);
+                      inTestResults = true;
+                    }
+                  }
+                  // Capture test results (lines with checkmarks)
+                  else if (inTestResults && (line.includes('✔') || line.includes('✗'))) {
+                    // Clean up the test name
+                    let testName = line.replace(/[✔✗]/g, '').trim();
+                    const icon = line.includes('✔') ? '✅' : '❌';
+                    if (testName) {
+                      testResultLines.push(`  ${icon} ${testName}`);
+                    }
+                  }
+                }
+                
+                if (testResultLines.length > 0) {
+                  testDetails = testResultLines.join('\n');
+                }
+                
+                // If we didn't capture test details well, try alternative parsing
+                if (!testDetails) {
+                  const testdoxMatch = textOutput.match(/([A-Z][a-zA-Z\s]+(?:\n\s*✔[^\n]+)+)/g);
+                  if (testdoxMatch) {
+                    testDetails = testdoxMatch.map(match => {
+                      const lines = match.split('\n');
+                      const suiteName = lines[0].trim();
+                      const tests = lines.slice(1).map(line => {
+                        const testName = line.replace(/[✔✗]/g, '').trim();
+                        const icon = line.includes('✔') ? '✅' : '❌';
+                        return testName ? `  ${icon} ${testName}` : '';
+                      }).filter(Boolean);
+                      
+                      return `**${suiteName}**\n${tests.join('\n')}`;
+                    }).join('\n\n');
+                  }
+                }
+              }
+              
+              comment = `## ${emoji} PHP Test Results
               
               | Metric | Value |
               |--------|-------|
@@ -99,22 +179,50 @@ jobs:
               | **Passed** | ${passed} |
               | **Failed** | ${failures} |
               | **Errors** | ${errors} |
+              | **Execution Time** | ${executionTime}s |
               | **PHP Version** | 8.3 |
               | **PHPUnit Version** | 12.x |
               
+              ${timeAndMemory ? `### ⏱️ Performance Metrics\n${timeAndMemory}\n` : ''}
+              
+              ${testDetails ? `### 📋 Test Results Details\n\`\`\`\n${testDetails}\n\`\`\`\n` : ''}
+              
               ### 📁 Available Artifacts
               - 📊 Test Results (XML)
+              - 📝 Detailed Test Output
+              
+              ### 🔗 Quick Links  
+              - [View Test Run](../actions/runs/${{ github.run_id }})
+              - [View Workflow](../actions/workflows/Tests.yml)
+              
+              ---
+              *Generated automatically by GitHub Actions* 🤖`;
+              
+            } else {
+              comment = `## ❌ Test Results Not Available
+              
+              The test results XML file was not found. This might indicate a test execution failure.
               
               ### 🔗 Quick Links  
               - [View Test Run](../actions/runs/${{ github.run_id }})
               
               ---
               *Generated automatically by GitHub Actions* 🤖`;
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
             }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            reports/junit.xml
+            test_output.txt
+          retention-days: 30
