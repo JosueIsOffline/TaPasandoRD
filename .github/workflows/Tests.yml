@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🐘 Setup PHP 8.3
+      - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
@@ -28,10 +28,10 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
-      - name: 📁 Create reports directory
+      - name: Create reports directory
         run: mkdir -p reports
 
-      - name: 🗂️ Cache Composer packages
+      - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v3
         with:
@@ -40,17 +40,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: 🧪 Run test suite with coverage
+      - name: Run test suite with coverage
         run: |
           composer run-script test
 
-          # Generate additional reports
-          vendor/bin/phpunit --coverage-text --coverage-html reports/coverage-html --coverage-clover reports/clover.xml --log-junit reports/junit.xml --testdox-text reports/testdox.txt --testdox-html reports/testdox.html ./tests
-
-      - name: 📊 Generate Test Summary
+      - name: Generate Test Summary
         if: always()
         run: |
           echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
@@ -75,14 +72,14 @@ jobs:
             fi
           fi
 
-      - name: 📋 Publish Detailed Test Results
+      - name: Publish Detailed Test Results
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: "reports/junit.xml"
           check_name: "PHPUnit Test Results"
           summary: |
-            ## 📊 TaPasandoRD Test Execution Report
+            ## TaPasandoRD Test Execution Report
 
             **Project**: TaPasandoRD - Sistema de Reportes de Incidencias  
             **Test Framework**: PHPUnit 12.x  
@@ -90,7 +87,7 @@ jobs:
             **Environment**: Ubuntu Latest  
             **Framework**: Arkham Framework v1.5.2
 
-            ### 📈 Quality Metrics
+            ### Quality Metrics
             - ✅ Comprehensive test coverage analysis
             - ✅ All tests executed with strict validation  
             - ✅ Dependency validation completed
@@ -101,7 +98,7 @@ jobs:
           detailed_summary: true
           annotate_only: false
 
-      - name: 📄 Upload Test Reports as Artifacts
+      - name: Upload Test Reports as Artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -110,7 +107,7 @@ jobs:
             reports/
           retention-days: 30
 
-      - name: 💬 Enhanced PR Test Results Comment
+      - name: Enhanced PR Test Results Comment
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && always()
         with:
