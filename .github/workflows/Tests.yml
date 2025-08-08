@@ -49,8 +49,8 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
-          report_paths: "/reports/junit.xml"
-          check_name: "🧪 PHPUnit Test Suite Results"
+          report_paths: "reports/junit.xml"
+          check_name: "PHPUnit Test Suite Results"
           summary: |
             ## 📊 Test Execution Summary
 
@@ -74,7 +74,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const path = '/reports/junit.xml';
+            const path = 'reports/junit.xml';
 
             if (fs.existsSync(path)) {
               const xmlContent = fs.readFileSync(path, 'utf8');
