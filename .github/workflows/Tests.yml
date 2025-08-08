@@ -74,7 +74,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const path = 'homework-8/reports/junit.xml';
+            const path = '/reports/junit.xml';
 
             if (fs.existsSync(path)) {
               const xmlContent = fs.readFileSync(path, 'utf8');
