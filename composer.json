@@ -40,9 +40,10 @@
       "vendor/bin/phpunit --testdox --colors=always"
     ],
     "config": {
-    "optimize-autoloader": true,
-    "sort-packages": true
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+      "optimize-autoloader": true,
+      "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+  }
 }
