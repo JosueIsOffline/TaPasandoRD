@@ -3,7 +3,7 @@
   --sidebar-collapsed-width: 60px;
   --sidebar-bg: #1a202c; /* Dark background */
   --main-bg: #4a5568; /* Dark grey from image */
-  --text-color: #e2e8f0; /* Light text for dark background */
+  --text-color: #000; /* Light text for dark background */
   --light-text-color: #a0aec0; /* Lighter grey for section titles */
   --hover-bg: #2d3748; /* Darker grey for hover */
   --border-color: #2d3748;
@@ -130,4 +130,3 @@ body {
   object-fit: cover;
   border-radius: 10px;
 }
-

@@ -9,7 +9,9 @@ class UserRepository
 
   public function getById(int $id): ?array
   {
-    return User::find($id) ?? null;
+    $user = new User();
+
+    return $user->query()->where('id', $id)->first() ?? null;
   }
 
   public function findByEmail(string $email): ?array
