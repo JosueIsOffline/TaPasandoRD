@@ -3,6 +3,8 @@
     <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
     <link href="/assets/map/mapFeature.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    {% endblock %}
 
 {% block body %}
@@ -141,39 +143,39 @@
   {% endblock %} 
   
   {% block scripts %}
-     <script src="/assets/sidebar/sidebarFeatures.js"></script>
-     <script src="/assets/map/mapFeature.js"></script>
-     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/assets/sidebar/sidebarFeatures.js"></script>
+  <script src="/assets/map/mapFeature.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <script>
     const logout = async () => {
       try {
-          const response = await fetch("/api/logout", {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
+        const response = await fetch("/api/logout", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
+          }
+        });
         if (response.ok) {
           window.location.href = "/login";
-        } 
+        }
       } catch (error) {
-          console.error('Error en logout:', error);
+        console.error('Error en logout:', error);
         window.location.href = "/login";
       }
     }
-   const getRole = (role) => {
+
+    const getRole = (role) => {
       const roles = {
         1: 'Reportero',
         2: 'Validador',
         3: 'Admin'
       }
-
       return roles[role]
     }
-    const user = {{auth_user()|json_encode()|raw}}
-    document.getElementById("spanRole").innerText = getRole(user.role_id)
 
- 
-    </script>
-  {% endblock %}
+    const user = {{ auth_user()|json_encode()|raw }}
+    document.getElementById("spanRole").innerText = getRole(user.role_id)
+  </script>
+{% endblock %}
