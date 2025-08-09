@@ -82,7 +82,6 @@ jobs:
             let comment = '';
 
             if (fs.existsSync(xmlPath)) {
-              // Parse XML results
               const xmlContent = fs.readFileSync(xmlPath, 'utf8');
               const testMatch = xmlContent.match(/tests="(\d+)"/);
               const failureMatch = xmlContent.match(/failures="(\d+)"/);
@@ -98,7 +97,6 @@ jobs:
               const status = (parseInt(failures) + parseInt(errors)) === 0 ? '✅ PASSED' : '❌ FAILED';
               const emoji = (parseInt(failures) + parseInt(errors)) === 0 ? '🎉' : '⚠️';
               
-              // Parse test output for detailed information
               let testDetails = '';
               let timeAndMemory = '';
               let testSummaryTable = '';
@@ -106,13 +104,11 @@ jobs:
               if (fs.existsSync(textOutputPath)) {
                 const textOutput = fs.readFileSync(textOutputPath, 'utf8');
                 
-                // Extract time and memory information
                 const timeMemoryMatch = textOutput.match(/Time: ([^,]+), Memory: ([^\n]+)/);
                 if (timeMemoryMatch) {
-                  timeAndMemory = `**Execution Time**: ${timeMemoryMatch[1]} | **Memory Usage**: ${timeMemoryMatch[2]}`;
+                  timeAndMemory = '**Execution Time**: ' + timeMemoryMatch[1] + ' | **Memory Usage**: ' + timeMemoryMatch[2];
                 }
                 
-                // Parse XML for better structured data
                 const testSuites = [];
                 const suiteRegex = /<testsuite[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*assertions="(\d+)"[^>]*time="([^"]*)"[^>]*>/g;
                 let suiteMatch;
@@ -123,8 +119,7 @@ jobs:
                   const assertions = parseInt(suiteMatch[3]);
                   const time = parseFloat(suiteMatch[4]).toFixed(3);
                   
-                  // Skip CLI Arguments suite or other meta suites
-                  if (suiteName !== 'CLI Arguments' && !suiteName.includes('\\\\') && testCount > 0) {
+                  if (suiteName !== 'CLI Arguments' && !suiteName.includes('\\') && testCount > 0) {
                     testSuites.push({
                       name: suiteName,
                       tests: testCount,
@@ -134,18 +129,16 @@ jobs:
                   }
                 }
                 
-                // Create summary table
                 if (testSuites.length > 0) {
-                  testSummaryTable = '\\n| Test Suite | Tests | Assertions | Time (s) | Status |\\n|------------|-------|------------|----------|--------|';
+                  testSummaryTable = '\n| Test Suite | Tests | Assertions | Time (s) | Status |\n|------------|-------|------------|----------|--------|';
                   
                   testSuites.forEach(suite => {
-                    const status = '✅ Passed'; // Assuming all passed if no failures in overall results
-                    testSummaryTable += `\\n| ${suite.name} | ${suite.tests} | ${suite.assertions} | ${suite.time} | ${status} |`;
+                    const suiteStatus = '✅ Passed';
+                    testSummaryTable += '\n| ' + suite.name + ' | ' + suite.tests + ' | ' + suite.assertions + ' | ' + suite.time + ' | ' + suiteStatus + ' |';
                   });
                 }
                 
-                // Extract individual test results from text output with better parsing
-                const lines = textOutput.split('\\n');
+                const lines = textOutput.split('\n');
                 let currentSuite = '';
                 let testResults = {};
                 let inTestdoxMode = false;
@@ -154,13 +147,11 @@ jobs:
                   const line = lines[i];
                   const trimmedLine = line.trim();
                   
-                  // Check if we're in testdox output mode
                   if (trimmedLine.includes('testdox') || inTestdoxMode) {
                     inTestdoxMode = true;
                   }
                   
-                  // Detect test suite names (not indented, contains "Test" at the end)
-                  if (inTestdoxMode && line && !line.startsWith(' ') && !line.startsWith('\\t') && 
+                  if (inTestdoxMode && line && !line.startsWith(' ') && !line.startsWith('\t') && 
                       trimmedLine.endsWith('Test') && !trimmedLine.includes('PHPUnit') && 
                       !trimmedLine.includes('Time:') && !trimmedLine.includes('OK (') && 
                       !trimmedLine.includes('Tests:') && !trimmedLine.includes('--')) {
@@ -168,7 +159,6 @@ jobs:
                     currentSuite = trimmedLine;
                     testResults[currentSuite] = [];
                   }
-                  // Capture individual test results (indented lines with checkmarks)
                   else if (currentSuite && (line.startsWith(' ✔') || line.startsWith(' ✗'))) {
                     const testName = line.replace(/^ *[✔✗]/, '').trim();
                     const passed = line.includes('✔');
@@ -181,65 +171,54 @@ jobs:
                   }
                 }
                 
-                // Format test details as collapsible sections
                 if (Object.keys(testResults).length > 0) {
                   const sections = Object.keys(testResults).map(suiteName => {
                     const tests = testResults[suiteName];
                     if (tests.length === 0) return '';
                     
                     const testList = tests.map(test => 
-                      `- ${test.passed ? '✅' : '❌'} ${test.name}`
-                    ).join('\\n');
+                      '- ' + (test.passed ? '✅' : '❌') + ' ' + test.name
+                    ).join('\n');
                     
-                    return `\\n<details>\\n<summary><strong>📋 ${suiteName}</strong> (${tests.length} tests)</summary>\\n\\n\\`\\`\\`\\n${testList}\\n\\`\\`\\`\\n\\n</details>`;
+                    return '\n<details>\n<summary><strong>📋 ' + suiteName + '</strong> (' + tests.length + ' tests)</summary>\n\n```\n' + testList + '\n```\n\n</details>';
                   }).filter(Boolean);
                   
                   if (sections.length > 0) {
-                    testDetails = sections.join('\\n');
+                    testDetails = sections.join('\n');
                   }
                 }
               }
               
-              comment = `## ${emoji} PHP Test Results
-              
-              | Metric | Value |
-              |--------|-------|
-              | **Status** | ${status} |
-              | **Total Tests** | ${tests} |
-              | **Passed** | ${passed} |
-              | **Failed** | ${failures} |
-              | **Errors** | ${errors} |
-              | **Execution Time** | ${executionTime}s |
-              | **PHP Version** | 8.3 |
-              | **PHPUnit Version** | 12.x |
-              
-              ${timeAndMemory ? `### ⏱️ Performance Metrics\n${timeAndMemory}\n` : ''}
-              
-              ${testSummaryTable ? `### 📊 Test Suites Summary${testSummaryTable}\n` : ''}
-              
-              ${testDetails ? `### 📋 Detailed Test Results\n${testDetails}\n` : ''}
-              
-              ### 📁 Available Artifacts
-              - 📊 Test Results (XML)
-              - 📝 Detailed Test Output
-              
-              ### 🔗 Quick Links  
-              - [View Test Run](../actions/runs/${{ github.run_id }})
-              - [View Workflow](../actions/workflows/Tests.yml)
-              
-              ---
-              *Generated automatically by GitHub Actions* 🤖`;
+              comment = '## ' + emoji + ' PHP Test Results\n\n' +
+                '| Metric | Value |\n' +
+                '|--------|-------|\n' +
+                '| **Status** | ' + status + ' |\n' +
+                '| **Total Tests** | ' + tests + ' |\n' +
+                '| **Passed** | ' + passed + ' |\n' +
+                '| **Failed** | ' + failures + ' |\n' +
+                '| **Errors** | ' + errors + ' |\n' +
+                '| **Execution Time** | ' + executionTime + 's |\n' +
+                '| **PHP Version** | 8.3 |\n' +
+                '| **PHPUnit Version** | 12.x |\n\n' +
+                (timeAndMemory ? '### ⏱️ Performance Metrics\n' + timeAndMemory + '\n\n' : '') +
+                (testSummaryTable ? '### 📊 Test Suites Summary' + testSummaryTable + '\n\n' : '') +
+                (testDetails ? '### 📋 Detailed Test Results\n' + testDetails + '\n\n' : '') +
+                '### 📁 Available Artifacts\n' +
+                '- 📊 Test Results (XML)\n' +
+                '- 📝 Detailed Test Output\n\n' +
+                '### 🔗 Quick Links\n' +
+                '- [View Test Run](../actions/runs/${{ github.run_id }})\n' +
+                '- [View Workflow](../actions/workflows/Tests.yml)\n\n' +
+                '---\n' +
+                '*Generated automatically by GitHub Actions* 🤖';
               
             } else {
-              comment = `## ❌ Test Results Not Available
-              
-              The test results XML file was not found. This might indicate a test execution failure.
-              
-              ### 🔗 Quick Links  
-              - [View Test Run](../actions/runs/${{ github.run_id }})
-              
-              ---
-              *Generated automatically by GitHub Actions* 🤖`;
+              comment = '## ❌ Test Results Not Available\n\n' +
+                'The test results XML file was not found. This might indicate a test execution failure.\n\n' +
+                '### 🔗 Quick Links\n' +
+                '- [View Test Run](../actions/runs/${{ github.run_id }})\n\n' +
+                '---\n' +
+                '*Generated automatically by GitHub Actions* 🤖';
             }
 
             github.rest.issues.createComment({
