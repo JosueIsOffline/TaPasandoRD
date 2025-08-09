@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.008006">
+    <testsuite name="UserRepositoryTest" file="/Users/josueisoffline/Documents/GitHub/TaPasandoRD/tests/Repositories/UserRepositoryTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.008006">
+      <testcase name="testCreateUser" file="/Users/josueisoffline/Documents/GitHub/TaPasandoRD/tests/Repositories/UserRepositoryTest.php" line="18" class="UserRepositoryTest" classname="UserRepositoryTest" assertions="1" time="0.008006"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
