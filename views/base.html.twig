@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TaPasandoRD{% endblock %}</title>
+
+    <!-- Favicon principal -->
+    <link rel="icon" type="image/png" sizes="22x22" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="6x6" href="/favicon.png">
+    <link rel="shortcut icon" href="/favicon.png">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
    
     <!-- Leaflet -->
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -18,10 +26,11 @@
     <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> 
     <link href="/assets/css/global.css" rel="stylesheet">
+    <link href="/assets/homePage/Main.css" rel="stylesheet">
     
     {% block styles %}{% endblock %}
 </head>
-<body> 
+ <body class="{% block body_class %}{% endblock %}"> 
    
     {% block body %}{% endblock %} 
 

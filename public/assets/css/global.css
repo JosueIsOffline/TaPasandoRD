@@ -21,6 +21,12 @@
   --info-color: #06b6d4;
   --dark-color: #1f2937;
   --light-color: #f8fafc;
+
+  /* Fondo interactivo */
+  --mouse-x: 50%;
+  --mouse-y: 40%;
+  --glow-strength: 0.6;
+  --bg-grid-line: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -62,7 +68,6 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #8d93a5, var(--main-bg));
 }
-
 
 .app-container {
   display: flex;
@@ -149,6 +154,32 @@ body::-webkit-scrollbar-thumb:hover {
   object-fit: cover;
   border-radius: 10px;
 }
+
+/* Fondo (Lineas repetitivas con fondo oscuro - gradient) */
+.background-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      var(--bg-grid-line) 0px,
+      var(--bg-grid-line) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--bg-grid-line) 0px,
+      var(--bg-grid-line) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    linear-gradient(180deg, var(--dark-color), var(--main-bg));
+  filter: saturate(1.05);
+}
+
 
 /* Ocultar la barra de scroll en dispositivos móviles */
 @media (max-width: 600px) {
