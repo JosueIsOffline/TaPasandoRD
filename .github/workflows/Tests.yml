@@ -114,71 +114,64 @@ jobs:
                 
                 // Parse XML for better structured data
                 const testSuites = [];
-                const suiteMatches = xmlContent.match(/<testsuite[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*assertions="(\d+)"[^>]*time="([^"]*)"[^>]*>/g);
+                const suiteRegex = /<testsuite[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*assertions="(\d+)"[^>]*time="([^"]*)"[^>]*>/g;
+                let suiteMatch;
                 
-                if (suiteMatches) {
-                  suiteMatches.forEach(suiteMatch => {
-                    const nameMatch = suiteMatch.match(/name="([^"]*)"/);
-                    const testsMatch = suiteMatch.match(/tests="(\d+)"/);
-                    const assertionsMatch = suiteMatch.match(/assertions="(\d+)"/);
-                    const timeMatch = suiteMatch.match(/time="([^"]*)"/);
-                    
-                    if (nameMatch && testsMatch) {
-                      const suiteName = nameMatch[1];
-                      const testCount = testsMatch[1];
-                      const assertions = assertionsMatch ? assertionsMatch[1] : '0';
-                      const time = timeMatch ? parseFloat(timeMatch[1]).toFixed(3) : '0.000';
-                      
-                      // Skip CLI Arguments suite or other meta suites
-                      if (suiteName !== 'CLI Arguments' && !suiteName.includes('\\')) {
-                        testSuites.push({
-                          name: suiteName,
-                          tests: parseInt(testCount),
-                          assertions: parseInt(assertions),
-                          time: parseFloat(time)
-                        });
-                      }
-                    }
-                  });
+                while ((suiteMatch = suiteRegex.exec(xmlContent)) !== null) {
+                  const suiteName = suiteMatch[1];
+                  const testCount = parseInt(suiteMatch[2]);
+                  const assertions = parseInt(suiteMatch[3]);
+                  const time = parseFloat(suiteMatch[4]).toFixed(3);
+                  
+                  // Skip CLI Arguments suite or other meta suites
+                  if (suiteName !== 'CLI Arguments' && !suiteName.includes('\\\\') && testCount > 0) {
+                    testSuites.push({
+                      name: suiteName,
+                      tests: testCount,
+                      assertions: assertions,
+                      time: time
+                    });
+                  }
                 }
                 
                 // Create summary table
                 if (testSuites.length > 0) {
-                  testSummaryTable = `
-| Test Suite | Tests | Assertions | Time (s) | Status |
-|------------|-------|------------|----------|--------|`;
+                  testSummaryTable = '\\n| Test Suite | Tests | Assertions | Time (s) | Status |\\n|------------|-------|------------|----------|--------|';
                   
                   testSuites.forEach(suite => {
-                    const status = '✅ Passed'; // Assuming all passed if no failures
-                    testSummaryTable += `
-| ${suite.name} | ${suite.tests} | ${suite.assertions} | ${suite.time} | ${status} |`;
+                    const status = '✅ Passed'; // Assuming all passed if no failures in overall results
+                    testSummaryTable += `\\n| ${suite.name} | ${suite.tests} | ${suite.assertions} | ${suite.time} | ${status} |`;
                   });
                 }
                 
-                // Extract individual test results from text output
-                const lines = textOutput.split('\n');
+                // Extract individual test results from text output with better parsing
+                const lines = textOutput.split('\\n');
                 let currentSuite = '';
                 let testResults = {};
+                let inTestdoxMode = false;
                 
                 for (let i = 0; i < lines.length; i++) {
-                  const line = lines[i].trim();
+                  const line = lines[i];
+                  const trimmedLine = line.trim();
                   
-                  // Detect test suite names
-                  if (line && !line.startsWith('✔') && !line.startsWith('✗') && 
-                      !line.startsWith(' ') && !line.includes('PHPUnit') && 
-                      !line.includes('Time:') && !line.includes('OK (') && 
-                      !line.includes('Tests:') && !line.includes('--') && 
-                      !line.includes('composer') && !line.includes('vendor') &&
-                      !line.includes('Loading') && !line.includes('Runtime:') &&
-                      line.length > 3 && line.includes('Test')) {
+                  // Check if we're in testdox output mode
+                  if (trimmedLine.includes('testdox') || inTestdoxMode) {
+                    inTestdoxMode = true;
+                  }
+                  
+                  // Detect test suite names (not indented, contains "Test" at the end)
+                  if (inTestdoxMode && line && !line.startsWith(' ') && !line.startsWith('\\t') && 
+                      trimmedLine.endsWith('Test') && !trimmedLine.includes('PHPUnit') && 
+                      !trimmedLine.includes('Time:') && !trimmedLine.includes('OK (') && 
+                      !trimmedLine.includes('Tests:') && !trimmedLine.includes('--')) {
                     
-                    currentSuite = line;
+                    currentSuite = trimmedLine;
                     testResults[currentSuite] = [];
                   }
-                  // Capture individual test results
-                  else if (currentSuite && (line.startsWith('✔') || line.startsWith('✗'))) {
-                    const testName = line.replace(/[✔✗]/g, '').trim();
-                    const passed = line.startsWith('✔');
+                  // Capture individual test results (indented lines with checkmarks)
+                  else if (currentSuite && (line.startsWith(' ✔') || line.startsWith(' ✗'))) {
+                    const testName = line.replace(/^ *[✔✗]/, '').trim();
+                    const passed = line.includes('✔');
                     if (testName) {
                       testResults[currentSuite].push({
                         name: testName,
@@ -190,24 +183,20 @@ jobs:
                 
                 // Format test details as collapsible sections
                 if (Object.keys(testResults).length > 0) {
-                  testDetails = Object.keys(testResults).map(suiteName => {
+                  const sections = Object.keys(testResults).map(suiteName => {
                     const tests = testResults[suiteName];
                     if (tests.length === 0) return '';
                     
                     const testList = tests.map(test => 
                       `- ${test.passed ? '✅' : '❌'} ${test.name}`
-                    ).join('\n');
+                    ).join('\\n');
                     
-                    return `
-<details>
-<summary><strong>📋 ${suiteName}</strong> (${tests.length} tests)</summary>
-
-\`\`\`
-${testList}
-\`\`\`
-
-</details>`;
-                  }).filter(Boolean).join('\n');
+                    return `\\n<details>\\n<summary><strong>📋 ${suiteName}</strong> (${tests.length} tests)</summary>\\n\\n\\`\\`\\`\\n${testList}\\n\\`\\`\\`\\n\\n</details>`;
+                  }).filter(Boolean);
+                  
+                  if (sections.length > 0) {
+                    testDetails = sections.join('\\n');
+                  }
                 }
               }
               
