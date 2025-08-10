@@ -26,7 +26,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   overflow-x: visible;
-  z-index: 1000;
+  z-index: 1001;
 }
 .sidebar::-webkit-scrollbar {
   display: none;
@@ -390,7 +390,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 999;
+  z-index: 1001;
   color: var(--light-text-color);
 }
 
