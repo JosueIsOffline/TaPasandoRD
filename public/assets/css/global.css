@@ -4,6 +4,7 @@
   --sidebar-bg: #1a202c; /* Dark background */
   --main-bg: #4a5568; /* Dark grey from image */
   --text-color: #e2e8f0; /* Light text for dark background */
+  --text-muted: #a0aec0; /* Muted text color for subtitles */
   --light-text-color: #a0aec0; /* Lighter grey for section titles */
   --hover-bg: #2d3748; /* Darker grey for hover */
   --border-color: #2d3748;
