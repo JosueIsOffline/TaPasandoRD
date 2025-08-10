@@ -50,7 +50,7 @@ abstract class TestCase extends BaseTestCase
   {
     return $this->pdo->lastInsertId();
   }
-
+  
   protected function tearDown(): void
   {
     // Cerrar todas las conexiones
