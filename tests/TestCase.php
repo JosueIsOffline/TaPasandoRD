@@ -41,6 +41,16 @@ abstract class TestCase extends BaseTestCase
     $this->seedInitialData();
   }
 
+  /**
+   * Get the last inserted ID from the database.
+   *
+   * @return string
+   */
+  protected function getLastInsertId(): string
+  {
+    return $this->pdo->lastInsertId();
+  }
+
   protected function tearDown(): void
   {
     // Cerrar todas las conexiones
