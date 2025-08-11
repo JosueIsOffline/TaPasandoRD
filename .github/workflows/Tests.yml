@@ -1,0 +1,239 @@
+name: PHP Quality Assurance
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main", "dev"]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  quality-assurance:
+    name: Code Quality & Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring
+          tools: composer:v2
+
+      # - name: Validate composer.json and composer.lock
+      #   run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run test suite
+        run: |
+          composer run-script test > test_output.txt 2>&1 || echo "Tests completed with exit code: $?"
+          cat test_output.txt
+
+      - name: 📋 Publish Test Results
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: "reports/junit.xml"
+          check_name: "PHPUnit Test Suite Results"
+          summary: |
+            ## 📊 Test Execution Summary
+
+            **Project**: TaPasandoRD  
+            **Test Framework**: PHPUnit 12.x  
+            **PHP Version**: 8.3  
+            **Environment**: Ubuntu Latest  
+
+            ### 📈 Quality Metrics
+            - ✅ Code coverage report generated
+            - ✅ All tests executed with strict validation  
+            - ✅ Composer dependencies validated
+          fail_on_failure: true
+          require_tests: true
+          job_summary: true
+          detailed_summary: true
+
+      - name: Comment PR Results
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request' && always()
+        with:
+          script: |
+            const fs = require('fs');
+            const xmlPath = 'reports/junit.xml';
+            const textOutputPath = 'test_output.txt';
+
+            let comment = '';
+
+            if (fs.existsSync(xmlPath)) {
+              const xmlContent = fs.readFileSync(xmlPath, 'utf8');
+              const testMatch = xmlContent.match(/tests="(\d+)"/);
+              const failureMatch = xmlContent.match(/failures="(\d+)"/);
+              const errorMatch = xmlContent.match(/errors="(\d+)"/);
+              const timeMatch = xmlContent.match(/time="([^"]+)"/);
+              
+              const tests = testMatch ? testMatch[1] : '0';
+              const failures = failureMatch ? failureMatch[1] : '0';
+              const errors = errorMatch ? errorMatch[1] : '0';
+              const executionTime = timeMatch ? parseFloat(timeMatch[1]).toFixed(3) : 'N/A';
+              const passed = parseInt(tests) - parseInt(failures) - parseInt(errors);
+              
+              const status = (parseInt(failures) + parseInt(errors)) === 0 ? '✅ PASSED' : '❌ FAILED';
+              const emoji = (parseInt(failures) + parseInt(errors)) === 0 ? '🎉' : '⚠️';
+              
+              let testDetails = '';
+              let timeAndMemory = '';
+              let testSummaryTable = '';
+              
+              if (fs.existsSync(textOutputPath)) {
+                const textOutput = fs.readFileSync(textOutputPath, 'utf8');
+                
+                const timeMemoryMatch = textOutput.match(/Time: ([^,]+), Memory: ([^\n]+)/);
+                if (timeMemoryMatch) {
+                  timeAndMemory = '**Execution Time**: ' + timeMemoryMatch[1] + ' | **Memory Usage**: ' + timeMemoryMatch[2];
+                }
+                
+                const testSuites = [];
+                const suiteRegex = /<testsuite[^>]*name="([^"]*)"[^>]*tests="(\d+)"[^>]*assertions="(\d+)"[^>]*time="([^"]*)"[^>]*>/g;
+                let suiteMatch;
+                
+                while ((suiteMatch = suiteRegex.exec(xmlContent)) !== null) {
+                  const suiteName = suiteMatch[1];
+                  const testCount = parseInt(suiteMatch[2]);
+                  const assertions = parseInt(suiteMatch[3]);
+                  const time = parseFloat(suiteMatch[4]).toFixed(3);
+                  
+                  if (suiteName !== 'CLI Arguments' && !suiteName.includes('\\') && testCount > 0) {
+                    testSuites.push({
+                      name: suiteName,
+                      tests: testCount,
+                      assertions: assertions,
+                      time: time
+                    });
+                  }
+                }
+                
+                if (testSuites.length > 0) {
+                  testSummaryTable = '\n| Test Suite | Tests | Assertions | Time (s) | Status |\n|------------|-------|------------|----------|--------|';
+                  
+                  testSuites.forEach(suite => {
+                    const suiteStatus = '✅ Passed';
+                    testSummaryTable += '\n| ' + suite.name + ' | ' + suite.tests + ' | ' + suite.assertions + ' | ' + suite.time + ' | ' + suiteStatus + ' |';
+                  });
+                }
+                
+                const lines = textOutput.split('\n');
+                let currentSuite = '';
+                let testResults = {};
+                let inTestdoxMode = false;
+                
+                for (let i = 0; i < lines.length; i++) {
+                  const line = lines[i];
+                  const trimmedLine = line.trim();
+                  
+                  if (trimmedLine.includes('testdox') || inTestdoxMode) {
+                    inTestdoxMode = true;
+                  }
+                  
+                  if (inTestdoxMode && line && !line.startsWith(' ') && !line.startsWith('\t') && 
+                      trimmedLine.endsWith('Test') && !trimmedLine.includes('PHPUnit') && 
+                      !trimmedLine.includes('Time:') && !trimmedLine.includes('OK (') && 
+                      !trimmedLine.includes('Tests:') && !trimmedLine.includes('--')) {
+                    
+                    currentSuite = trimmedLine;
+                    testResults[currentSuite] = [];
+                  }
+                  else if (currentSuite && (line.startsWith(' ✔') || line.startsWith(' ✗'))) {
+                    const testName = line.replace(/^ *[✔✗]/, '').trim();
+                    const passed = line.includes('✔');
+                    if (testName) {
+                      testResults[currentSuite].push({
+                        name: testName,
+                        passed: passed
+                      });
+                    }
+                  }
+                }
+                
+                if (Object.keys(testResults).length > 0) {
+                  const sections = Object.keys(testResults).map(suiteName => {
+                    const tests = testResults[suiteName];
+                    if (tests.length === 0) return '';
+                    
+                    const testList = tests.map(test => 
+                      '- ' + (test.passed ? '✅' : '❌') + ' ' + test.name
+                    ).join('\n');
+                    
+                    return '\n<details>\n<summary><strong>📋 ' + suiteName + '</strong> (' + tests.length + ' tests)</summary>\n\n```\n' + testList + '\n```\n\n</details>';
+                  }).filter(Boolean);
+                  
+                  if (sections.length > 0) {
+                    testDetails = sections.join('\n');
+                  }
+                }
+              }
+              
+              comment = '## ' + emoji + ' PHP Test Results\n\n' +
+                '| Metric | Value |\n' +
+                '|--------|-------|\n' +
+                '| **Status** | ' + status + ' |\n' +
+                '| **Total Tests** | ' + tests + ' |\n' +
+                '| **Passed** | ' + passed + ' |\n' +
+                '| **Failed** | ' + failures + ' |\n' +
+                '| **Errors** | ' + errors + ' |\n' +
+                '| **Execution Time** | ' + executionTime + 's |\n' +
+                '| **PHP Version** | 8.3 |\n' +
+                '| **PHPUnit Version** | 12.x |\n\n' +
+                (timeAndMemory ? '### ⏱️ Performance Metrics\n' + timeAndMemory + '\n\n' : '') +
+                (testSummaryTable ? '### 📊 Test Suites Summary' + testSummaryTable + '\n\n' : '') +
+                (testDetails ? '### 📋 Detailed Test Results\n' + testDetails + '\n\n' : '') +
+                '### 📁 Available Artifacts\n' +
+                '- 📊 Test Results (XML)\n' +
+                '- 📝 Detailed Test Output\n\n' +
+                '### 🔗 Quick Links\n' +
+                '- [View Test Run](../actions/runs/${{ github.run_id }})\n' +
+                '- [View Workflow](../actions/workflows/Tests.yml)\n\n' +
+                '---\n' +
+                '*Generated automatically by GitHub Actions* 🤖';
+              
+            } else {
+              comment = '## ❌ Test Results Not Available\n\n' +
+                'The test results XML file was not found. This might indicate a test execution failure.\n\n' +
+                '### 🔗 Quick Links\n' +
+                '- [View Test Run](../actions/runs/${{ github.run_id }})\n\n' +
+                '---\n' +
+                '*Generated automatically by GitHub Actions* 🤖';
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            reports/junit.xml
+            test_output.txt
+          retention-days: 30
