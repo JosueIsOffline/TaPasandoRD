@@ -120,10 +120,20 @@ class AuthController extends AbstractController
 
     if (empty($required['email'])) {
       $required['emailPersist'] = $params['email'];
-      return $this->error($required, 'Error al iniciar session');
+
+      return $this->error($required, 'Disculpe, no se pudo iniciar sesión.');
+
+      //----------------------------------------------------------------------------------------------------------------
+      // TODO: Debemos agregar la funcionalidad de recuperación de contraseña.
+
+      // return $this->error($required, 'No se pudo iniciar sesión. Si crees que has olvidado tus accesos recuperalos en la opción de abajo.');
     }
 
-    return $this->error($required, 'Error al iniciar session');
+    // return $this->error($required, 'No se pudo iniciar sesión. Si crees que has olvidado tus accesos recupera tu contraseña en la opción de abajo.');
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    return $this->error($required, 'Disculpe, nose pudo iniciar sesión.');
   }
 
   public function register(): Response
@@ -142,7 +152,7 @@ class AuthController extends AbstractController
     $repo->create($data);
     return $this->success(
       [],
-      "Usuario creado exitosamente, inicia session",
+      "Usuario creado exitosamente, ya podrás iniciar sesión",
       200,
       '/login',
     );
