@@ -3,7 +3,8 @@
   --sidebar-collapsed-width: 60px;
   --sidebar-bg: #1a202c; /* Dark background */
   --main-bg: #4a5568; /* Dark grey from image */
-  --text-color: #000; /* Light text for dark background */
+  --text-color: #e2e8f0; /* Light text for dark background */
+  --text-muted: #a0aec0; /* Muted text color for subtitles */
   --light-text-color: #a0aec0; /* Lighter grey for section titles */
   --hover-bg: #2d3748; /* Darker grey for hover */
   --border-color: #2d3748;
@@ -21,6 +22,12 @@
   --info-color: #06b6d4;
   --dark-color: #1f2937;
   --light-color: #f8fafc;
+  
+  /* Fondo interactivo */
+  --mouse-x: 50%;
+  --mouse-y: 40%;
+  --glow-strength: 0.6;
+  --bg-grid-line: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -48,6 +55,25 @@ body {
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.5;
   color: var(--text-color);
+  overflow: hidden;
+  scrollbar-width: thin;
+}
+
+/* Barra de scroll */
+body::-webkit-scrollbar {
+  width: 10px;
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--main-bg), #d3d5d9);
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #8d93a5, var(--main-bg));
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -136,4 +162,42 @@ body {
   height: 200px;
   object-fit: cover;
   border-radius: 10px;
+}
+
+/* Fondo (Lineas repetitivas con fondo oscuro - gradient) */
+.background-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      var(--bg-grid-line) 0px,
+      var(--bg-grid-line) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--bg-grid-line) 0px,
+      var(--bg-grid-line) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    linear-gradient(180deg, var(--dark-color), var(--main-bg));
+  filter: saturate(1.05);
+}
+
+
+/* Ocultar la barra de scroll en dispositivos móviles */
+@media (max-width: 600px) {
+  body {
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+  }
+  body::-webkit-scrollbar {
+    display: none;
+  }
 }
