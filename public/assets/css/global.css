@@ -36,6 +36,12 @@
   padding: 0;
 }
 
+/* #map { */
+/*   height: 60rem; */
+/*   margin-top: 2rem; */
+/*   border-radius: 0.75rem; */
+/* } */
+
 h1,
 h2,
 h3,
@@ -68,6 +74,8 @@ body::-webkit-scrollbar-thumb {
 
 body::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #8d93a5, var(--main-bg));
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-container {
