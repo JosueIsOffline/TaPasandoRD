@@ -6,6 +6,6 @@ use JosueIsOffline\Framework\Model\Model;
 
 class Province extends Model
 {
-  protected array $fillable = ['name', 'code'];
+    protected string $table = 'provinces';
+    protected array $fillable = ['name', 'code'];
 }
-?>

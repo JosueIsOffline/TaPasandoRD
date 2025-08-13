@@ -4,9 +4,9 @@ use App\Controllers\Web\ProvinceController;
 
 return [
     ['GET', '/provinces', [ProvinceController::class, 'index']],
-    ['GET', '/provinces/create', [ProvinceController::class, 'createForm']],
-    ['POST', '/provinces/store', [ProvinceController::class, 'store']],
-    ['GET', '/provinces/edit', [ProvinceController::class, 'editForm']],
-    ['POST', '/provinces/update', [ProvinceController::class, 'update']],
-    ['POST', '/provinces/delete', [ProvinceController::class, 'destroy']],
+    ['GET', '/provinces/create', [ProvinceController::class, 'create']],
+    ['POST', '/provinces', [ProvinceController::class, 'store']],
+    ['GET', '/provinces/{id}/edit', [ProvinceController::class, 'edit']],
+    ['POST', '/provinces/{id}/update', [ProvinceController::class, 'update']],
+    ['GET', '/provinces/{id}/delete', [ProvinceController::class, 'destroy']],
 ];

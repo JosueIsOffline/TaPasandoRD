@@ -1,92 +1,78 @@
 <?php
 
-namespace  App\Controllers\Web;
+namespace App\Controllers\Web;
 
-use App\Models\Province;
+use App\Repositories\ProvinceRepository;
 use JosueIsOffline\Framework\Controllers\AbstractController;
 use JosueIsOffline\Framework\Http\Response;
 
 class ProvinceController extends AbstractController
 {
-    // Listar provincias
+    protected ProvinceRepository $provinceRepo;
+
+    public function __construct()
+    {
+        parent::__construct();  // IMPORTANTE
+        $this->provinceRepo = new ProvinceRepository();
+    }
+
     public function index(): Response
     {
-        $provinces = Province::all();
-
-        return $this->render('pages/provinces/index', [
-            'provinces' => $provinces
-        ]);
+        $provinces = $this->provinceRepo->getAll();
+        return $this->render('pages/provinces/index.html.twig', ['provinces' => $provinces]);
     }
 
-    // Mostrar formulario de creación
-    public function createForm(): Response
+    public function create(): Response
     {
-        return $this->render('provinces/create.html.twig');
+        return $this->render('pages/provinces/create.html.twig');
     }
 
-    // Guardar nueva provincia
     public function store(): Response
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $province = new Province();
-            $province->create([
-                'name' => $_POST['name'],
-                'code' => $_POST['code']
+        $name = trim($_POST['name'] ?? '');
+        $code = trim($_POST['code'] ?? '');
+
+        if ($name === '') {
+            return $this->render('provinces/create.html.twig', [
+                'error' => 'El nombre es obligatorio',
+                'old'   => $_POST
             ]);
         }
 
+        $this->provinceRepo->create(['name' => $name, 'code' => $code]);
         return $this->redirect('/provinces');
     }
 
-    // Mostrar formulario de edición
-    public function editForm(): Response
+    public function edit($id): Response
     {
-        $id = $_GET['id'] ?? null;
-
-        if (!$id || !is_numeric($id)) {
-            return $this->render('errors/400.html.twig', ['message' => 'ID inválido']);
-        }
-
-        $province = Province::find((int)$id);
-
+        $province = $this->provinceRepo->findById($id);
         if (!$province) {
-            return $this->render('errors/404.html.twig', ['message' => 'Provincia no encontrada']);
+            return new Response('Provincia no encontrada', 404);
         }
 
-        return $this->render('provinces/edit.html.twig', [
-            'province' => $province
-        ]);
+        return $this->render('/pages/provinces/edit.html.twig', ['province' => $province]);
     }
 
-    
-    // Actualizar provincia
-    public function update(): Response
+    public function update($id): Response
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!isset($_POST['id'], $_POST['name'])) {
-                return $this->render('errors/400.html.twig', ['message' => 'Faltan datos obligatorios']);
-            }
+        $name = trim($_POST['name'] ?? '');
+        $code = trim($_POST['code'] ?? '');
 
-            $province = new Province();
-            $province->update([
-                'id' => (int)$_POST['id'],
-                'name' => trim($_POST['name']),
-                'code' => trim($_POST['code'] ?? '')
+        if ($name === '') {
+            return $this->render('provinces/edit.html.twig', [
+                'error'    => 'El nombre es obligatorio',
+                'province' => $this->provinceRepo->findById($id)
             ]);
         }
 
+        $this->provinceRepo->update($id, ['name' => $name, 'code' => $code]);
         return $this->redirect('/provinces');
     }
 
-
-    // Eliminar provincia
-    public function destroy(): Response
+    public function destroy($id): Response
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $province = new Province();
-            $province->delete($_POST['id']);
-        }
-
+        $this->provinceRepo->delete($id);
         return $this->redirect('/provinces');
     }
 }
+

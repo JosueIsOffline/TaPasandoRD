@@ -1,46 +1,54 @@
-<!-- views/provinces/index.php -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Provincias</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
-<div class="container mt-4">
-    <h1>Provincias</h1>
-    <a href="/provinces/create" class="btn btn-primary mb-3">Agregar Provincia</a>
+    <div class="container mt-4">
+        <h1>Listado de Provincias</h1>
+        <a href="/provinces/create" class="btn btn-primary mb-3">Agregar nueva provincia</a>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($provinces)): ?>
-                <?php foreach ($provinces as $province): ?>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Creado</th>
+                    <th>Actualizado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for province in provinces %}
                     <tr>
-                        <td><?= htmlspecialchars($province['id']) ?></td>
-                        <td><?= htmlspecialchars($province['name']) ?></td>
-                        <td><?= htmlspecialchars($province['code']) ?></td>
+                        <td>{{ province.id }}</td>
+                        <td>{{ province.name }}</td>
+                        <td>{{ province.code ?: '-' }}</td>
+                        <td>{{ province.created_at|date("Y-m-d H:i") }}</td>
+                        <td>{{ province.updated_at|date("Y-m-d H:i") }}</td>
                         <td>
-                            <a href="/provinces/edit?id=<?= $province['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="/provinces/delete" method="POST" style="display:inline;" onsubmit="return confirm('¿Eliminar esta provincia?');">
-                                <input type="hidden" name="id" value="<?= $province['id'] ?>">
-                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                            </form>
+                            <a href="/provinces/{{ province.id }}/edit" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="/provinces/{{ province.id }}/delete" class="btn btn-sm btn-danger"
+                               onclick="return confirm('¿Eliminar esta provincia?')">Eliminar</a>
                         </td>
                     </tr>
-                <?php endforeach ?>
-            <?php else: ?>
-                <tr><td colspan="4" class="text-center">No hay provincias registradas.</td></tr>
-            <?php endif ?>
-        </tbody>
-    </table>
-</div>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No hay provincias registradas.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
