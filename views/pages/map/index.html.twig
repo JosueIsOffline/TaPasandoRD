@@ -14,7 +14,7 @@
                 <div class="filter-panel">
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="form-label">Provincia</label>
+                            <label class="form-label" id="filterProvincia">Provincia</label>
                             <select class="form-select">
                                 <option>Todas las provincias</option>
                                 <option>Distrito Nacional</option>
@@ -24,10 +24,11 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Tipo de Incidencia</label>
+                            <label class="form-label" id="filterTipo">Tipo de Incidencia</label>
                             <select class="form-select">
                                 <option>Todos los tipos</option>
                                 <option>Accidente</option>
+                                <option>Incendio</option>
                                 <option>Robo</option>
                                 <option>Pelea</option>
                                 <option>Desastre</option>
@@ -36,9 +37,9 @@
                         <div class="col-md-4">
                             <label class="form-label">Rango de Fecha</label>
                             <div class="input-group">
-                                <input type="date" class="form-control">
+                                <input type="date" class="form-control" id="filterFechaInicio">
                                 <span class="input-group-text">a</span>
-                                <input type="date" class="form-control">
+                                <input type="date" class="form-control" id="filterFechaFin">
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
