@@ -13,6 +13,11 @@ class IncidentRepository
     return $incidents;
   }
 
+  public function getValidIncident(): ?array
+  {
+    return Incident::query()->where('status', 'validado')->get();
+  }
+
 
   public function getById(int $id): ?array
   {
@@ -23,5 +28,11 @@ class IncidentRepository
   public function create(array $data): void
   {
     Incident::query()->insert($data);
+  }
+
+  public function update(array $data): void
+  {
+
+    Incident::query()->update($data);
   }
 }
