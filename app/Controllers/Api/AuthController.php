@@ -140,6 +140,26 @@ class AuthController extends AbstractController
   {
     $params = $this->request->getAllPost();
 
+    $required = $this->validateRequired($params, ['nombre', 'email', 'password', 'rol']);
+
+    if (!empty($required)) {
+      return $this->error($required, 'Por favor, complete todos los campos requeridos.');
+    }
+
+    $existingUser = $this->repoUser->findByEmail($params['email']);
+    if ($existingUser) {
+      $preservedData = [
+        'name' => $params['nombre'] ?? '',
+        'email' => $params['email'] ?? '',
+        'rol' => $params['rol'] ?? ''
+      ];
+
+      return $this->error(
+        array_merge(['email' => 'Este email ya está registrado'], ['preservedData' => $preservedData]),
+        'El email ya está en uso. Por favor, use otro email o inicie sesión.'
+      );
+    }
+
     $data = [
       'name' => $params['nombre'],
       'email' => $params['email'],
@@ -148,14 +168,28 @@ class AuthController extends AbstractController
       'password' => password_hash($params['password'], PASSWORD_DEFAULT)
     ];
 
-    $repo = new UserRepository();
-    $repo->create($data);
-    return $this->success(
-      [],
-      "Usuario creado exitosamente, ya podrás iniciar sesión",
-      200,
-      '/login',
-    );
+    try {
+      $this->repoUser->create($data);
+      return $this->success(
+        [],
+        "Usuario creado exitosamente, ya podrás iniciar sesión",
+        200,
+        '/login',
+      );
+    } catch (\Exception $e) {
+      if (
+        strpos($e->getMessage(), 'Duplicate entry') !== false ||
+        strpos($e->getMessage(), 'UNIQUE constraint failed') !== false
+      ) {
+        return $this->error(
+          ['email' => 'Este email ya está registrado'],
+          'El email ya está en uso.'
+        );
+      }
+
+      error_log('Error al registrar usuario: ' . $e->getMessage());
+      return $this->error([], 'Error interno del servidor. Intente nuevamente.');
+    }
   }
 
   public function logout(): Response
@@ -178,3 +212,4 @@ class AuthController extends AbstractController
     return $roles[$role];
   }
 }
+
