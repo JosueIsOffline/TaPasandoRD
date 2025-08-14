@@ -11,4 +11,9 @@ class IncidentController extends AbstractController
   {
     return $this->renderWithFlash('incident/index.html.twig');
   }
+
+  public function list(): Response
+  {
+    return $this->renderWithFlash('incident/list.html.twig');
+  }
 }
