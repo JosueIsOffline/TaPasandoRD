@@ -84,6 +84,47 @@
       color: #dc2626;
   }
 
+  /* Toast de error */
+  .toast-error {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      background: #dc2626;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s, transform 0.4s;
+      transform: translateY(-30px);
+      font-size: 1rem;
+      min-width: 280px;
+      max-width: 90vw;
+      text-align: center;
+      border-left: 4px solid #991b1b;
+  }
+  .toast-error.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+  }
+  @media (max-width: 600px) {
+      .toast-error {
+          right: 50%;
+          top: 1rem;
+          left: 50%;
+          transform: translate(-50%, -30px);
+          min-width: 85vw;
+          padding: 0.75rem 1rem;
+          font-size: 0.95rem;
+      }
+      .toast-error.show {
+          transform: translate(-50%, 0);
+      }
+  }
+
  </style>
 {% endblock %}
 {% block body %}
@@ -94,12 +135,14 @@
                         <i class="fas fa-user-plus text-primary text-5xl"></i>
                         <h2 class="mt-3 text-2xl font-bold">Únete a TaPasandoRD</h2>
                     </div> 
+                    
+                    <!-- Toast de error -->
                     {% if error.message %}
-                     <div class="alert alert-danger">
-                       <i class="fas fa-exclamation-triangle me-2"></i>
-                         {{ error.message }}
-                       </div>
-                     {% endif %}
+                        <div id="toast-error" class="toast-error">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {{ error.message }}
+                        </div>
+                    {% endif %}
             
                     <form method="POST" action="/api/register">
                         <div class="flex flex-col md:flex-row md:gap-4">
@@ -175,4 +218,21 @@
                 </div>
             </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% if error.message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toast = document.getElementById('toast-error');
+            if (toast) {
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 5000); // Mostrar por 5 segundos
+            }
+        });
+    </script>
+    {% endif %}
 {% endblock %}
