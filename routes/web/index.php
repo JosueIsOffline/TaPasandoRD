@@ -1,7 +1,7 @@
 <?php
 
-use App\Controllers\Web\MapController;
+use App\Controllers\Web\HomeController;
 
 return [
-  ['GET', '/', [MapController::class, 'index'], 'auth'],
+  ['GET', '/', [HomeController::class, 'index'], 'auth'],
 ];
