@@ -27,7 +27,9 @@ class ValidatorRepository
       ORDER BY i.occurrence_date ASC
     ";
 
-    return DB::raw($sql);
+
+    $stmt = DB::raw($sql);
+    return $results = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: null;
   }
 
   public function approveIncident(array $data): void
