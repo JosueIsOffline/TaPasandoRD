@@ -1,12 +1,12 @@
-<?php
+<?php 
 
 namespace App\Repositories;
 
 use JosueIsOffline\Framework\Database\DB;
 
-class ProvinceRepository
+class CategoryRepository
 {
-    protected string $table = 'provinces';
+    protected string $table = 'categories';
 
     public function getAll()
     {
@@ -26,8 +26,10 @@ class ProvinceRepository
     {
         return DB::table($this->table)
             ->insert([
-                'name' => $data['name'] ?? '',
-                'code' => $data['code'] ?? ''
+                'name'       => $data['name'] ?? '',
+                'icon_color' => $data['icon_color'] ?? null,
+                'icon'       => $data['icon'] ?? null,
+                'active'     => $data['active'] ?? true
             ]);
     }
 
@@ -36,8 +38,10 @@ class ProvinceRepository
         return DB::table($this->table)
             ->where('id', $id)
             ->update([
-                'name' => $data['name'] ?? '',
-                'code' => $data['code'] ?? ''
+                'name'       => $data['name'] ?? '',
+                'icon_color' => $data['icon_color'] ?? null,
+                'icon'       => $data['icon'] ?? null,
+                'active'     => $data['active'] ?? true
             ]);
     }
 
@@ -48,5 +52,3 @@ class ProvinceRepository
             ->delete();
     }
 }
-
-

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Provincias</title>
+    <title>Vecindarios</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
     <!-- Bootstrap CSS -->
@@ -11,37 +11,37 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h1>Listado de Provincias</h1>
-        <a href="/provinces/create" class="btn btn-primary mb-3">Agregar nueva provincia</a>
+        <h1>Listado de Vecindarios</h1>
+        <a href="/neighborhoods/create" class="btn btn-primary mb-3">Agregar nuevo vecindario</a>
 
         <table class="table table-bordered table-striped">
             <thead class="table-light">
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>Código</th>
+                    <th>Municipio</th>
                     <th>Creado</th>
                     <th>Actualizado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for province in provinces %}
+                {% for neighborhood in neighborhoods %}
                     <tr>
-                        <td>{{ province.id }}</td>
-                        <td>{{ province.name }}</td>
-                        <td>{{ province.code ?: '-' }}</td>
-                        <td>{{ province.created_at|date("Y-m-d H:i") }}</td>
-                        <td>{{ province.updated_at|date("Y-m-d H:i") }}</td>
+                        <td>{{ neighborhood.id }}</td>
+                        <td>{{ neighborhood.name }}</td>
+                        <td>{{ neighborhood.municipality_name }}</td>
+                        <td>{{ neighborhood.created_at|date("Y-m-d H:i") }}</td>
+                        <td>{{ neighborhood.updated_at|date("Y-m-d H:i") }}</td>
                         <td>
-                            <a href="/provinces/{{ province.id }}/edit" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="/provinces/{{ province.id }}/delete" class="btn btn-sm btn-danger"
-                               onclick="return confirm('¿Eliminar esta provincia?')">Eliminar</a>
+                            <a href="/neighborhoods/{{ neighborhood.id }}/edit" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="/neighborhoods/{{ neighborhood.id }}/delete" class="btn btn-sm btn-danger"
+                               onclick="return confirm('¿Eliminar este vecindario?')">Eliminar</a>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6" class="text-center">No hay provincias registradas.</td>
+                        <td colspan="6" class="text-center">No hay vecindarios registrados.</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -52,4 +52,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

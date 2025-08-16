@@ -10,3 +10,4 @@ return [
     ['POST', '/provinces/{id}/update', [ProvinceController::class, 'update']],
     ['GET', '/provinces/{id}/delete', [ProvinceController::class, 'destroy']],
 ];
+

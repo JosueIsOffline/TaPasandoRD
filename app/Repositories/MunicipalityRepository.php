@@ -4,9 +4,9 @@ namespace App\Repositories;
 
 use JosueIsOffline\Framework\Database\DB;
 
-class ProvinceRepository
+class MunicipalityRepository
 {
-    protected string $table = 'provinces';
+    protected string $table = 'municipalities';
 
     public function getAll()
     {
@@ -14,7 +14,18 @@ class ProvinceRepository
             ->select()
             ->get();
     }
+    
+    public function getAllWithProvince()
+    {
+    $sql = "
+        SELECT m.*, p.name AS province_name
+        FROM municipalities m
+        INNER JOIN provinces p ON m.province_id = p.id";
 
+    return DB::raw($sql);
+    }
+
+    
     public function findById(int $id)
     {
         return DB::table($this->table)
@@ -26,8 +37,9 @@ class ProvinceRepository
     {
         return DB::table($this->table)
             ->insert([
-                'name' => $data['name'] ?? '',
-                'code' => $data['code'] ?? ''
+                'name'        => $data['name'] ?? '',
+                'code'        => $data['code'] ?? '',
+                'province_id' => $data['province_id'] ?? null
             ]);
     }
 
@@ -36,8 +48,9 @@ class ProvinceRepository
         return DB::table($this->table)
             ->where('id', $id)
             ->update([
-                'name' => $data['name'] ?? '',
-                'code' => $data['code'] ?? ''
+                'name'        => $data['name'] ?? '',
+                'code'        => $data['code'] ?? '',
+                'province_id' => $data['province_id'] ?? null
             ]);
     }
 
@@ -48,5 +61,3 @@ class ProvinceRepository
             ->delete();
     }
 }
-
-
