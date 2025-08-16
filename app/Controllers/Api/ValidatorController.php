@@ -18,8 +18,8 @@ class ValidatorController extends AbstractController
 
   public function getPendingIncident(): Response
   {
-    $pendings = $this->vRepo->getPendingIncidents();
+    $data = $this->vRepo->getPendingIncidents();
 
-    return $this->success($pendings, 200);
+    return $this->success($data, 200);
   }
 }
