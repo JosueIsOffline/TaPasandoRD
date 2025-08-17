@@ -77,10 +77,10 @@
                                                 <button class="btn btn-outline-primary btn-sm me-1" data-bs-toggle="modal" data-bs-target="#validateModal">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="btn btn-outline-success btn-sm me-1">
+                                                <button onclick="approve({{incident.id}})" class="btn btn-outline-success btn-sm me-1">
                                                     <i class="fas fa-check"></i>
                                                 </button>
-                                                <button class="button btn-outline-danger btn-sm">
+                                                <button onclick="reject({{incident.id}})" class="button btn-outline-danger btn-sm">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </td>
@@ -101,4 +101,41 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+
+    const approve = async (incidentId) => {
+      const data = new FormData()
+      data.append("incident_id", incidentId)
+      data.append("comments", "Validado")
+     
+     console.log(incidentId)
+      try {
+        const res = await fetch("http://localhost:8000/api/validator/approve", {
+          method: "POST",
+          body: data 
+        })
+      } catch(e) {
+       console.error("Something went wrong",e)
+      }
+    }
+
+  const reject = async (incidentId) => {
+   const data = new FormData()
+      data.append("incident_id", incidentId)
+      data.append("comments", "Rechazado")
+     
+     console.log(incidentId)
+      try {
+        const res = await fetch("http://localhost:8000/api/validator/reject", {
+          method: "POST",
+          body: data 
+        })
+      } catch(e) {
+       console.error("Something went wrong",e)
+      } 
+  }
+  </script>
 {% endblock %}
