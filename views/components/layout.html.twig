@@ -1,6 +1,11 @@
 {% extends "base.html.twig" %}
 {% block styles %}
 <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
+{{ block('validation_report_styles') }}
+{% endblock %}
+
+{% block validation_report_styles %}
+<!-- CSS específico para validation-report -->
 {% endblock %}
 
 {% block body %}

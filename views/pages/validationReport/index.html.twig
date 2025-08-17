@@ -2,6 +2,11 @@
 
 {% block body_class %}validation-report-body{% endblock %}
 
+{% block validation_report_styles %}
+  <link href="/assets/validationReport/validationReport-ui.css" rel="stylesheet">
+  <link href="/assets/validationReport/validationReport-modal.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 <div class="background-canvas" aria-hidden="true"></div>
 <div class="container-fluid p-4">
@@ -55,8 +60,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for incident in pendingIncidents %}
-                            <tr>
+                                                 {% for incident in pendingIncidents %}
+                             <tr data-incident-id="{{ incident.id }}">
                                 <td class="date-column">
                                     <div>{{ incident.occurrence_date|date('d/m/Y') }}</div>
                                     <small>{{ incident.occurrence_date|date('H:i') }}</small>
@@ -139,152 +144,110 @@
                 Ir al Inicio
             </button>
         </div>
-    {% endif %}
-</div>
-{% endblock %}
+         {% endif %}
+ </div>
+
+ <!-- Modal de detalles del incidente -->
+ <div class="modal fade" id="incidentDetailsModal" tabindex="-1" aria-labelledby="incidentDetailsModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="incidentDetailsModalLabel">
+                     <i class="fas fa-info-circle"></i>
+                     Detalles del Incidente
+                 </h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+             </div>
+             <div class="modal-body">
+                 <div class="incident-details">
+                     <!-- Información del reporte -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-file-alt"></i>
+                             INFORMACIÓN DEL REPORTE
+                         </h6>
+                         <div class="details-grid">
+                             <div class="detail-item">
+                                 <span class="detail-label">Título:</span>
+                                 <span class="detail-value" id="modal-title"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Tipo incidencia:</span>
+                                 <span class="detail-value" id="modal-type"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Ubicación:</span>
+                                 <span class="detail-value" id="modal-location"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Fecha:</span>
+                                 <span class="detail-value" id="modal-date"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Email Reportero:</span>
+                                 <span class="detail-value" id="modal-reporter"></span>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- Estadísticas -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-chart-bar"></i>
+                             ESTADÍSTICAS
+                         </h6>
+                         <div class="stats-grid">
+                             <div class="stat-item">
+                                 <span class="stat-label">Muertos:</span>
+                                 <span class="stat-value" id="modal-deaths"></span>
+                             </div>
+                             <div class="stat-item">
+                                 <span class="stat-label">Heridos:</span>
+                                 <span class="stat-value" id="modal-injured"></span>
+                             </div>
+                             <div class="stat-item">
+                                 <span class="stat-label">Pérdidas:</span>
+                                 <span class="stat-value" id="modal-losses"></span>
+                             </div>
+                             <div class="stat-item">
+                                 <span class="stat-label">Coordenadas:</span>
+                                 <span class="stat-value" id="modal-coordinates"></span>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- Descripción -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-align-left"></i>
+                             DESCRIPCIÓN
+                         </h6>
+                         <p class="description-text" id="modal-description"></p>
+                     </div>
+
+                     
+
+                     <!-- Comentarios de validación -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-comments"></i>
+                             COMENTARIOS DE VALIDACIÓN
+                         </h6>
+                         <div class="validation-comments" id="modal-comments">
+                             <!-- Los comentarios se cargarán dinámicamente aquí -->
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+             </div>
+         </div>
+     </div>
+ </div>
+ {% endblock %}
 
 {% block scripts %}
   {{parent()}}
-  <script>
-
-    function toggleActionsMenu(incidentId) {
-      const menu = document.getElementById(`actions-menu-${incidentId}`);
-      const button = event.target.closest('.actions-button');
-      const allMenus = document.querySelectorAll('.actions-menu');
-      
-      allMenus.forEach(m => {
-        if (m !== menu) {
-          m.classList.remove('show');
-        }
-      });
-      
-      if (menu.classList.contains('show')) {
-        menu.classList.remove('show');
-      } else {
-
-        const buttonRect = button.getBoundingClientRect();
-        const menuWidth = 160; // Ancho mínimo del menú
-        
-        menu.style.left = (buttonRect.right - menuWidth) + 'px';
-        menu.style.top = (buttonRect.bottom + 8) + 'px';
-        
-        menu.classList.add('show');
-      }
-    }
-
-    document.addEventListener('click', function(event) {
-      if (!event.target.closest('.actions-wrapper')) {
-        document.querySelectorAll('.actions-menu').forEach(menu => {
-          menu.classList.remove('show');
-        });
-      }
-    });
-
-    // Función para ver detalles
-    function viewDetails(incidentId) {
-      //TODO: Implementar la lógica para ver detalles con modal
-    }
-
-    // Función para aprobar incidente
-    const approve = async (incidentId) => {
-      const data = new FormData()
-      data.append("incident_id", incidentId)
-      data.append("comments", "Validado")
-     
-      try {
-        const res = await fetch("http://localhost:8000/api/validator/approve", {
-          method: "POST",
-          body: data 
-        })
-        
-        if (res.ok) {
-          // Cerrar el menú de acciones
-          document.getElementById(`actions-menu-${incidentId}`).classList.remove('show');
-          // Recargar la página para mostrar los cambios
-          window.location.reload();
-        }
-      } catch(e) {
-       console.error("Something went wrong",e)
-      }
-    }
-
-    // Función para rechazar incidente
-    const reject = async (incidentId) => {
-      const data = new FormData()
-      data.append("incident_id", incidentId)
-      data.append("comments", "Rechazado")
-     
-      try {
-        const res = await fetch("http://localhost:8000/api/validator/reject", {
-          method: "POST",
-          body: data 
-        })
-        
-        if (res.ok) {
-          // Cerrar el menú de acciones
-          document.getElementById(`actions-menu-${incidentId}`).classList.remove('show');
-          // Recargar la página para mostrar los cambios
-          window.location.reload();
-        }
-      } catch(e) {
-       console.error("Something went wrong",e)
-      } 
-    }
-
-    // Funcionalidad de búsqueda
-    document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.querySelector('.search-input');
-      if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-          const searchTerm = e.target.value.toLowerCase();
-          const tableRows = document.querySelectorAll('tbody tr');
-          const dataTable = document.getElementById('data-table');
-          const searchEmptyState = document.getElementById('search-empty-state');
-          
-          let visibleRows = 0;
-          
-          tableRows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-              row.style.display = '';
-              visibleRows++;
-            } else {
-              row.style.display = 'none';
-            }
-          });
-          
-          if (visibleRows === 0 && searchTerm !== '') {
-            if (dataTable) dataTable.style.display = 'none';
-            if (searchEmptyState) searchEmptyState.style.display = 'block';
-
-          } else {
-
-            if (dataTable) dataTable.style.display = 'block';
-            if (searchEmptyState) searchEmptyState.style.display = 'none';
-          }
-        });
-      }
-    });
-    
-    // Función para limpiar búsqueda
-    function clearSearch() {
-      const searchInput = document.querySelector('.search-input');
-      const dataTable = document.getElementById('data-table');
-      const searchEmptyState = document.getElementById('search-empty-state');
-      const tableRows = document.querySelectorAll('tbody tr');
-      
-      if (searchInput) {
-        searchInput.value = '';
-      }
-      
-      // Mostrar todas las filas
-      tableRows.forEach(row => {
-        row.style.display = '';
-      });
-      
-      // Ocultar estado vacío y mostrar tabla
-      if (dataTable) dataTable.style.display = 'block';
-      if (searchEmptyState) searchEmptyState.style.display = 'none';
-    }
-  </script>
+  <script src="/assets/validationReport/validationReport.js"></script>
 {% endblock %}
