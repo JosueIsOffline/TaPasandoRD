@@ -1,0 +1,50 @@
+#map {
+    height: 600px;
+    width: 100%;
+}
+.map-container {
+    position: relative;
+}
+.map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+}
+
+/* ESTILOS CORREGIDOS PARA LOS MARCADORES */
+.incident-marker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    color: white;
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
+    transform: translate(-16px, -32px); /* Ajuste de posición */
+}
+
+/* Asegurar que los íconos estén centrados */
+.incident-marker i {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.accident { background-color: #dc3545; }   /* 🔴 Rojo intenso para accidentes: urgencia, peligro */
+.fire     { background-color: #ff6f00; }   /* 🟠 Naranja fuego para incendios: calor, llamas */
+.robbery  { background-color: #6610f2; }   /* 🟣 Púrpura para robos: misterio, alerta urbana */
+.fight    { background-color: #6e3503; }   /* 🟤 Marrón oscuro para peleas: violencia, tierra */
+.disaster { background-color: #20c997; }   /* 🟢 Verde para desastres naturales: agua, vegetación */
+.default  { background-color: #6c757d; }   /* ⚫ Gris neutro para casos sin categoría clara */
