@@ -1,105 +1,145 @@
 {% extends "layout.html.twig" %}
 
+{% block body_class %}validation-report-body{% endblock %}
+
 {% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
 <div class="container-fluid p-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="mb-0">Reporte de Validación</h1>
-            <p class="text-muted">Panel de control y estadísticas del sistema de validación</p>
+
+    <!-- Header con búsqueda y filtros -->
+    <div class="search-header">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar reportes...">
         </div>
+        
+        <div class="filter-group">
+            <button class="filter-button">
+                Últimos 15 días
+                <i class="fas fa-chevron-down chevron"></i>
+            </button>
+            <button class="filter-button">
+                Todos los Estados
+                <i class="fas fa-chevron-down chevron"></i>
+            </button>
+            <button class="filter-button">
+                Todas las Categorías
+                <i class="fas fa-chevron-down chevron"></i>
+            </button>
+        </div>
+        
+
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Bienvenido al Reporte de Validación</h5>
-                </div>
-                <div class="card-body">
-                    <p>Aquí se mostrarán futuras estadísticas y gráficos del sistema de validación.</p>
-                </div>
+    {% if pendingIncidents and pendingIncidents|length > 0 %}
+        <!-- Tabla de datos -->
+        <div class="data-table" id="data-table">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="fas fa-clock"></i>
+                    Reportes Pendientes de Validación
+                </h5>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>FECHA</th>
+                            <th>TÍTULO</th>
+                            <th>TIPO</th>
+                            <th>UBICACIÓN</th>
+                            <th>REPORTERO</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for incident in pendingIncidents %}
+                            <tr>
+                                <td class="date-column">
+                                    <div>{{ incident.occurrence_date|date('d/m/Y') }}</div>
+                                    <small>{{ incident.occurrence_date|date('H:i') }}</small>
+                                </td>
+                                <td class="title-column">{{ incident.title }}</td>
+                                <td>
+                                    <span class="type-badge" style="background-color: {{ incident.category_color }} !important; border-color: {{ incident.category_color }} !important;">
+                                        {{ incident.category_name }}
+                                    </span>
+                                </td>
+                                <td class="location-column">
+                                    <div>{{ incident.municipality_name ?? 'N/A' }}</div>
+                                    <small>{{ incident.province_name ?? 'N/A' }}</small>
+                                </td>
+                                <td class="reporter-column">
+                                    <div>{{ incident.reporter_email }}</div>
+                                    <small>{{ roles[incident.reporter_role] }}</small>
+                                </td>
+                                <td>
+                                    <span class="status-badge">
+                                        <i class="fas fa-clock"></i>
+                                        Pendiente
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="actions-wrapper">
+                                        <button class="actions-button" onclick="toggleActionsMenu({{ incident.id }})">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        
+                                        <div class="actions-menu" id="actions-menu-{{ incident.id }}">
+                                            <div class="actions-menu-item" onclick="viewDetails({{ incident.id }})">
+                                                <i class="fas fa-eye"></i>
+                                                Ver detalles
+                                            </div>
+                                            <div class="actions-menu-item" onclick="approve({{ incident.id }})">
+                                                <i class="fas fa-check"></i>
+                                                Aprobar
+                                            </div>
+                                            <div class="actions-menu-item" onclick="reject({{ incident.id }})">
+                                                <i class="fas fa-times"></i>
+                                                Rechazar
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-
-    <!-- Pending Reports -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-clock text-warning me-2"></i>
-                        Reportes Pendientes de Validación
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if pendingIncidents and pendingIncidents|length > 0 %}
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Título</th>
-                                        <th>Tipo</th>
-                                        <th>Ubicación</th>
-                                        <th>Reportero</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for incident in pendingIncidents %}
-                                        <tr>
-                                            <td>
-                                                <small>{{ incident.occurrence_date|date('d/m/Y') }}</small><br>
-                                                <small class="text-muted">{{ incident.occurrence_date|date('H:i') }}</small>
-                                            </td>
-                                            <td>{{ incident.title }}</td>
-                                            <td>
-                                                <span class="badge" style="background-color: {{ incident.category_color }} !important; color: white;">
-                                                    {{ incident.category_name }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <small>{{ incident.municipality_name ?? 'N/A' }}</small><br>
-                                                <small class="text-muted">{{ incident.province_name ?? 'N/A' }}</small>
-                                            </td>
-                                            <td>
-                                                <small>{{ incident.reporter_email }}</small><br>
-                                                <small class="text-muted">{{ roles[incident.reporter_role] }}</small>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-warning text-dark">
-                                                    <i class="fas fa-clock me-1"></i>Pendiente
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-outline-primary btn-sm me-1" data-bs-toggle="modal" data-bs-target="#validateModal">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button onclick="approve({{incident.id}})" class="btn btn-outline-success btn-sm me-1">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                                <button onclick="reject({{incident.id}})" class="button btn-outline-danger btn-sm">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
-                            <h5 class="text-muted">No hay reportes pendientes</h5>
-                            <p class="text-muted">Todos los incidentes han sido validados o no hay reportes en el sistema.</p>
-                        </div>
-                    {% endif %}
-                </div>
+        
+        <!-- Estado vacío para búsquedas sin resultados -->
+        <div class="empty-state" id="search-empty-state" style="display: none;">
+            <div class="empty-state-icon">
+                <i class="fas fa-search"></i>
             </div>
+            <h2 class="empty-state-title">No se encontraron resultados</h2>
+            <p class="empty-state-description">
+                No hay reportes que coincidan con tu búsqueda. 
+                Intenta con otros términos o revisa los filtros aplicados.
+            </p>
+            <button class="empty-state-button" onclick="clearSearch()">
+                Limpiar búsqueda
+            </button>
         </div>
-    </div>
+    {% else %}
+        <!-- Estado vacío -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="empty-state-title">No hay reportes pendientes</h2>
+            <p class="empty-state-description">
+                Todos los incidentes han sido validados o no hay reportes en el sistema. 
+                Los nuevos reportes aparecerán aquí automáticamente.
+            </p>
+            <button class="empty-state-button" onclick="window.location.href='/'">
+                Ir al Inicio
+            </button>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -107,36 +147,144 @@
   {{parent()}}
   <script>
 
+    function toggleActionsMenu(incidentId) {
+      const menu = document.getElementById(`actions-menu-${incidentId}`);
+      const button = event.target.closest('.actions-button');
+      const allMenus = document.querySelectorAll('.actions-menu');
+      
+      allMenus.forEach(m => {
+        if (m !== menu) {
+          m.classList.remove('show');
+        }
+      });
+      
+      if (menu.classList.contains('show')) {
+        menu.classList.remove('show');
+      } else {
+
+        const buttonRect = button.getBoundingClientRect();
+        const menuWidth = 160; // Ancho mínimo del menú
+        
+        menu.style.left = (buttonRect.right - menuWidth) + 'px';
+        menu.style.top = (buttonRect.bottom + 8) + 'px';
+        
+        menu.classList.add('show');
+      }
+    }
+
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.actions-wrapper')) {
+        document.querySelectorAll('.actions-menu').forEach(menu => {
+          menu.classList.remove('show');
+        });
+      }
+    });
+
+    // Función para ver detalles
+    function viewDetails(incidentId) {
+      //TODO: Implementar la lógica para ver detalles con modal
+    }
+
+    // Función para aprobar incidente
     const approve = async (incidentId) => {
       const data = new FormData()
       data.append("incident_id", incidentId)
       data.append("comments", "Validado")
      
-     console.log(incidentId)
       try {
         const res = await fetch("http://localhost:8000/api/validator/approve", {
           method: "POST",
           body: data 
         })
+        
+        if (res.ok) {
+          // Cerrar el menú de acciones
+          document.getElementById(`actions-menu-${incidentId}`).classList.remove('show');
+          // Recargar la página para mostrar los cambios
+          window.location.reload();
+        }
       } catch(e) {
        console.error("Something went wrong",e)
       }
     }
 
-  const reject = async (incidentId) => {
-   const data = new FormData()
+    // Función para rechazar incidente
+    const reject = async (incidentId) => {
+      const data = new FormData()
       data.append("incident_id", incidentId)
       data.append("comments", "Rechazado")
      
-     console.log(incidentId)
       try {
         const res = await fetch("http://localhost:8000/api/validator/reject", {
           method: "POST",
           body: data 
         })
+        
+        if (res.ok) {
+          // Cerrar el menú de acciones
+          document.getElementById(`actions-menu-${incidentId}`).classList.remove('show');
+          // Recargar la página para mostrar los cambios
+          window.location.reload();
+        }
       } catch(e) {
        console.error("Something went wrong",e)
       } 
-  }
+    }
+
+    // Funcionalidad de búsqueda
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const searchTerm = e.target.value.toLowerCase();
+          const tableRows = document.querySelectorAll('tbody tr');
+          const dataTable = document.getElementById('data-table');
+          const searchEmptyState = document.getElementById('search-empty-state');
+          
+          let visibleRows = 0;
+          
+          tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+              row.style.display = '';
+              visibleRows++;
+            } else {
+              row.style.display = 'none';
+            }
+          });
+          
+          if (visibleRows === 0 && searchTerm !== '') {
+            if (dataTable) dataTable.style.display = 'none';
+            if (searchEmptyState) searchEmptyState.style.display = 'block';
+
+          } else {
+
+            if (dataTable) dataTable.style.display = 'block';
+            if (searchEmptyState) searchEmptyState.style.display = 'none';
+          }
+        });
+      }
+    });
+    
+    // Función para limpiar búsqueda
+    function clearSearch() {
+      const searchInput = document.querySelector('.search-input');
+      const dataTable = document.getElementById('data-table');
+      const searchEmptyState = document.getElementById('search-empty-state');
+      const tableRows = document.querySelectorAll('tbody tr');
+      
+      if (searchInput) {
+        searchInput.value = '';
+      }
+      
+      // Mostrar todas las filas
+      tableRows.forEach(row => {
+        row.style.display = '';
+      });
+      
+      // Ocultar estado vacío y mostrar tabla
+      if (dataTable) dataTable.style.display = 'block';
+      if (searchEmptyState) searchEmptyState.style.display = 'none';
+    }
   </script>
 {% endblock %}
