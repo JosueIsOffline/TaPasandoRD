@@ -346,15 +346,25 @@
 }
 
 .sub-menu-link {
-  display: block;
-  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   color: var(--light-text-color);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sub-menu-link svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
 }
 
 .sub-menu-link:hover {
