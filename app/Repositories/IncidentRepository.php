@@ -69,7 +69,22 @@ class IncidentRepository
     $stmt = DB::raw($sql, [$id]);
     $incident = $stmt->fetch(\PDO::FETCH_ASSOC);
     
+    if ($incident) {
+      $incident['validation_comments'] = $this->getValidationComments($id);
+    }
+    
     return $incident;
+  }
+
+  /**
+   * Obtiene los comentarios de validación para un incidente específico
+   * TODO: Implementar cuando esté la tabla de comentarios de validación
+   */
+  private function getValidationComments(int $incidentId): array
+  {
+    // TODO: Implementar cuando esté la tabla de comentarios de validación
+    // Por ahora retornamos un array vacío
+    return [];
   }
 
   public function create(array $data): void

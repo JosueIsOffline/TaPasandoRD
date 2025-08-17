@@ -90,6 +90,57 @@
   transform: rotate(180deg);
 }
 
+/* Dropdown de filtros */
+.filter-dropdown {
+  position: relative;
+}
+
+.filter-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.filter-dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.filter-option {
+  padding: 12px 16px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.filter-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-option:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+.filter-option:last-child {
+  border-radius: 0 0 12px 12px;
+}
+
+
+
 
 /* Estado vacío = cuando no hay reportes */
 .empty-state {
@@ -237,6 +288,12 @@
   font-size: 12px;
   color: white;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .location-column {
@@ -356,5 +413,120 @@
   .table thead th,
   .table tbody td {
     padding: 12px 16px;
+  }
+  
+  /* Responsividad para el tipo de incidencia en móviles */
+  .type-badge {
+    max-width: 120px;
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+/* Paginación */
+.pagination-container {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pagination-info {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.page-number {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 36px;
+  text-align: center;
+}
+
+.page-number:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.page-number.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+/* Responsive para paginación */
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Responsive para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .type-badge {
+    max-width: 100px;
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .table thead th,
+  .table tbody td {
+    padding: 8px 12px;
   }
 }

@@ -19,18 +19,35 @@
         </div>
         
         <div class="filter-group">
-            <button class="filter-button">
-                Últimos 15 días
-                <i class="fas fa-chevron-down chevron"></i>
-            </button>
-            <button class="filter-button">
-                Todos los Estados
-                <i class="fas fa-chevron-down chevron"></i>
-            </button>
-            <button class="filter-button">
-                Todas las Categorías
-                <i class="fas fa-chevron-down chevron"></i>
-            </button>
+            <div class="filter-dropdown">
+                <button class="filter-button" id="date-filter-btn">
+                    Últimos 15 días
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="filter-dropdown-menu" id="date-filter-menu">
+                    <div class="filter-option" data-value="15">Últimos 15 días</div>
+                    <div class="filter-option" data-value="30">Últimos 30 días</div>
+                    <div class="filter-option" data-value="7">Últimos 7 días</div>
+                    <div class="filter-option" data-value="all">Todos los días</div>
+                </div>
+            </div>
+            
+            <div class="filter-dropdown">
+                <button class="filter-button" id="category-filter-btn">
+                    Todas las Categorías
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="filter-dropdown-menu" id="category-filter-menu">
+                    <div class="filter-option" data-value="all">Todas las Categorías</div>
+                    <div class="filter-option" data-value="accident">Accidentes</div>
+                    <div class="filter-option" data-value="natural_disaster">Desastres Naturales</div>
+                    <div class="filter-option" data-value="crime">Delitos</div>
+                    <div class="filter-option" data-value="infrastructure">Infraestructura</div>
+                    <div class="filter-option" data-value="other">Otros</div>
+                </div>
+            </div>
+            
+
         </div>
         
 
@@ -112,6 +129,26 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+        
+        <!-- Paginación -->
+        <div class="pagination-container" id="pagination-container" style="display: none;">
+            <div class="pagination-info">
+                <span id="pagination-text">Mostrando 1-4 de 0 reportes</span>
+            </div>
+            <div class="pagination-controls">
+                <button class="pagination-btn" id="prev-btn" onclick="previousPage()" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    Anterior
+                </button>
+                <div class="page-numbers" id="page-numbers">
+                    <!-- Los números de página se generarán dinámicamente -->
+                </div>
+                <button class="pagination-btn" id="next-btn" onclick="nextPage()" disabled>
+                    Siguiente
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </div>
         

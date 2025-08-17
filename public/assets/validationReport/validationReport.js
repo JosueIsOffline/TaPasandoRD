@@ -162,22 +162,210 @@ const reject = async (incidentId) => {
 // Función para limpiar búsqueda
 function clearSearch() {
   const searchInput = document.querySelector('.search-input');
-  const dataTable = document.getElementById('data-table');
-  const searchEmptyState = document.getElementById('search-empty-state');
-  const tableRows = document.querySelectorAll('tbody tr');
   
   if (searchInput) {
     searchInput.value = '';
   }
   
-  // Mostrar todas las filas
+  // Aplicar filtros
+  applyFilters();
+}
+
+let currentDateFilter = '15';
+let currentCategoryFilter = 'all';
+
+// Variables globales para paginación
+let currentPage = 1;
+const itemsPerPage = 4;
+let allVisibleRows = [];
+
+// Función para aplicar filtros
+function applyFilters() {
+  const tableRows = document.querySelectorAll('tbody tr');
+  const dataTable = document.getElementById('data-table');
+  const searchEmptyState = document.getElementById('search-empty-state');
+  const paginationContainer = document.getElementById('pagination-container');
+  
+  // Resetear a la primera página cuando se aplican filtros
+  currentPage = 1;
+  
+  // Filtrar filas visibles
+  allVisibleRows = [];
   tableRows.forEach(row => {
-    row.style.display = '';
+    let showRow = true;
+    
+    // Filtro por fecha
+    if (currentDateFilter !== 'all') {
+      const dateCell = row.querySelector('.date-column div');
+      if (dateCell) {
+        const incidentDate = new Date(dateCell.textContent.split('/').reverse().join('-'));
+        const daysDiff = Math.floor((Date.now() - incidentDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff > parseInt(currentDateFilter)) {
+          showRow = false;
+        }
+      }
+    }
+    
+    // Filtro por categoría
+    if (currentCategoryFilter !== 'all') {
+      const categoryCell = row.querySelector('.type-badge');
+      if (categoryCell) {
+        const categoryText = categoryCell.textContent.toLowerCase();
+        if (!categoryText.includes(currentCategoryFilter)) {
+          showRow = false;
+        }
+      }
+    }
+    
+    if (showRow) {
+      allVisibleRows.push(row);
+    }
   });
   
-  // Ocultar estado vacío y mostrar tabla
-  if (dataTable) dataTable.style.display = 'block';
-  if (searchEmptyState) searchEmptyState.style.display = 'none';
+  // Mostrar/ocultar tabla y estado vacío
+  if (allVisibleRows.length === 0) {
+    if (dataTable) dataTable.style.display = 'none';
+    if (searchEmptyState) searchEmptyState.style.display = 'block';
+    if (paginationContainer) paginationContainer.style.display = 'none';
+  } else {
+    if (dataTable) dataTable.style.display = 'block';
+    if (searchEmptyState) searchEmptyState.style.display = 'none';
+    
+    // Mostrar paginación si hay más de 4 elementos
+    if (allVisibleRows.length > itemsPerPage) {
+      if (paginationContainer) paginationContainer.style.display = 'flex';
+      renderPagination();
+    } else {
+      if (paginationContainer) paginationContainer.style.display = 'none';
+    }
+    
+    // Aplicar paginación
+    applyPagination();
+  }
+}
+
+// Función para actualizar filtro de fecha
+function updateDateFilter(value, text) {
+  currentDateFilter = value;
+  document.getElementById('date-filter-btn').textContent = text;
+  document.getElementById('date-filter-menu').classList.remove('show');
+  applyFilters();
+}
+
+// Función para actualizar filtro de categoría
+function updateCategoryFilter(value, text) {
+  currentCategoryFilter = value;
+  document.getElementById('category-filter-btn').textContent = text;
+  document.getElementById('category-filter-menu').classList.remove('show');
+  applyFilters();
+}
+
+
+// Función para aplicar paginación
+function applyPagination() {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  
+  // Ocultar todas las filas
+  allVisibleRows.forEach(row => {
+    row.style.display = 'none';
+  });
+  
+  // Mostrar solo las filas de la página actual
+  for (let i = startIndex; i < endIndex && i < allVisibleRows.length; i++) {
+    allVisibleRows[i].style.display = '';
+  }
+  
+  // Actualizar texto de paginación
+  updatePaginationText();
+}
+
+// Función para renderizar controles de paginación
+function renderPagination() {
+  const totalPages = Math.ceil(allVisibleRows.length / itemsPerPage);
+  const pageNumbersContainer = document.getElementById('page-numbers');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  
+  pageNumbersContainer.innerHTML = '';
+  
+  // Generar números de página
+  for (let i = 1; i <= totalPages; i++) {
+    const pageNumber = document.createElement('div');
+    pageNumber.className = 'page-number';
+    pageNumber.textContent = i;
+    
+    if (i === currentPage) {
+      pageNumber.classList.add('active');
+    }
+    
+    pageNumber.addEventListener('click', () => {
+      goToPage(i);
+    });
+    
+    pageNumbersContainer.appendChild(pageNumber);
+  }
+  
+  // Actualizar estado de botones
+  prevBtn.disabled = currentPage === 1;
+  nextBtn.disabled = currentPage === totalPages;
+}
+
+// Función para ir a una página específica
+function goToPage(page) {
+  currentPage = page;
+  applyPagination();
+  renderPagination();
+}
+
+// Función para ir a la página anterior
+function previousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    applyPagination();
+    renderPagination();
+  }
+}
+
+// Función para ir a la página siguiente
+function nextPage() {
+  const totalPages = Math.ceil(allVisibleRows.length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    applyPagination();
+    renderPagination();
+  }
+}
+
+// Función para actualizar texto de paginación
+function updatePaginationText() {
+  const startIndex = (currentPage - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPage * itemsPerPage, allVisibleRows.length);
+  const totalItems = allVisibleRows.length;
+  
+  const paginationText = document.getElementById('pagination-text');
+  paginationText.textContent = `Mostrando ${startIndex}-${endIndex} de ${totalItems} reportes`;
+}
+
+// Función para inicializar paginación por defecto
+function initializePagination() {
+  const tableRows = document.querySelectorAll('tbody tr');
+  const paginationContainer = document.getElementById('pagination-container');
+  
+  // Inicializar con todas las filas visibles
+  allVisibleRows = Array.from(tableRows);
+  
+  // Mostrar paginación si hay más de 4 elementos
+  if (allVisibleRows.length > itemsPerPage) {
+    if (paginationContainer) paginationContainer.style.display = 'flex';
+    renderPagination();
+  } else {
+    if (paginationContainer) paginationContainer.style.display = 'none';
+  }
+  
+  // Aplicar paginación inicial
+  applyPagination();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -192,23 +380,116 @@ document.addEventListener('DOMContentLoaded', function() {
       
       let visibleRows = 0;
       
+      // Resetear a la primera página cuando se busca
+      currentPage = 1;
+      
+      // Filtrar filas visibles
+      allVisibleRows = [];
       tableRows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        if (text.includes(searchTerm)) {
-          row.style.display = '';
-          visibleRows++;
-        } else {
-          row.style.display = 'none';
+        let showRow = true;
+        
+        // Aplicar filtros de fecha y categoría
+        if (currentDateFilter !== 'all') {
+          const dateCell = row.querySelector('.date-column div');
+          if (dateCell) {
+            const incidentDate = new Date(dateCell.textContent.split('/').reverse().join('-'));
+            const daysDiff = Math.floor((Date.now() - incidentDate.getTime()) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff > parseInt(currentDateFilter)) {
+              showRow = false;
+            }
+          }
+        }
+        
+        if (currentCategoryFilter !== 'all') {
+          const categoryCell = row.querySelector('.type-badge');
+          if (categoryCell) {
+            const categoryText = categoryCell.textContent.toLowerCase();
+            if (!categoryText.includes(currentCategoryFilter)) {
+              showRow = false;
+            }
+          }
+        }
+        
+        // Aplicar búsqueda de texto
+        if (showRow && searchTerm !== '') {
+          const text = row.textContent.toLowerCase();
+          if (!text.includes(searchTerm)) {
+            showRow = false;
+          }
+        }
+        
+        if (showRow) {
+          allVisibleRows.push(row);
         }
       });
       
-      if (visibleRows === 0 && searchTerm !== '') {
+      // Aplicar paginación
+      if (allVisibleRows.length > itemsPerPage) {
+        document.getElementById('pagination-container').style.display = 'flex';
+        renderPagination();
+      } else {
+        document.getElementById('pagination-container').style.display = 'none';
+      }
+      
+      applyPagination();
+      
+      if (allVisibleRows.length === 0 && searchTerm !== '') {
         if (dataTable) dataTable.style.display = 'none';
         if (searchEmptyState) searchEmptyState.style.display = 'block';
+        if (document.getElementById('pagination-container')) {
+          document.getElementById('pagination-container').style.display = 'none';
+        }
       } else {
         if (dataTable) dataTable.style.display = 'block';
         if (searchEmptyState) searchEmptyState.style.display = 'none';
       }
     });
   }
+  
+  // Funcionalidad de filtros dropdown
+  const dateFilterBtn = document.getElementById('date-filter-btn');
+  const dateFilterMenu = document.getElementById('date-filter-menu');
+  const categoryFilterBtn = document.getElementById('category-filter-btn');
+  const categoryFilterMenu = document.getElementById('category-filter-menu');
+  
+  // Toggle filtro de fecha
+  dateFilterBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dateFilterMenu.classList.toggle('show');
+    categoryFilterMenu.classList.remove('show');
+  });
+  
+  // Toggle filtro de categoría
+  categoryFilterBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    categoryFilterMenu.classList.toggle('show');
+    dateFilterMenu.classList.remove('show');
+  });
+  
+  document.querySelectorAll('#date-filter-menu .filter-option').forEach(option => {
+    option.addEventListener('click', function() {
+      const value = this.getAttribute('data-value');
+      const text = this.textContent;
+      updateDateFilter(value, text);
+    });
+  });
+  
+  document.querySelectorAll('#category-filter-menu .filter-option').forEach(option => {
+    option.addEventListener('click', function() {
+      const value = this.getAttribute('data-value');
+      const text = this.textContent;
+      updateCategoryFilter(value, text);
+    });
+  });
+  
+  // Cerrar dropdowns al hacer clic fuera
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown')) {
+      dateFilterMenu.classList.remove('show');
+      categoryFilterMenu.classList.remove('show');
+    }
+  });
+  
+  initializePagination();
 });
