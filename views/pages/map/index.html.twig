@@ -70,7 +70,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">
+                <h5 class="modal-title">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Detalle de Incidencia
                 </h5>
@@ -78,47 +78,46 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <!-- Columna izquierda -->
                     <div class="col-md-8">
                         <div class="mb-3">
-                            <h4 id="incidentTitle">Accidente de tránsito en Av. Churchill</h4>
+                            <h4 id="incidentTitle"></h4>
                             <div class="d-flex gap-2 mb-2">
-                                <span class="incident-type-badge bg-danger text-white" id="incidentType">Accidente</span>
-                                <span class="badge bg-secondary" id="incidentStatus">Validado</span>
+                                <span class="incident-type-badge bg-danger text-white" id="incidentType"></span>
+                                <span class="badge bg-secondary" id="incidentStatus"></span>
                             </div>
                             <p class="text-muted" id="locationInfo">
                                 <i class="fas fa-map-marker-alt me-1"></i>
-                                Santo Domingo Este, Distrito Nacional - Villa Duarte
                             </p>
                             <p class="text-muted" id="timeInfo">
                                 <i class="fas fa-clock me-1"></i>
-                                31 de julio de 2025, 2:30 PM
                             </p>
                         </div>
 
                         <div class="mb-4">
                             <h6>Descripción</h6>
-                            <p id="incidentDescription">Colisión múltiple que involucra 3 vehículos en la intersección de Av. Churchill con Av. 27 de Febrero. El accidente se produjo durante las horas pico de la tarde debido a condiciones de lluvia que afectaron la visibilidad de los conductores.</p>
+                            <p id="incidentDescription"></p>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-4 text-center">
                                 <div class="border rounded p-3">
                                     <i class="fas fa-skull text-danger fa-2x mb-2"></i>
-                                    <h5 class="text-danger mb-0" id="deathCount">2</h5>
+                                    <h5 class="text-danger mb-0" id="deathCount"></h5>
                                     <small class="text-muted">Muertos</small>
                                 </div>
                             </div>
                             <div class="col-4 text-center">
                                 <div class="border rounded p-3">
                                     <i class="fas fa-user-injured text-warning fa-2x mb-2"></i>
-                                    <h5 class="text-warning mb-0" id="injuredCount">5</h5>
+                                    <h5 class="text-warning mb-0" id="injuredCount"></h5>
                                     <small class="text-muted">Heridos</small>
                                 </div>
                             </div>
                             <div class="col-4 text-center">
                                 <div class="border rounded p-3">
                                     <i class="fas fa-dollar-sign text-info fa-2x mb-2"></i>
-                                    <h5 class="text-info mb-0" id="lossAmount">$50K</h5>
+                                    <h5 class="text-info mb-0" id="lossAmount"></h5>
                                     <small class="text-muted">Pérdidas</small>
                                 </div>
                             </div>
@@ -126,7 +125,7 @@
 
                         <div class="mb-4">
                             <h6>Coordenadas</h6>
-                            <p class="text-muted" id="coordinatesDisplay">Latitud: 18.4861 | Longitud: -69.9312</p>
+                            <p class="text-muted" id="coordinatesDisplay"></p>
                             <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-map me-1"></i> Ver en Mapa
                             </button>
@@ -134,115 +133,30 @@
 
                         <div class="mb-4">
                             <h6>Referencias</h6>
-                            <a href="#" class="btn btn-outline-info btn-sm me-2">
-                                <i class="fab fa-twitter me-1"></i> Ver en Twitter
-                            </a>
-                            <a href="#" class="btn btn-outline-primary btn-sm">
-                                <i class="fab fa-facebook me-1"></i> Ver en Facebook
-                            </a>
+                            <div id="referencias-container"></div>
                         </div>
                     </div>
+
+                    <!-- Columna derecha -->
                     <div class="col-md-4">
                         <div class="mb-3">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23dc3545'/%3E%3Ctext x='150' y='105' text-anchor='middle' fill='white' font-size='16'%3EFoto del Accidente%3C/text%3E%3C/svg%3E" class="img-fluid rounded" alt="Foto de la incidencia">
+                            <img id="incidentPhoto" class="img-fluid rounded" alt="Foto de la incidencia">
                         </div>
                         
                         <div class="mb-3">
                             <h6>Información del Reporte</h6>
-                            <p class="mb-1"><strong>Reportado por:</strong> <span id="reportedBy">Juan Pérez</span></p>
-                            <p class="mb-1"><strong>Email:</strong> <span id="reporterEmail">juan.perez@gmail.com</span></p>
-                            <p class="mb-1"><strong>Fecha de reporte:</strong> <span id="reportDate">31/07/2025 3:15 PM</span></p>
-                            <p class="mb-0"><strong>Estado:</strong> <span class="status-approved" id="reportStatus">Aprobado</span></p>
+                            <p class="mb-1"><strong>Reportado por:</strong> <span id="reportedBy"></span></p>
+                            <p class="mb-1"><strong>Fecha de reporte:</strong> <span id="reportDate"></span></p>
+                            <p class="mb-0"><strong>Estado:</strong> <span id="reportStatus"></span></p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Correction Form -->
-                <div class="mt-4 border-top pt-4">
-                    <h6 class="mb-3">
-                        <i class="fas fa-edit me-1"></i>
-                        Sugerir Corrección
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Muertos</label>
-                                <input type="number" class="form-control" value="2" id="correctionDeaths">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Heridos</label>
-                                <input type="number" class="form-control" value="5" id="correctionInjured">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Pérdida Estimada (RD$)</label>
-                                <input type="number" class="form-control" value="50000" id="correctionLoss">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Provincia</label>
-                                <select class="form-select" id="correctionProvince">
-                                    <option selected>Distrito Nacional</option>
-                                    <option>Santo Domingo</option>
-                                    <option>Santiago</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Comentario de la corrección</label>
-                        <textarea class="form-control" rows="2" placeholder="Explica por qué sugieres esta corrección..." id="correctionComment"></textarea>
-                    </div>
-                    <button class="btn btn-warning">
-                        <i class="fas fa-paper-plane me-1"></i>
-                        Enviar Corrección
-                    </button>
-                </div>
-
-                <!-- Comments Section -->
-                <div class="mt-4 border-top pt-4">
-                    <h6 class="mb-3">
-                        <i class="fas fa-comments me-1"></i>
-                        Comentarios (3)
-                    </h6>
-                    
-                    <div class="comment mb-3 p-3 bg-light rounded">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <strong>María García</strong>
-                            <small class="text-muted">Hace 2 horas</small>
-                        </div>
-                        <p class="mb-0">Fui testigo del accidente. Efectivamente fueron 3 vehículos involucrados. Los paramédicos tardaron unos 15 minutos en llegar.</p>
-                    </div>
-                    
-                    <div class="comment mb-3 p-3 bg-light rounded">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <strong>Carlos Rodríguez</strong>
-                            <small class="text-muted">Hace 1 hora</small>
-                        </div>
-                        <p class="mb-0">Confirmo que había mucho tráfico en la zona. Las autoridades cerraron un carril por casi 2 horas.</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <textarea class="form-control" rows="3" placeholder="Agregar un comentario..."></textarea>
-                    </div>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-comment me-1"></i>
-                        Comentar
-                    </button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-share me-1"></i>
-                    Compartir
-                </button>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

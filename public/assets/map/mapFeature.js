@@ -57,33 +57,69 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     function abrirModal(incident) {
-      document.getElementById("incidentTitle").textContent =
-        incident.title || "";
-      document.getElementById("incidentType").textContent = incident.type || "";
-      document.getElementById("incidentStatus").textContent =
-        incident.status || "Pendiente";
-      document.getElementById("locationInfo").innerHTML =
-        `<i class="fas fa-map-marker-alt me-1"></i> ${incident.location || ""}`;
-      document.getElementById("timeInfo").innerHTML =
-        `<i class="fas fa-clock me-1"></i> ${incident.date || ""}`;
-      document.getElementById("incidentDescription").textContent =
-        incident.description || "";
-      document.getElementById("deathCount").textContent = incident.deaths || 0;
-      document.getElementById("injuredCount").textContent =
-        incident.injured || 0;
-      document.getElementById("lossAmount").textContent = incident.loss || "$0";
-      document.getElementById("coordinatesDisplay").textContent =
-        `Latitud: ${incident.lat} | Longitud: ${incident.lng}`;
-      document.getElementById("reportedBy").textContent =
-        incident.reportedBy || "Desconocido";
-      document.getElementById("reporterEmail").textContent =
-        incident.reporterEmail || "-";
-      document.getElementById("reportDate").textContent =
-        incident.reportDate || "-";
-      document.getElementById("reportStatus").textContent =
-        incident.reportStatus || "Pendiente";
-      new bootstrap.Modal(document.getElementById("incidentModal")).show();
-    }
+        document.getElementById("incidentTitle").textContent =
+            incident.title || "";
+
+        document.getElementById("incidentType").textContent =
+            getCategoryName(incident.category_id) || "Sin categoría";
+
+        document.getElementById("incidentStatus").textContent =
+            incident.status || "Pendiente";
+
+        document.getElementById("locationInfo").innerHTML =
+            `<i class="fas fa-map-marker-alt me-1"></i> Provincia ID: ${incident.province_id}, Municipio ID: ${incident.municipality_id}`;
+
+        document.getElementById("timeInfo").innerHTML =
+            `<i class="fas fa-clock me-1"></i> ${incident.occurrence_date || ""}`;
+
+        document.getElementById("incidentDescription").textContent =
+            incident.description || "";
+
+        document.getElementById("deathCount").textContent =
+            incident.deaths ?? 0;
+
+        document.getElementById("injuredCount").textContent =
+            incident.injuries ?? 0;
+
+        document.getElementById("lossAmount").textContent =
+            `RD$${incident.estimated_loss || "0"}`;
+
+        document.getElementById("coordinatesDisplay").textContent =
+            `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
+
+        document.getElementById("reportedBy").textContent =
+            `Usuario ${incident.reported_by || "Desconocido"}`;
+
+        document.getElementById("reportDate").textContent =
+            incident.created_at || "-";
+
+        document.getElementById("reportStatus").textContent =
+            incident.status || "Pendiente";
+
+        // Imagen
+        if (incident.photo_url) {
+            document.getElementById("incidentPhoto").src = incident.photo_url;
+        }
+
+       if (incident.social_media_url) {
+
+        const contenedor = document.getElementById("referencias-container");
+
+        const boton = document.createElement("a");
+        boton.href = incident.social_media_url;
+        boton.target = "_blank";
+        boton.className = "btn btn-outline-primary btn-sm me-2";
+        boton.textContent = "Ver publicación";
+
+        contenedor.appendChild(boton);
+}
+
+
+        new bootstrap.Modal(document.getElementById("incidentModal")).show();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
+        modal.hide();
+}
+
 
     const getCategoryName = (categoryId) => {
       const names = {
