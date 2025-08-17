@@ -1,0 +1,89 @@
+/* Estilos para las secciones de la página de inicio */
+
+/* Sección de Nuevos Reportes */
+.nuevos-reportes {
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.nuevos-reportes__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.nuevos-reportes__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.nuevos-reportes__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.nuevos-reportes__subtitle {
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* scroll to bottom */
+.scroll-arrow {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.scroll-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-arrow i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.scroll-arrow:hover i {
+  transform: translateY(2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nuevos-reportes {
+    padding: 60px 0;
+  }
+  
+  .scroll-arrow {
+    width: 2.5rem;
+    height: 2.5rem;
+    bottom: 1.5rem;
+  }
+  
+  .scroll-arrow i {
+    font-size: 1rem;
+  }
+}

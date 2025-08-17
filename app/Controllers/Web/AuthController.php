@@ -29,7 +29,7 @@ class AuthController extends AbstractController
     if ($this->auth->check()) {
       return $this->redirect('/');
     }
-    return $this->render('register.html.twig');
+    return $this->renderWithFlash('register.html.twig');
   }
 
   public function logout(): Response

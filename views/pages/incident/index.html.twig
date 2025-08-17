@@ -9,10 +9,53 @@
     align-items: center; 
     justify-content: center;
   }
+  .toast-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: #38a169;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateY(-30px);
+    font-size: 1rem;
+    min-width: 220px;
+    max-width: 90vw;
+    text-align: center;
+}
+.toast-message.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+@media (max-width: 600px) {
+    .toast-message {
+        right: 50%;
+        top: 1rem;
+        left: 50%;
+        transform: translate(-50%, -30px);
+        min-width: 80vw;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+    .toast-message.show {
+        transform: translate(-50%, 0);
+    }
+}
 </style>
 {% endblock %}
 
 {% block content %}
+        {% if message %}
+            <div id="toast-message" class="toast-message">
+              {{ message }}
+            </div>
+        {% endif %}
             <div class="container-fluid p-4">
                 <div class="row mb-4">
                     <div class="col-12">
@@ -28,18 +71,21 @@
                                 <h5 class="mb-0">Información de la Incidencia</h5>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="POST" action="/api/incident">
+                                    <input type="hidden" name="reported_by" value={{auth_user().id}} />
+
+                                    <input type="hidden" name="status" value="pendiente" />
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Fecha de Ocurrencia</label>
-                                                <input type="datetime-local" class="form-control">
+                                                <input type="datetime-local" class="form-control" name="occurrence_date">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Título</label>
-                                                <input type="text" class="form-control" placeholder="Título descriptivo">
+                                                <input type="text" class="form-control" name="title" placeholder="Título descriptivo">
                                             </div>
                                         </div>
                                     </div>
@@ -49,25 +95,25 @@
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="accidente">
+                                                    <input class="form-check-input" value="1" type="checkbox" name="category_id" id="accidente">
                                                     <label class="form-check-label" for="accidente">Accidente</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="pelea">
+                                                    <input class="form-check-input" value="2" type="checkbox" name="category_id" id="pelea">
                                                     <label class="form-check-label" for="pelea">Pelea</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="robo">
+                                                    <input class="form-check-input" value="3" type="checkbox" name="category_id" id="robo">
                                                     <label class="form-check-label" for="robo">Robo</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="desastre">
+                                                    <input class="form-check-input" value="4" type="checkbox" name="category_id" id="desastre">
                                                     <label class="form-check-label" for="desastre">Desastre</label>
                                                 </div>
                                             </div>
@@ -76,37 +122,42 @@
 
                                     <div class="mb-3">
                                         <label class="form-label">Descripción</label>
-                                        <textarea class="form-control" rows="4" placeholder="Describe los detalles de la incidencia..."></textarea>
+                                        <textarea class="form-control" rows="4" name="description" placeholder="Describe los detalles de la incidencia..."></textarea>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">Provincia</label>
-                                                <select class="form-select">
-                                                    <option>Seleccionar provincia</option>
-                                                    <option>Distrito Nacional</option>
-                                                    <option>Santo Domingo</option>
-                                                    <option>Santiago</option>
-                                                    <option>La Vega</option>
+                                                <select class="form-select" name="province_id">
+                                                    <option value="">Seleccionar provincia</option>
+                                                    <option value=1>Distrito Nacional</option>
+                                                    <option value=2>Santo Domingo</option>
+                                                    <option value=3>Santiago</option>
+                                                    <option value=4>La Vega</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">Municipio</label>
-                                                <select class="form-select">
-                                                    <option>Seleccionar municipio</option>
-                                                    <option>Santo Domingo Este</option>
-                                                    <option>Santo Domingo Norte</option>
-                                                    <option>Santo Domingo Oeste</option>
+                                                <select class="form-select" name="municipality_id">
+                                                    <option value="">Seleccionar municipio</option>
+                                                    <option value=1>Santo Domingo Este</option>
+                                                    <option value=2>Santo Domingo Norte</option>
+                                                    <option value=3>Santo Domingo Oeste</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">Barrio</label>
-                                                <input type="text" class="form-control" placeholder="Nombre del barrio">
+                                                <select class="form-select" name="neighborhood_id">
+                                                    <option value="">Seleccionar Barrio</option>
+                                                    <option value=1>Santo Domingo Ese</option>
+                                                    <option value=2>Santo Domingo Norte</option>
+                                                    <option value=3>Santo Domingo Oeste</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -115,13 +166,13 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Latitud</label>
-                                                <input type="number" id="latitude" class="form-control" placeholder="18.4861" step="any">
+                                                <input type="number" id="latitude" class="form-control" name="latitude" placeholder="18.4861" step="any">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Longitud</label>
-                                                <input type="number" id="longitude" class="form-control" placeholder="-69.9312" step="any">
+                                                <input type="number" id="longitude" class="form-control" name="longitude" placeholder="-69.9312" step="any">
                                             </div>
                                         </div>
                                     </div>
@@ -130,31 +181,31 @@
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">Muertos</label>
-                                                <input type="number" class="form-control" placeholder="0" min="0">
+                                                <input type="number" class="form-control" name="deaths" placeholder="0" min="0">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">Heridos</label>
-                                                <input type="number" class="form-control" placeholder="0" min="0">
+                                                <input type="number" class="form-control" name="injuries" placeholder="0" min="0">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">Pérdida Estimada</label>
-                                                <input type="number" class="form-control" placeholder="0" min="0">
+                                                <input type="number" class="form-control" name="estimated_loss" placeholder="0" min="0">
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label">Link a Redes Sociales</label>
-                                        <input type="url" class="form-control" placeholder="https://...">
+                                        <input type="url" class="form-control" name="social_media_url" placeholder="https://...">
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label">Foto del Hecho</label>
-                                        <input type="file" class="form-control" accept="image/*">
+                                        <input type="file" class="form-control" name="photo_url" accept="image/*">
                                     </div>
 
                                     <div class="d-grid gap-2">
@@ -207,6 +258,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{parent()}}
   <script>
     var map;
     var marker;
@@ -288,7 +340,20 @@
         }
         latInput.value = '';
         lngInput.value = '';
-    }
-      
+    } 
   </script>
+
+   {% if message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toast = document.getElementById('toast-message');
+            if (toast) {
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+    {% endif %}
 {% endblock %}

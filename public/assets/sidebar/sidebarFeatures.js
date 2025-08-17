@@ -7,6 +7,9 @@ const mobileHamburgerButton = document.getElementById(
   "mobile-hamburger-button",
 );
 
+// Array para almacenar referencias a los event listeners
+let subMenuListeners = [];
+
 // Comprobar si es un dispositivo móvil según el ancho de la pantalla
 const isMobile = () => window.innerWidth <= 768;
 
@@ -123,22 +126,31 @@ function handleInitialAndResize() {
   }
 }
 
+// Función para remover listeners existentes
+function removeSubMenuListeners() {
+  subMenuListeners.forEach(({ element, listener }) => {
+    element.removeEventListener("click", listener);
+  });
+  subMenuListeners = [];
+}
+
 // Función para inicializar los event listeners de los submenús
 function initializeSubMenuListeners() {
-  // Remover listeners existentes para evitar duplicados
-  document
-    .querySelectorAll(".menu-item.has-submenu > .menu-link")
-    .forEach((link) => {
-      // Clonar el elemento para remover todos los event listeners
-      const newLink = link.cloneNode(true);
-      link.parentNode.replaceChild(newLink, link);
-    });
+  // Remover listeners existentes
+  removeSubMenuListeners();
 
   // Agregar nuevos listeners
   document
     .querySelectorAll(".menu-item.has-submenu > .menu-link")
     .forEach((link) => {
-      link.addEventListener("click", toggleSubMenu);
+      const listener = (event) => toggleSubMenu(event);
+      link.addEventListener("click", listener);
+
+      // Almacenar referencia para poder remover después
+      subMenuListeners.push({
+        element: link,
+        listener: listener,
+      });
     });
 }
 
@@ -172,7 +184,11 @@ window.addEventListener("load", () => {
   initializeSubMenuListeners();
 });
 
-window.addEventListener("resize", handleInitialAndResize);
+window.addEventListener("resize", () => {
+  handleInitialAndResize();
+  // Re-inicializar listeners después del resize
+  initializeSubMenuListeners();
+});
 
 // Event listeners para los botones de toggle
 if (toggleButton) {
