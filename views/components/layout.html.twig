@@ -43,7 +43,7 @@
                     </li>
 
                     <li class="menu-item">
-                        <a href="/" class="menu-link" data-tooltip="Dashboard">
+                        <a href="/" class="menu-link" data-tooltip="Reporte de Validación">
                             <!-- Home icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                             <span>Inicio</span>
@@ -85,10 +85,10 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
                         
-                        {# Todo: Implementación de dashboard o gráfico que identifique lugares más reportados y que tipos de incidentes #}
+                        {# Todo: Implementación de reporte de validación o gráfico que identifique lugares más reportados y que tipos de incidentes #}
                         <ul class="sub-menu">
                             <li class="sub-menu-item"><a href="#" class="sub-menu-link">Reportes</a></li>
-                            <li class="sub-menu-item"><a href="/dashboard" class="sub-menu-link">Analíticas</a></li>
+                            <li class="sub-menu-item"><a href="/validation-report" class="sub-menu-link">Analíticas</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -154,7 +154,7 @@ function setActiveMenuItem() {
         '/': 'a[href="/"]', 
         '/report-incident': 'a[href="/report-incident"]', 
         '/incidents': 'a[href="/incidents"]',
-        '/dashboard': 'a[href="/dashboard"]',
+        '/validation-report': 'a[href="/validation-report"]',
     };
     
     if (routeMapping[currentPath]) {
