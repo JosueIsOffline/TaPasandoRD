@@ -128,8 +128,14 @@ const approve = async (incidentId) => {
     if (res.ok) {
       // Cerrar el menú de acciones
       document.getElementById(`actions-menu-${incidentId}`).classList.remove('show');
-      // Recargar la página para mostrar los cambios
-      window.location.reload();
+      
+      // Mostrar cambio de estatus visualmente
+      showStatusChange(incidentId, 'Aprobado', 'success');
+      
+      // Recargar la página después de 3 segundos (el bash solo se muestra por 3 segundos)
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     }
   } catch(e) {
    console.error("Something went wrong",e)
@@ -151,11 +157,35 @@ const reject = async (incidentId) => {
     if (res.ok) {
       // Cerrar el menú de acciones
       document.getElementById(`actions-menu-${incidentId}`).classList.remove('show');
-      // Recargar la página para mostrar los cambios
-      window.location.reload();
+      
+      showStatusChange(incidentId, 'Rechazado', 'danger');
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     }
   } catch(e) {
    console.error("Something went wrong",e) 
+  }
+}
+
+// Función para mostrar cambio de estatus
+function showStatusChange(incidentId, newStatus, statusType) {
+  const statusCell = document.querySelector(`tr[data-incident-id="${incidentId}"] .status-badge`);
+  
+  if (statusCell) {
+
+    statusCell.innerHTML = `
+      <i class="fas fa-${statusType === 'success' ? 'check' : 'times'}"></i>
+      ${newStatus}
+    `;
+    
+    // Cambiar clases CSS para el nuevo estatus
+    statusCell.className = `status-badge status-${statusType}`;
+    
+    // Agregar animación de cambio
+    statusCell.style.animation = 'statusChange 0.5s ease-in-out';
+    
   }
 }
 
