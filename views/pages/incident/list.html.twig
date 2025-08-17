@@ -67,15 +67,16 @@
                                 <div class="row text-center border-top pt-2">
                                     <div class="col-4">
                                         <small class="text-muted d-block">Muertos</small>
-                                        <strong class="text-danger">2</strong>
+
+                                        <strong class="text-danger">${incident.deaths || 0}</strong>
                                     </div>
                                     <div class="col-4">
                                         <small class="text-muted d-block">Heridos</small>
-                                        <strong class="text-warning">5</strong>
+                                        <strong class="text-warning">${incident.injuries}</strong>
                                     </div>
                                     <div class="col-4">
                                         <small class="text-muted d-block">Pérdidas</small>
-                                        <strong class="text-info">$50K</strong>
+                                        <strong class="text-info">$${incident.estimated_loss}</strong>
                                     </div>
                                 </div>
                             </div>

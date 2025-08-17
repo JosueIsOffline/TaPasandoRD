@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Incident;
 use App\Models\IncidentValidation;
 use JosueIsOffline\Framework\Database\DB;
 
@@ -29,16 +30,31 @@ class ValidatorRepository
 
 
     $stmt = DB::raw($sql);
-    return $results = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: null;
+    $results = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: null;
+    return $results;
   }
 
   public function approveIncident(array $data): void
   {
-    IncidentValidation::query()->insert($data);
+
+    $validate = new IncidentValidation();
+
+    $validate->create($data);
+    $this->changeStatusIncident($data['incident_id'], 'validado');
   }
 
   public function rejectIncident(array $data): void
   {
-    IncidentValidation::query()->insert($data);
+    $validate = new IncidentValidation();
+
+    $validate->create($data);
+
+    $this->changeStatusIncident($data['incident_id'], 'rechazado');
+  }
+
+  private function changeStatusIncident(int $id, string $status): void
+  {
+    $incident = new Incident();
+    $incident->update(['id' => $id, 'status' => $status]);
   }
 }
