@@ -3,17 +3,20 @@
 namespace App\Controllers\Api;
 
 use App\Repositories\ValidatorRepository;
+use JosueIsOffline\Framework\Auth\AuthService;
 use JosueIsOffline\Framework\Controllers\AbstractController;
 use JosueIsOffline\Framework\Http\Response;
 
 class ValidatorController extends AbstractController
 {
 
+  private AuthService $auth;
   private ValidatorRepository $vRepo;
 
   public function __construct()
   {
     $this->vRepo = new ValidatorRepository();
+    $this->auth = new AuthService();
   }
 
   public function getPendingIncident(): Response
@@ -27,6 +30,7 @@ class ValidatorController extends AbstractController
     $params = $this->request->getAllPost();
 
     $data = $this->normalizeData($params);
+    $data['validator_id'] = $this->auth->id();
     $data['status'] = "Aprovado";
     $this->vRepo->approveIncident($data);
 
@@ -37,6 +41,7 @@ class ValidatorController extends AbstractController
   {
     $params = $this->request->getAllPost();
     $data = $this->normalizeData($params);
+    $data['validator_id'] = $this->auth->id();
     $data['status'] = "Rechazado";
     $this->vRepo->rejectIncident($data);
 
