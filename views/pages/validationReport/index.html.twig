@@ -104,6 +104,7 @@
 {% endblock %}
 
 {% block scripts %}
+  {{parent()}}
   <script>
 
     const approve = async (incidentId) => {
