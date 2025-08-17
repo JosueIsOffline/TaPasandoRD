@@ -15,8 +15,10 @@ class ValidatorRepository
             m.name as municipality_name,
             n.name as neighborhood_name,
             c.name as category_name,
+            c.icon_color as category_color,
             reporter.name as reporter_name,
-            reporter.email as reporter_email
+            reporter.email as reporter_email,
+            reporter.role_id as reporter_role
       FROM incidents i
       LEFT JOIN provinces p ON i.province_id = p.id
       LEFT JOIN municipalities m ON i.municipality_id = m.id
