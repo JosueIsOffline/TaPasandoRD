@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aad27e0f470f248cd34d590a0fb9e14f",
+    "content-hash": "5b4ed91768b43a5c84db9cb1c35320b1",
     "packages": [
         {
             "name": "arkham-dev/framework",
-            "version": "v1.5.2",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JosueIsOffline/Arkham.git",
-                "reference": "e25ba57d651d58f9b423eae9cd65ef4a95e630a2"
+                "reference": "a2bbb436bd1fcae965a13f661f89ca1c6f9ffbc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JosueIsOffline/Arkham/zipball/e25ba57d651d58f9b423eae9cd65ef4a95e630a2",
-                "reference": "e25ba57d651d58f9b423eae9cd65ef4a95e630a2",
+                "url": "https://api.github.com/repos/JosueIsOffline/Arkham/zipball/a2bbb436bd1fcae965a13f661f89ca1c6f9ffbc2",
+                "reference": "a2bbb436bd1fcae965a13f661f89ca1c6f9ffbc2",
                 "shasum": ""
             },
             "require": {
@@ -30,6 +30,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^12.2"
             },
+            "default-branch": true,
             "type": "project",
             "extra": {
                 "branch-alias": {
@@ -49,18 +50,15 @@
             "authors": [
                 {
                     "name": "JosueIsOffline",
-                    "email": "josue@arkham-framework.dev",
+                    "email": "josuehernandez2314@gmail.com",
                     "homepage": "https://github.com/JosueIsOffline",
                     "role": "Creator"
                 },
                 {
-                    "name": "Arkham Framework Team",
-                    "email": "team@arkham-framework.dev",
-                    "homepage": "https://arkham-framework.dev/team"
+                    "name": "Arkham Framework Team"
                 }
             ],
             "description": "A lightweight, modern PHP framework built from scratch with MVC architecture, database wizard, and powerful developer tools",
-            "homepage": "https://arkham-framework.dev",
             "keywords": [
                 "arkham",
                 "database",
@@ -74,23 +72,11 @@
                 "web"
             ],
             "support": {
-                "docs": "https://arkham-framework.dev/docs",
-                "forum": "https://github.com/arkham/framework/discussions",
-                "issues": "https://github.com/arkham/framework/issues",
-                "source": "https://github.com/arkham/framework",
-                "wiki": "https://github.com/arkham/framework/wiki"
+                "docs": "https://josueisoffline.vercel.app/writing/guia-completa-de-arkham-framework-en-espanol#respuestas-http",
+                "issues": "https://github.com/JosueIsOffline/Arkham/issues",
+                "source": "https://github.com/JosueIsOffline/Arkham"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/sponsors/arkham-framework",
-                    "type": "github"
-                },
-                {
-                    "url": "https://patreon.com/arkham_framework",
-                    "type": "patreon"
-                }
-            ],
-            "time": "2025-08-04T19:58:21+00:00"
+            "time": "2025-08-04T20:07:30+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -3194,10 +3180,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
-    "prefer-stable": false,
+    "stability-flags": {
+        "arkham-dev/framework": 20
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "php": ">=8.1"
+    },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
