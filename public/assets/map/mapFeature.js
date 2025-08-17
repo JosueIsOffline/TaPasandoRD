@@ -103,17 +103,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
        if (incident.social_media_url) {
 
-        const contenedor = document.getElementById("referencias-container");
-        contenedor.innerHTML = "";
+          const contenedor = document.getElementById("referencias-container");
+          contenedor.innerHTML = "";
 
-        const boton = document.createElement("a");
-        boton.href = incident.social_media_url;
-        boton.target = "_blank";
-        boton.className = "btn btn-outline-primary btn-sm me-2";
-        boton.textContent = "Ver publicación";
+          const boton = document.createElement("a");
+          boton.href = incident.social_media_url;
+          boton.target = "_blank";
+          boton.className = "btn btn-outline-primary btn-sm me-2";
+          boton.textContent = "Ver publicación";
 
-        contenedor.appendChild(boton);
-}
+          contenedor.appendChild(boton);
+      }
 
 
         new bootstrap.Modal(document.getElementById("incidentModal")).show();
@@ -133,21 +133,59 @@ document.addEventListener("DOMContentLoaded", function () {
       return names[categoryId];
     };
 
+    // Cargar las provincias y tipos de incidencia
+    async function loadFilters() {
+      try {
+        const response = await fetch("http://localhost:8000/api/provinces");
+        if (!response.ok) throw new Error("Error al obtener provincias");
+
+        const provinces = await response.json();
+        const provinceSelect = document.getElementById("filterProvincia");
+        provinceSelect.innerHTML = '<option value="">Todas las provincias</option>';
+        provinces.forEach((province) => {
+          const option = document.createElement("option");
+          option.value = province.id;
+          option.textContent = province.name;
+          provinceSelect.appendChild(option);
+        });
+
+        const categoryResponse = await fetch("http://localhost:8000/api/categories");
+        if (!categoryResponse.ok) throw new Error("Error al obtener categorías");
+
+        const categories = await categoryResponse.json();
+        const tipoSelect = document.getElementById("filterTipo");
+        tipoSelect.innerHTML = '<option value="">Todos los tipos</option>';
+        categories.forEach((category) => {
+          const option = document.createElement("option");
+          option.value = category.id;
+          option.textContent = category.name;
+          tipoSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error al cargar filtros:", error);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        loadFilters();
+      });
+    }
+
     async function loadIncidencias() {
-      const provincia = document.getElementById("filterProvincia").value;
-      const tipo = document.getElementById("filterTipo").value;
-      const fechaInicio = document.getElementById("filterFechaInicio").value;
-      const fechaFin = document.getElementById("filterFechaFin").value;
 
       try {
-        let url = new URL("http://localhost:8000/api/valid-incident");
-        if (provincia) url.searchParams.append("provincia", provincia);
-        if (tipo) url.searchParams.append("tipo", tipo);
-        if (fechaInicio) url.searchParams.append("fechaInicio", fechaInicio);
-        if (fechaFin) url.searchParams.append("fechaFin", fechaFin);
+        const provinciaId = document.getElementById("filterProvincia").value;
+        const tipoId = document.getElementById("filterTipo").value;
+        const fechaInicio = document.getElementById("filterFechaInicio").value;
+        const fechaFin = document.getElementById("filterFechaFin").value;
 
+
+        let url = new URL("http://localhost:8000/api/valid-incident");
         const response = await fetch(url);
         if (!response.ok) throw new Error("Error al obtener incidencias");
+        if (provinciaId) url.searchParams.append("province_id", provinciaId);
+        if (tipoId) url.searchParams.append("category_id", tipoId);
+        if (fechaInicio) url.searchParams.append("start_date", fechaInicio);
+        if (fechaFin) url.searchParams.append("end_date", fechaFin);
 
         const incidents = await response.json();
 
