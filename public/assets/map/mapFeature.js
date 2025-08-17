@@ -74,9 +74,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const fechaInicio = document.getElementById('filterFechaInicio').value;
             const fechaFin = document.getElementById('filterFechaFin').value;
 
-            let query = `?provincia=${encodeURIComponent(provincia)}&tipo=${encodeURIComponent(tipo)}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
             try {
-                const response = await fetch(`/api/incidencias${query}`);
+                const response = await fetch(`http://localhost:8000/api/valid-incident`);
                 if (!response.ok) throw new Error("Error al obtener incidencias");
 
                 const incidents = await response.json();
