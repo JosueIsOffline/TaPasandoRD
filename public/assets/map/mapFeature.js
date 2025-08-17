@@ -104,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
        if (incident.social_media_url) {
 
         const contenedor = document.getElementById("referencias-container");
+        contenedor.innerHTML = "";
 
         const boton = document.createElement("a");
         boton.href = incident.social_media_url;
@@ -139,9 +140,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const fechaFin = document.getElementById("filterFechaFin").value;
 
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/valid-incident`,
-        );
+        let url = new URL("http://localhost:8000/api/valid-incident");
+        if (provincia) url.searchParams.append("provincia", provincia);
+        if (tipo) url.searchParams.append("tipo", tipo);
+        if (fechaInicio) url.searchParams.append("fechaInicio", fechaInicio);
+        if (fechaFin) url.searchParams.append("fechaFin", fechaFin);
+
+        const response = await fetch(url);
         if (!response.ok) throw new Error("Error al obtener incidencias");
 
         const incidents = await response.json();
