@@ -19,7 +19,7 @@
   ],
   "require": {
     "php": ">=8.1",
-    "arkham-dev/framework": "1.5.2",
+    "arkham-dev/framework": "v1.5.2",
     "league/oauth2-client": "^2.8",
     "league/oauth2-google": "^4.0",
     "stevenmaguire/oauth2-microsoft": "^2.2",
@@ -45,3 +45,4 @@
   "minimum-stability": "stable",
   "prefer-stable": true
 }
+
