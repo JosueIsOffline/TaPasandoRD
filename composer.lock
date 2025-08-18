@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26b016ef384e2760f7edc9ec867abea6",
+    "content-hash": "14ca4c23b2d0177168e9d41978e29dba",
     "packages": [
         {
             "name": "arkham-dev/framework",
