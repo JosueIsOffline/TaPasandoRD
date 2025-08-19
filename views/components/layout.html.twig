@@ -19,7 +19,8 @@
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <img src="{{ auth_user().photo_url|raw }}" alt="User Avatar" class="avatar">
+        <img src={% if auth_user().photo_url%}"{{ auth_user().photo_url}}"{%else%}"https://avatar.iran.liara.run/username?username={{auth_user().name}}&length=1"{% endif %}alt="User Avatar" class="avatar">
+
         <div class="user-info">
             <span id="spanRole" class="user-role">role</span>
             <span class="user-name">{{ auth_user().name }}</span>
@@ -78,6 +79,15 @@
                             <span>Ver Mapa</span>
                         </a>
                     </li> 
+                    <li class="menu-item" {% if auth_user().role_id != 3 %} style="display:none;" {%endif%}>
+
+                        <a href="/administration-panel" class="menu-link" data-tooltip="Income">
+                            <!-- BarChart2 icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            <span>Administración</span>
+                        </a> 
+                      </li>
+
 
                     <li class="menu-item" {% if auth_user().role_id not in [2, 3] %}style="display: none;"{% endif %}>
                         <a href="/validation-report" class="menu-link" data-tooltip="Income">
@@ -85,23 +95,6 @@
                             <i class="fas fa-check-double me-2"></i>
                             <span>Validadores</span>
                         </a>
-                        
-                        {# Todo: Implementación de reporte de validación o gráfico que identifique lugares más reportados y que tipos de incidentes #}
-                        <!-- <ul class="sub-menu"> -->
-                        <!--    <li class="sub-menu-item"> -->
-                        <!--         <a href="/validation-report" class="sub-menu-link"> -->
-                        <!--             <!-- CheckSquare icon -->
-                        <!--             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> -->
-                        <!--                 <polyline points="9 11 12 14 22 4"></polyline> -->
-                        <!--                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path> -->
-                        <!--             </svg> -->
-                        <!--             Reportes -->
-                        <!--         </a> -->
-                        <!--     </li> -->
-                        <!--     <!-- <li class="sub-menu-item" {% if auth_user().role_id != 3 %}style="display: none;"{% endif %}> --> 
-                        <!--     <!--     <a href="#" class="sub-menu-link">Analíticas</a> -->
-                        <!--     <!-- </li> -->
-                        <!-- </ul> -->
                     </li>
                 </ul>
             </div>
