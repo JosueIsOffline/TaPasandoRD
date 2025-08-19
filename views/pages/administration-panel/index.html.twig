@@ -1,7 +1,11 @@
 {% extends 'layout.html.twig' %}
 
 
+{%block body_class%}
+  validation-report-body
+{% endblock %}
 {% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
 <div class="row mb-4">
     <!-- Provincias -->
     <div class="col-md-3">
