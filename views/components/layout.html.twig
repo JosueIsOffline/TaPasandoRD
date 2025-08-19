@@ -1,6 +1,7 @@
 {% extends "base.html.twig" %}
 {% block styles %}
 <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
+<link href="/assets/map/mapFeature.css" rel="stylesheet">
 {{ block('validation_report_styles') }}
 {% endblock %}
 {% block validation_report_styles %}
@@ -146,6 +147,7 @@
 
 {% block scripts %}
 <script src="/assets/sidebar/sidebarFeatures.js"></script>
+<script src="/assets/map/mapFeature.js"></script>
 <script>
 function setActiveMenuItem() {
     const currentPath = window.location.pathname;
