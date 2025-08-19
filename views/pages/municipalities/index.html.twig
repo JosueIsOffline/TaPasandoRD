@@ -1,60 +1,102 @@
 {% extends "layout.html.twig" %}
+
+{% block styles %}
+{{ parent() }}
+<style>
+  .toast-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: #38a169;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateY(-30px);
+    font-size: 1rem;
+    min-width: 220px;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast-message.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  @media (max-width: 600px) {
+    .toast-message {
+      right: 50%;
+      top: 1rem;
+      left: 50%;
+      transform: translate(-50%, -30px);
+      min-width: 80vw;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+    }
+    .toast-message.show {
+      transform: translate(-50%, 0);
+    }
+  }
+</style>
+{% endblock %}
 {% block content %}
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <title>Municipios</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-</head>
-<body>
-    <div class="container mt-4">
-        <h1>Listado de Municipios</h1>
-        <a href="/municipalities/create" class="btn btn-primary mb-3">Agregar nuevo municipio</a>
-
-        <table class="table table-bordered table-striped">
-            <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Provincia</th>
-                    <th>Creado</th>
-                    <th>Actualizado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for municipality in municipalities %}
-                    <tr>
-                        <td>{{ municipality.id }}</td>
-                        <td>{{ municipality.name }}</td>
-                        <td>{{ municipality.code ?: '-' }}</td>
-                        <td>{{ municipality.province_name }}</td>
-                        <td>{{ municipality.created_at|date("Y-m-d H:i") }}</td>
-                        <td>{{ municipality.updated_at|date("Y-m-d H:i") }}</td>
-                        <td>
-                            <a href="/municipalities/{{ municipality.id }}/edit" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="/municipalities/{{ municipality.id }}/delete" class="btn btn-sm btn-danger"
-                               onclick="return confirm('¿Eliminar este municipio?')">Eliminar</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="7" class="text-center">No hay municipios registrados.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">Listado de Municipios</h1>
+        <a href="/municipalities/create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Agregar nuevo municipio
+        </a>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <table class="table table-bordered table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Provincia</th>
+                        <th scope="col">Creado</th>
+                        <th scope="col">Actualizado</th>
+                        <th scope="col" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for municipality in municipalities %}
+                        <tr>
+                            <td>{{ municipality.id }}</td>
+                            <td>{{ municipality.name }}</td>
+                            <td>{{ municipality.code ?: '-' }}</td>
+                            <td>{{ municipality.province_name }}</td>
+                            <td>{{ municipality.created_at|date("Y-m-d H:i") }}</td>
+                            <td>{{ municipality.updated_at|date("Y-m-d H:i") }}</td>
+                            <td class="text-center">
+                                <a href="/municipalities/{{ municipality.id }}/edit" 
+                                   class="btn btn-sm btn-success">
+                                    Editar
+                                </a>
+                                <a href="/municipalities/{{ municipality.id }}/delete" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar este municipio?')">
+                                    Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                No hay municipios registrados.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
