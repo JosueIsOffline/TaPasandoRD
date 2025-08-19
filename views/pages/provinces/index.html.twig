@@ -1,45 +1,129 @@
 {% extends "layout.html.twig" %}
+
+{% block styles %}
+{{ parent() }}
+<style>
+  .toast-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: #38a169;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateY(-30px);
+    font-size: 1rem;
+    min-width: 220px;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast-message.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  @media (max-width: 600px) {
+    .toast-message {
+      right: 50%;
+      top: 1rem;
+      left: 50%;
+      transform: translate(-50%, -30px);
+      min-width: 80vw;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+    }
+    .toast-message.show {
+      transform: translate(-50%, 0);
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
+  {% if message %}
+    <div id="toast-message" class="toast-message">
+      {{ message }}
+    </div>
+  {% endif %}
 
-<body>
-    <div class="container mt-4">
-        <h1>Listado de Provincias</h1>
-        <a href="/provinces/create" class="btn btn-primary mb-3">Agregar nueva provincia</a>
-
-        <table class="table table-bordered table-striped">
-            <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Creado</th>
-                    <th>Actualizado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for province in provinces %}
-                    <tr>
-                        <td>{{ province.id }}</td>
-                        <td>{{ province.name }}</td>
-                        <td>{{ province.code }}</td>
-                        <td>{{ province.created_at|date("Y-m-d H:i") }}</td>
-                        <td>{{ province.updated_at|date("Y-m-d H:i") }}</td>
-                        <td>
-                            <a href="/provinces/{{ province.id }}/edit" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="/provinces/{{ province.id }}/delete" class="btn btn-sm btn-danger"
-                               onclick="return confirm('¿Eliminar esta provincia?')">Eliminar</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center">No hay provincias registradas.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  <div class="container-fluid p-4">
+    <div class="row mb-4">
+      <div class="col-12 d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Listado de Provincias</h1>
+        <a href="/provinces/create" class="btn btn-primary">
+          <i class="fas fa-plus me-2"></i> Agregar Provincia
+        </a>
+      </div>
     </div>
 
-</body>
-</html>
+    <div class="row">
+      <div class="col-12">
+        <div class="card incident-card">
+          <div class="card-header bg-white">
+            <h5 class="mb-0">Provincias Registradas</h5>
+          </div>
+          <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Código</th>
+                  <th>Creado</th>
+                  <th>Actualizado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for province in provinces %}
+                  <tr>
+                    <td>{{ province.id }}</td>
+                    <td>{{ province.name }}</td>
+                    <td>{{ province.code }}</td>
+                    <td>{{ province.created_at|date("Y-m-d H:i") }}</td>
+                    <td>{{ province.updated_at|date("Y-m-d H:i") }}</td>
+                    <td>
+                      <a href="/provinces/{{ province.id }}/edit" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit me-1"></i> Editar
+                      </a>
+                      <a href="/provinces/{{ province.id }}/delete" class="btn btn-sm btn-danger"
+                         onclick="return confirm('¿Eliminar esta provincia?')">
+                        <i class="fas fa-trash-alt me-1"></i> Eliminar
+                      </a>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">No hay provincias registradas.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+{{ parent() }}
+  {% if message %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var toast = document.getElementById('toast-message');
+        if (toast) {
+          toast.classList.add('show');
+          setTimeout(function() {
+            toast.classList.remove('show');
+          }, 3000);
+        }
+      });
+    </script>
+  {% endif %}
 {% endblock %}
