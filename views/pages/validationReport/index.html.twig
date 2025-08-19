@@ -1,0 +1,325 @@
+{% extends "layout.html.twig" %}
+
+{% block body_class %}validation-report-body{% endblock %}
+
+{% block validation_report_styles %}
+  <link href="/assets/validationReport/validationReport-ui.css" rel="stylesheet">
+  <link href="/assets/validationReport/validationReport-modal.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
+<div class="container-fluid p-4">
+
+    <!-- Header con búsqueda y filtros -->
+    <div class="search-header">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar reportes...">
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-dropdown">
+                <button class="filter-button" id="date-filter-btn">
+                    Últimos 15 días
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="filter-dropdown-menu" id="date-filter-menu">
+                    <div class="filter-option" data-value="15">Últimos 15 días</div>
+                    <div class="filter-option" data-value="30">Últimos 30 días</div>
+                    <div class="filter-option" data-value="7">Últimos 7 días</div>
+                    <div class="filter-option" data-value="all">Todos los días</div>
+                </div>
+            </div>
+
+            <div class="filter-dropdown">
+                <button class="filter-button" id="category-filter-btn">
+                    Todas las Categorías
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="filter-dropdown-menu" id="category-filter-menu">
+                    <div class="filter-option" data-value="all">Todas las Categorías</div>
+                    <div class="filter-option" data-value="accident">Accidentes</div>
+                    <div class="filter-option" data-value="natural_disaster">Desastres Naturales</div>
+                    <div class="filter-option" data-value="crime">Delitos</div>
+                    <div class="filter-option" data-value="infrastructure">Infraestructura</div>
+                    <div class="filter-option" data-value="other">Otros</div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    {% if pendingIncidents and pendingIncidents|length > 0 %}
+        <!-- Tabla de datos -->
+        <div class="data-table" id="data-table">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="fas fa-clock"></i>
+                    Reportes Pendientes de Validación
+                </h5>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>FECHA</th>
+                            <th>TÍTULO</th>
+                            <th>TIPO</th>
+                            <th>UBICACIÓN</th>
+                            <th>REPORTERO</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                                                 {% for incident in pendingIncidents %}
+                             <tr data-incident-id="{{ incident.id }}">
+                                <td class="date-column">
+                                    <div>{{ incident.occurrence_date|date('d/m/Y') }}</div>
+                                    <small>{{ incident.occurrence_date|date('H:i') }}</small>
+                                </td>
+                                <td class="title-column">{{ incident.title }}</td>
+                                <td>
+                                    <span class="type-badge" style="background-color: {{ incident.category_color }} !important; border-color: {{ incident.category_color }} !important;">
+                                        {{ incident.category_name }}
+                                    </span>
+                                </td>
+                                <td class="location-column">
+                                    <div>{{ incident.municipality_name ?? 'N/A' }}</div>
+                                    <small>{{ incident.province_name ?? 'N/A' }}</small>
+                                </td>
+                                <td class="reporter-column">
+                                    <div>{{ incident.reporter_email }}</div>
+                                    <small>{{ roles[incident.reporter_role] }}</small>
+                                </td>
+                                <td>
+                                    <span class="status-badge">
+                                        <i class="fas fa-clock"></i>
+                                        Pendiente
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="actions-wrapper">
+                                        <button class="actions-button" onclick="toggleActionsMenu({{ incident.id }})">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+
+                                        <div class="actions-menu" id="actions-menu-{{ incident.id }}">
+                                            <div class="actions-menu-item" onclick="viewDetails({{ incident.id }})">
+                                                <i class="fas fa-eye"></i>
+                                                Ver detalles
+                                            </div>
+                                            <div class="actions-menu-item" onclick="approve({{ incident.id }})">
+                                                <i class="fas fa-check"></i>
+                                                Aprobar
+                                            </div>
+                                            <div class="actions-menu-item" onclick="reject({{ incident.id }})">
+                                                <i class="fas fa-times"></i>
+                                                Rechazar
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pagination-container" id="pagination-container" style="display: none;">
+            <div class="pagination-info">
+                <span id="pagination-text">Mostrando 1-4 de 0 reportes</span>
+            </div>
+            <div class="pagination-controls">
+                <button class="pagination-btn" id="prev-btn" onclick="previousPage()" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    Anterior
+                </button>
+                <div class="page-numbers" id="page-numbers">
+                    <!-- Los números de página se generarán dinámicamente -->
+                </div>
+                <button class="pagination-btn" id="next-btn" onclick="nextPage()" disabled>
+                    Siguiente
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Estado vacío para búsquedas sin resultados -->
+        <div class="empty-state" id="search-empty-state" style="display: none;">
+            <div class="empty-state-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h2 class="empty-state-title">No se encontraron resultados</h2>
+            <p class="empty-state-description">
+                No hay reportes que coincidan con tu búsqueda. 
+                Intenta con otros términos o revisa los filtros aplicados.
+            </p>
+            <button class="empty-state-button" onclick="clearSearch()">
+                Limpiar búsqueda
+            </button>
+        </div>
+    {% else %}
+        <!-- Estado vacío -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="empty-state-title">No hay reportes pendientes</h2>
+            <p class="empty-state-description">
+                Todos los incidentes han sido validados o no hay reportes en el sistema. 
+                Los nuevos reportes aparecerán aquí automáticamente.
+            </p>
+            <button class="empty-state-button" onclick="window.location.href='/'">
+                Ir al Inicio
+            </button>
+        </div>
+         {% endif %}
+ </div>
+
+ <!-- Modal de detalles del incidente -->
+ <div class="modal fade" id="incidentDetailsModal" tabindex="-1" aria-labelledby="incidentDetailsModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="incidentDetailsModalLabel">
+                     <i class="fas fa-info-circle"></i>
+                     Detalles del Incidente
+                 </h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+             </div>
+             <div class="modal-body">
+                 <div class="incident-details">
+                     <!-- Información del reporte -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-file-alt"></i>
+                             INFORMACIÓN DEL REPORTE
+                         </h6>
+                         <div class="details-grid">
+                             <div class="detail-item">
+                                 <span class="detail-label">Título:</span>
+                                 <span class="detail-value" id="modal-title"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Tipo incidencia:</span>
+                                 <span class="detail-value" id="modal-type"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Ubicación:</span>
+                                 <span class="detail-value" id="modal-location"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Fecha:</span>
+                                 <span class="detail-value" id="modal-date"></span>
+                             </div>
+                             <div class="detail-item">
+                                 <span class="detail-label">Email Reportero:</span>
+                                 <span class="detail-value" id="modal-reporter"></span>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- Estadísticas -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-chart-bar"></i>
+                             ESTADÍSTICAS
+                         </h6>
+                         <div class="stats-grid">
+                             <div class="stat-item">
+                                 <span class="stat-label">Muertos:</span>
+                                 <span class="stat-value" id="modal-deaths"></span>
+                             </div>
+                             <div class="stat-item">
+                                 <span class="stat-label">Heridos:</span>
+                                 <span class="stat-value" id="modal-injured"></span>
+                             </div>
+                             <div class="stat-item">
+                                 <span class="stat-label">Pérdidas:</span>
+                                 <span class="stat-value" id="modal-losses"></span>
+                             </div>
+                             <div class="stat-item">
+                                 <span class="stat-label">Coordenadas:</span>
+                                 <span class="stat-value" id="modal-coordinates"></span>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- Descripción -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-align-left"></i>
+                             DESCRIPCIÓN
+                         </h6>
+                         <p class="description-text" id="modal-description"></p>
+                     </div>
+
+
+
+                     <!-- Comentarios de validación -->
+                     <div class="details-section">
+                         <h6 class="section-title">
+                             <i class="fas fa-comments"></i>
+                             COMENTARIOS DE VALIDACIÓN
+                         </h6>
+                         
+                         <!-- Mensaje informativo -->
+                         <div class="info-message mb-3">
+                             <div class="alert alert-info" role="alert">
+                                 <i class="fas fa-info-circle me-2"></i>
+                                 <strong>Información:</strong> Los comentarios de validación se muestran a continuación. 
+                                 Puedes agregar un comentario personalizado usando el formulario de abajo, o usar las opciones 
+                                 rápidas del menú de acciones (que usan comentarios por defecto).
+                             </div>
+                         </div>
+                         
+                         <div class="validation-comments" id="modal-comments">
+                             <!-- Los comentarios se cargarán dinámicamente aquí -->
+                         </div>
+                         
+                         <!-- Textarea para nuevo comentario -->
+                         <div class="new-comment-section">
+                             <label for="new-comment" class="form-label">Agregar comentario:</label>
+                             <textarea 
+                                 id="new-comment" 
+                                 class="form-control" 
+                                 rows="3" 
+                                 placeholder="Escribe tu comentario de validación aquí..."
+                             ></textarea>
+                             
+                             <!-- Área de mensajes -->
+                             <div id="comment-message" class="comment-message mt-2" style="display: none;">
+                                 <!-- Los mensajes se mostrarán aquí -->
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                 <div class="comment-actions">
+                     <button type="button" class="btn btn-primary" onclick="approveWithComment()">
+                         <i class="fas fa-check"></i> Aprobar con comentario
+                     </button>
+                     <button type="button" class="btn btn-danger" onclick="rejectWithComment()">
+                         <i class="fas fa-times"></i> Rechazar con comentario
+                     </button>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+ {% endblock %}
+
+{% block scripts %}
+  {{parent()}}
+  <script src="/assets/validationReport/validationReport.js"></script>
+{% endblock %}
