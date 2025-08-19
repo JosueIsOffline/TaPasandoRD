@@ -270,14 +270,44 @@
                              <i class="fas fa-comments"></i>
                              COMENTARIOS DE VALIDACIÓN
                          </h6>
+                         
+                         <!-- Mensaje informativo -->
+                         <div class="info-message mb-3">
+                             <div class="alert alert-info" role="alert">
+                                 <i class="fas fa-info-circle me-2"></i>
+                                 <strong>Información:</strong> Los comentarios de validación se muestran a continuación. 
+                                 Puedes agregar un comentario personalizado usando el formulario de abajo, o usar las opciones 
+                                 rápidas del menú de acciones (que usan comentarios por defecto).
+                             </div>
+                         </div>
+                         
                          <div class="validation-comments" id="modal-comments">
                              <!-- Los comentarios se cargarán dinámicamente aquí -->
+                         </div>
+                         
+                         <!-- Textarea para nuevo comentario -->
+                         <div class="new-comment-section">
+                             <label for="new-comment" class="form-label">Agregar comentario:</label>
+                             <textarea 
+                                 id="new-comment" 
+                                 class="form-control" 
+                                 rows="3" 
+                                 placeholder="Escribe tu comentario de validación aquí..."
+                             ></textarea>
                          </div>
                      </div>
                  </div>
              </div>
              <div class="modal-footer">
                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                 <div class="comment-actions">
+                     <button type="button" class="btn btn-primary" onclick="approveWithComment()">
+                         <i class="fas fa-check"></i> Aprobar con comentario
+                     </button>
+                     <button type="button" class="btn btn-danger" onclick="rejectWithComment()">
+                         <i class="fas fa-times"></i> Rechazar con comentario
+                     </button>
+                 </div>
              </div>
          </div>
      </div>
