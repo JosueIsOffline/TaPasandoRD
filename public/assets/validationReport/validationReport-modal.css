@@ -24,7 +24,7 @@
 }
 
 #incidentDetailsModal .modal-title i {
-  color: #f59e0b;
+  color: #3b82f6;
 }
 
 #incidentDetailsModal .btn-close {
@@ -88,7 +88,7 @@
 }
 
 #incidentDetailsModal .section-title {
-  color: #f59e0b;
+  color: #3b82f6;
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -137,8 +137,8 @@
 }
 
 #incidentDetailsModal .stat-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 12px;
   padding: 16px;
   text-align: center;
@@ -158,7 +158,7 @@
   color: white;
   font-size: 24px;
   font-weight: 600;
-  color: #f59e0b;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Descripción */
@@ -196,7 +196,7 @@
 }
 
 #incidentDetailsModal .comment-author {
-  color: #f59e0b;
+  color: #3b82f6;
   font-weight: 600;
   font-size: 14px;
 }
@@ -222,12 +222,13 @@
 #incidentDetailsModal .no-comments i {
   display: block;
   margin-bottom: 10px;
-  opacity: 0.5;
+  color: white !important;
 }
 
 #incidentDetailsModal .no-comments p {
   margin: 0;
   font-size: 14px;
+  color: white !important;
 }
 
 /* Sección de comentarios */
@@ -258,13 +259,40 @@
 
 #incidentDetailsModal .new-comment-section .form-control:focus {
   background: rgba(0, 0, 0, 0.5);
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
   outline: none;
 }
 
 #incidentDetailsModal .new-comment-section .form-control::placeholder {
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos para mensajes de comentarios */
+#incidentDetailsModal .comment-message {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+}
+
+#incidentDetailsModal .comment-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+#incidentDetailsModal .comment-message.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+#incidentDetailsModal .comment-message.info {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
 }
 
 /* Estilos para los comentarios existentes */
@@ -323,8 +351,8 @@
 
 /* Mensaje informativo */
 #incidentDetailsModal .info-message .alert {
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   color: rgba(255, 255, 255, 0.9);
   border-radius: 8px;
   font-size: 13px;
@@ -332,9 +360,9 @@
 }
 
 #incidentDetailsModal .info-message .alert i {
-  color: #3b82f6;
+  color: #f59e0b;
 }
 
 #incidentDetailsModal .info-message .alert strong {
-  color: #3b82f6;
+  color: #f59e0b;
 }
