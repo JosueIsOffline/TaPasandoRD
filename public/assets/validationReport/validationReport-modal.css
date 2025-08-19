@@ -1,0 +1,195 @@
+/* Estilos del modal de detalles del incidente */
+
+/* Contenido del modal */
+#incidentDetailsModal .modal-content {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: white;
+}
+
+/* Header del modal */
+#incidentDetailsModal .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#incidentDetailsModal .modal-title {
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#incidentDetailsModal .modal-title i {
+  color: #f59e0b;
+}
+
+#incidentDetailsModal .btn-close {
+  filter: invert(1);
+}
+
+/* Cuerpo del modal */
+#incidentDetailsModal .modal-body {
+  padding: 24px;
+}
+
+/* Footer del modal */
+#incidentDetailsModal .modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Secciones del modal */
+#incidentDetailsModal .details-section {
+  margin-bottom: 32px;
+}
+
+#incidentDetailsModal .section-title {
+  color: #f59e0b;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+#incidentDetailsModal .section-title i {
+  font-size: 14px;
+}
+
+/* Información del reporte */
+#incidentDetailsModal .details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+#incidentDetailsModal .detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#incidentDetailsModal .detail-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#incidentDetailsModal .detail-value {
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Estadísticas */
+#incidentDetailsModal .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+}
+
+#incidentDetailsModal .stat-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+#incidentDetailsModal .stat-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+#incidentDetailsModal .stat-value {
+  display: block;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+/* Descripción */
+#incidentDetailsModal .description-text {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0;
+}
+
+/* Comentarios de validación */
+#incidentDetailsModal .validation-comments {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#incidentDetailsModal .comment-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+#incidentDetailsModal .comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+#incidentDetailsModal .comment-author {
+  color: #f59e0b;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#incidentDetailsModal .comment-date {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+#incidentDetailsModal .comment-content {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+#incidentDetailsModal .no-comments {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Responsive del modal */
+@media (max-width: 768px) {
+  #incidentDetailsModal .modal-dialog {
+    margin: 10px;
+  }
+
+  #incidentDetailsModal .details-grid,
+  #incidentDetailsModal .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #incidentDetailsModal .stat-value {
+    font-size: 20px;
+  }
+}

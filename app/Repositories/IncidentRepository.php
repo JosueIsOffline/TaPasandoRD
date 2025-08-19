@@ -20,6 +20,17 @@ class IncidentRepository
     return Incident::query()->where('status', 'validado')->get();
   }
 
+  public function getIncidentById(int $id): Response
+  {
+    $incident = $this->iRepo->getById($id);
+
+    if (!$incident) {
+      return $this->error('Incidente no encontrado', 404);
+    }
+
+    return $this->success($incident);
+  }
+
   public function getPendingIncidents(): ?array
   {
     $sql = "
