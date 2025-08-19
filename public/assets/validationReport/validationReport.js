@@ -33,6 +33,14 @@ document.addEventListener("click", function (event) {
   }
 });
 
+// Función para limpiar el textarea cuando se cierre el modal
+function clearCommentForm() {
+  const textarea = document.getElementById("new-comment");
+  if (textarea) {
+    textarea.value = "";
+  }
+}
+
 // Función para ver detalles del incidente
 async function viewDetails(incidentId) {
   try {
@@ -40,6 +48,12 @@ async function viewDetails(incidentId) {
     document
       .getElementById(`actions-menu-${incidentId}`)
       .classList.remove("show");
+
+    // Guardar el ID del incidente actual para uso en las funciones de comentarios
+    window.currentIncidentId = incidentId;
+
+    // Limpiar el formulario de comentarios
+    clearCommentForm();
 
     // Obtener los datos del incidente desde la tabla
     const row = document.querySelector(`tr[data-incident-id="${incidentId}"]`);
@@ -86,9 +100,8 @@ async function viewDetails(incidentId) {
         document.getElementById("modal-description").textContent =
           incident.description || "Sin descripción disponible";
 
-        // Contenedor de comentarios (por ahora, es un contenedor vacío)
-        const commentsContainer = document.getElementById("modal-comments");
-        commentsContainer.innerHTML = "";
+        // Cargar comentarios de validación existentes
+        await loadValidationComments(incidentId);
       } else {
         console.error(
           "Error al obtener datos del incidente desde la API, usando datos de la tabla",
@@ -115,6 +128,77 @@ async function viewDetails(incidentId) {
   }
 }
 
+// Función para cargar comentarios de validación existentes
+async function loadValidationComments(incidentId) {
+  try {
+    const response = await fetch(`/api/validator/comments/${incidentId}`);
+    if (response.ok) {
+      const comments = await response.json();
+      displayValidationComments(comments);
+    } else {
+      console.error("Error al cargar comentarios de validación");
+      document.getElementById("modal-comments").innerHTML = 
+        '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
+    }
+  } catch (error) {
+    console.error("Error al cargar comentarios de validación:", error);
+    document.getElementById("modal-comments").innerHTML = 
+      '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
+  }
+}
+
+// Función para mostrar comentarios de validación en el modal
+function displayValidationComments(comments) {
+  const commentsContainer = document.getElementById("modal-comments");
+  
+  if (!comments || comments.length === 0) {
+    commentsContainer.innerHTML = `
+      <div class="no-comments">
+        <i class="fas fa-comment-slash text-muted" style="font-size: 2rem; margin-bottom: 10px;"></i>
+        <p class="text-muted">No hay comentarios de validación para este incidente.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let commentsHTML = '';
+  comments.forEach(comment => {
+    const statusClass = comment.status === 'Aprovado' ? 'success' : 
+                       comment.status === 'Rechazado' ? 'danger' : 'warning';
+    const statusIcon = comment.status === 'Aprovado' ? 'check' : 
+                      comment.status === 'Rechazado' ? 'times' : 'clock';
+    
+    const commentDate = comment.created_at ? new Date(comment.created_at).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) : 'Fecha no disponible';
+    
+    commentsHTML += `
+      <div class="comment-item mb-3 p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <strong class="text-${statusClass}">
+              <i class="fas fa-${statusIcon}"></i> ${comment.status}
+            </strong>
+            <small class="text-muted ms-2">por ${comment.validator_name || comment.validator_email || 'Validador'}</small>
+          </div>
+          <small class="text-muted">
+            ${commentDate}
+          </small>
+        </div>
+        <div class="comment-text">
+          ${comment.comments || 'Sin comentarios'}
+        </div>
+      </div>
+    `;
+  });
+  
+  commentsContainer.innerHTML = commentsHTML;
+}
+
 // Función para mostrar datos por defecto cuando la API no funciona
 function showDefaultData() {
   document.getElementById("modal-deaths").textContent = "N/A";
@@ -134,7 +218,7 @@ const approve = async (incidentId) => {
   data.append("comments", "Validado");
 
   try {
-    const res = await fetch("http://localhost:8000/api/validator/approve", {
+    const res = await fetch("/api/validator/approve", {
       method: "POST",
       body: data,
     });
@@ -165,7 +249,7 @@ const reject = async (incidentId) => {
   data.append("comments", "Rechazado");
 
   try {
-    const res = await fetch("http://localhost:8000/api/validator/reject", {
+    const res = await fetch("/api/validator/reject", {
       method: "POST",
       body: data,
     });
@@ -419,7 +503,112 @@ function initializePagination() {
   applyPagination();
 }
 
+// Función para aprobar incidente con comentario personalizado
+async function approveWithComment() {
+  const commentText = document.getElementById("new-comment").value.trim();
+  
+  if (!commentText) {
+    alert("Por favor, escribe un comentario antes de aprobar el incidente.");
+    return;
+  }
+
+  if (!window.currentIncidentId) {
+    console.error("No hay incidente seleccionado");
+    return;
+  }
+
+  // Confirmar la acción
+  if (!confirm("¿Estás seguro de que deseas aprobar este incidente con el comentario proporcionado?")) {
+    return;
+  }
+
+  const data = new FormData();
+  data.append("incident_id", window.currentIncidentId);
+  data.append("comments", commentText);
+
+  try {
+    const res = await fetch("/api/validator/approve", {
+      method: "POST",
+      body: data,
+    });
+
+    if (res.ok) {
+      // Cerrar el modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById("incidentDetailsModal"));
+      modal.hide();
+
+      // Mostrar cambio de estatus visualmente
+      showStatusChange(window.currentIncidentId, "Aprobado", "success");
+
+      // Recargar la página después de 3 segundos
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    }
+  } catch (e) {
+    console.error("Error al aprobar incidente:", e);
+    alert("Error al aprobar el incidente. Por favor, intenta de nuevo.");
+  }
+}
+
+// Función para rechazar incidente con comentario personalizado
+async function rejectWithComment() {
+  const commentText = document.getElementById("new-comment").value.trim();
+  
+  if (!commentText) {
+    alert("Por favor, escribe un comentario antes de rechazar el incidente.");
+    return;
+  }
+
+  if (!window.currentIncidentId) {
+    console.error("No hay incidente seleccionado");
+    return;
+  }
+
+  // Confirmar la acción
+  if (!confirm("¿Estás seguro de que deseas rechazar este incidente con el comentario proporcionado?")) {
+    return;
+  }
+
+  const data = new FormData();
+  data.append("incident_id", window.currentIncidentId);
+  data.append("comments", commentText);
+
+  try {
+    const res = await fetch("/api/validator/reject", {
+      method: "POST",
+      body: data,
+    });
+
+    if (res.ok) {
+      // Cerrar el modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById("incidentDetailsModal"));
+      modal.hide();
+
+      // Mostrar cambio de estatus visualmente
+      showStatusChange(window.currentIncidentId, "Rechazado", "danger");
+
+      // Recargar la página después de 3 segundos
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    }
+  } catch (e) {
+    console.error("Error al rechazar incidente:", e);
+    alert("Error al rechazar el incidente. Por favor, intenta de nuevo.");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  // Event listener para limpiar el formulario cuando se cierre el modal
+  const modal = document.getElementById("incidentDetailsModal");
+  if (modal) {
+    modal.addEventListener("hidden.bs.modal", function () {
+      clearCommentForm();
+      window.currentIncidentId = null;
+    });
+  }
+
   // Funcionalidad de búsqueda
   const searchInput = document.querySelector(".search-input");
   if (searchInput) {

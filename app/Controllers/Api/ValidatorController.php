@@ -25,6 +25,19 @@ class ValidatorController extends AbstractController
 
     return $this->success($data, 200);
   }
+
+  public function getValidationComments(int $id): Response
+  {
+    $comments = $this->vRepo->getValidationComments($id);
+    
+    // Si no hay comentarios, devolver un array vacío
+    if ($comments === null) {
+      $comments = [];
+    }
+    
+    return $this->success($comments, 200);
+  }
+
   public function approve(): Response
   {
     $params = $this->request->getAllPost();

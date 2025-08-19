@@ -36,6 +36,21 @@ class ValidatorRepository
     return $results;
   }
 
+  public function getValidationComments(int $incidentId): ?array
+  {
+    $sql = "
+      SELECT iv.*, u.name as validator_name, u.email as validator_email
+      FROM incidentValidations iv
+      LEFT JOIN users u ON iv.validator_id = u.id
+      WHERE iv.incident_id = ?
+      ORDER BY iv.created_at DESC
+    ";
+
+    $stmt = DB::raw($sql, [$incidentId]);
+    $results = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: null;
+    return $results;
+  }
+
   public function approveIncident(array $data): void
   {
 
