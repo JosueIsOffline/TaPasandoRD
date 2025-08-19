@@ -39,6 +39,9 @@ function clearCommentForm() {
   if (textarea) {
     textarea.value = "";
   }
+  
+  // También limpiar mensajes
+  hideCommentMessage();
 }
 
 // Función para ver detalles del incidente
@@ -100,8 +103,14 @@ async function viewDetails(incidentId) {
         document.getElementById("modal-description").textContent =
           incident.description || "Sin descripción disponible";
 
-        // Cargar comentarios de validación existentes
-        await loadValidationComments(incidentId);
+// ------------------------------------------------------------------------------------------
+
+        // TODO: Implementar carga de comentarios de validación existentes
+        // await loadValidationComments(incidentId);
+// ------------------------------------------------------------------------------------------
+        
+        // Mostrar mensaje estático
+        showStaticCommentsMessage();
       } else {
         console.error(
           "Error al obtener datos del incidente desde la API, usando datos de la tabla",
@@ -127,76 +136,93 @@ async function viewDetails(incidentId) {
     console.error("Error al cargar detalles del incidente:", error);
   }
 }
+// ------------------------------------------------------------------------------------------
+// TODO: Función para cargar comentarios de validación existentes
+// PODEMOS UTILIZAR EL STATUS = PENDIENTE PARA MOSTRAR LOS COMENTARIOS DE LOS INCIDENTES QUE NO HAN SIDO VALIDADOS Y ESTÁN PENDIENTES DE VALIDACIÓN
 
-// Función para cargar comentarios de validación existentes
-async function loadValidationComments(incidentId) {
-  try {
-    const response = await fetch(`/api/validator/comments/${incidentId}`);
-    if (response.ok) {
-      const comments = await response.json();
-      displayValidationComments(comments);
-    } else {
-      console.error("Error al cargar comentarios de validación");
-      document.getElementById("modal-comments").innerHTML = 
-        '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
-    }
-  } catch (error) {
-    console.error("Error al cargar comentarios de validación:", error);
-    document.getElementById("modal-comments").innerHTML = 
-      '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
-  }
-}
 
-// Función para mostrar comentarios de validación en el modal
-function displayValidationComments(comments) {
+// async function loadValidationComments(incidentId) {
+//   try {
+//     const response = await fetch(`/api/validator/comments/${incidentId}`);
+//     if (response.ok) {
+//       const comments = await response.json();
+//       displayValidationComments(comments);
+//     } else {
+//       console.error("Error al cargar comentarios de validación");
+//       document.getElementById("modal-comments").innerHTML = 
+//         '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
+//     }
+//   } catch (error) {
+//     console.error("Error al cargar comentarios de validación:", error);
+//     document.getElementById("modal-comments").innerHTML = 
+//       '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
+//   }
+// }
+
+// TODO: Función para mostrar comentarios de validación en el modal
+// function displayValidationComments(comments) {
+//   const commentsContainer = document.getElementById("modal-comments");
+//   
+//   if (!comments || comments.length === 0) {
+//     commentsContainer.innerHTML = `
+//       <div class="no-comments">
+//         <i class="fas fa-comment-slash text-muted" style="font-size: 2rem; margin-bottom: 10px;"></i>
+//         <p class="text-muted">No hay comentarios de validación para este incidente.</p>
+//       </div>
+//     `;
+//     return;
+//   }
+
+//   let commentsHTML = '';
+//   comments.forEach(comment => {
+//     const statusClass = comment.status === 'Aprovado' ? 'success' : 
+//                        comment.status === 'Rechazado' ? 'danger' : 'warning';
+//     const statusIcon = comment.status === 'Aprovado' ? 'check' : 
+//                       comment.status === 'Rechazado' ? 'times' : 'clock';
+    
+//     const commentDate = comment.created_at ? new Date(comment.created_at).toLocaleDateString('es-ES', {
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit'
+//     }) : 'Fecha no disponible';
+    
+//     commentsHTML += `
+//       <div class="comment-item mb-3 p-3 border rounded">
+//         <div class="d-flex justify-content-between align-items-start mb-2">
+//           <div>
+//             <strong class="text-${statusClass}">
+//               <i class="fas fa-${statusIcon}"></i> ${comment.status}
+//             </strong>
+//             <small class="text-muted ms-2">por ${comment.validator_name || comment.validator_email || 'Validador'}</small>
+//           </div>
+//           <small class="text-muted">
+//             ${commentDate}
+//           </small>
+//         </div>
+//         <div class="comment-text">
+//           ${comment.comments || 'Sin comentarios'}
+//         </div>
+//       </div>
+//     `;
+//   }
+  
+//   commentsContainer.innerHTML = commentsHTML;
+// }
+
+// ------------------------------------------------------------------------------------------
+
+
+// Función para mostrar mensaje estático de comentarios
+function showStaticCommentsMessage() {
   const commentsContainer = document.getElementById("modal-comments");
-  
-  if (!comments || comments.length === 0) {
-    commentsContainer.innerHTML = `
-      <div class="no-comments">
-        <i class="fas fa-comment-slash text-muted" style="font-size: 2rem; margin-bottom: 10px;"></i>
-        <p class="text-muted">No hay comentarios de validación para este incidente.</p>
-      </div>
-    `;
-    return;
-  }
-
-  let commentsHTML = '';
-  comments.forEach(comment => {
-    const statusClass = comment.status === 'Aprovado' ? 'success' : 
-                       comment.status === 'Rechazado' ? 'danger' : 'warning';
-    const statusIcon = comment.status === 'Aprovado' ? 'check' : 
-                      comment.status === 'Rechazado' ? 'times' : 'clock';
-    
-    const commentDate = comment.created_at ? new Date(comment.created_at).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }) : 'Fecha no disponible';
-    
-    commentsHTML += `
-      <div class="comment-item mb-3 p-3 border rounded">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <div>
-            <strong class="text-${statusClass}">
-              <i class="fas fa-${statusIcon}"></i> ${comment.status}
-            </strong>
-            <small class="text-muted ms-2">por ${comment.validator_name || comment.validator_email || 'Validador'}</small>
-          </div>
-          <small class="text-muted">
-            ${commentDate}
-          </small>
-        </div>
-        <div class="comment-text">
-          ${comment.comments || 'Sin comentarios'}
-        </div>
-      </div>
-    `;
-  });
-  
-  commentsContainer.innerHTML = commentsHTML;
+  commentsContainer.innerHTML = `
+    <div class="no-comments">
+      <i class="fas fa-comment-slash text-white" style="font-size: 2rem; margin-bottom: 10px;"></i>
+      <p class="text-white">No hay comentarios de validación para este incidente.</p>
+    </div>
+  `;
 }
 
 // Función para mostrar datos por defecto cuando la API no funciona
@@ -208,7 +234,8 @@ function showDefaultData() {
   document.getElementById("modal-description").textContent =
     "Sin descripción disponible";
 
-  document.getElementById("modal-comments").innerHTML = "";
+  // Mostrar mensaje estático de comentarios verlo en (showStaticCommentsMessage)
+  showStaticCommentsMessage();
 }
 
 // Función para aprobar incidente
@@ -503,22 +530,41 @@ function initializePagination() {
   applyPagination();
 }
 
+// Función para mostrar mensajes de comentarios
+function showCommentMessage(message, type = 'info') {
+  const messageElement = document.getElementById('comment-message');
+  if (messageElement) {
+    messageElement.textContent = message;
+    messageElement.className = `comment-message mt-2 ${type}`;
+    messageElement.style.display = 'block';
+    
+    // Ocultar el mensaje después de 5 segundos
+    setTimeout(() => {
+      messageElement.style.display = 'none';
+    }, 5000);
+  }
+}
+
+// Función para ocultar mensajes de comentarios
+function hideCommentMessage() {
+  const messageElement = document.getElementById('comment-message');
+  if (messageElement) {
+    messageElement.style.display = 'none';
+  }
+}
+
 // Función para aprobar incidente con comentario personalizado
 async function approveWithComment() {
   const commentText = document.getElementById("new-comment").value.trim();
   
   if (!commentText) {
-    alert("Por favor, escribe un comentario antes de aprobar el incidente.");
+    showCommentMessage("Por favor, escribe un comentario antes de aprobar el incidente.", "error");
     return;
   }
 
   if (!window.currentIncidentId) {
     console.error("No hay incidente seleccionado");
-    return;
-  }
-
-  // Confirmar la acción
-  if (!confirm("¿Estás seguro de que deseas aprobar este incidente con el comentario proporcionado?")) {
+    showCommentMessage("Error: No hay incidente seleccionado.", "error");
     return;
   }
 
@@ -547,7 +593,7 @@ async function approveWithComment() {
     }
   } catch (e) {
     console.error("Error al aprobar incidente:", e);
-    alert("Error al aprobar el incidente. Por favor, intenta de nuevo.");
+    showCommentMessage("Error al aprobar el incidente. Por favor, intenta de nuevo.", "error");
   }
 }
 
@@ -556,17 +602,13 @@ async function rejectWithComment() {
   const commentText = document.getElementById("new-comment").value.trim();
   
   if (!commentText) {
-    alert("Por favor, escribe un comentario antes de rechazar el incidente.");
+    showCommentMessage("Por favor, escribe un comentario antes de rechazar el incidente.", "error");
     return;
   }
 
   if (!window.currentIncidentId) {
     console.error("No hay incidente seleccionado");
-    return;
-  }
-
-  // Confirmar la acción
-  if (!confirm("¿Estás seguro de que deseas rechazar este incidente con el comentario proporcionado?")) {
+    showCommentMessage("Error: No hay incidente seleccionado.", "error");
     return;
   }
 
@@ -595,7 +637,7 @@ async function rejectWithComment() {
     }
   } catch (e) {
     console.error("Error al rechazar incidente:", e);
-    alert("Error al rechazar el incidente. Por favor, intenta de nuevo.");
+    showCommentMessage("Error al rechazar el incidente. Por favor, intenta de nuevo.", "error");
   }
 }
 
