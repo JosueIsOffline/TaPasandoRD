@@ -34,7 +34,7 @@
 
     <div class="row">
         <div class="col-12">
-            <form method="POST" action="/api/incident" enctype="multipart/form-data">
+            <form method="POST" action="/api/incident">
                 <input type="hidden" name="reported_by" value={{auth_user().id}} />
                 <input type="hidden" name="status" value="pendiente" />
                 
