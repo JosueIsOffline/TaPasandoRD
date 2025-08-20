@@ -10,7 +10,7 @@ class CommentRepository
   public function getAll(int $id): ?array
   {
     $sql = "
-        SELECT c.*, u.name AS user_name
+        SELECT c.*, u.name AS user_name, u.photo_url as user_photo
         FROM comments c
         LEFT JOIN users u ON c.user_id = u.id
         WHERE c.incident_id = :incident_id
