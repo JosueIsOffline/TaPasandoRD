@@ -29,6 +29,17 @@ class IncidentController extends AbstractController
     return $this->success($incidents);
   }
 
+  public function getIncidentById(int $id): Response
+  {
+    $incident = $this->iRepo->getById($id);
+
+    if (!$incident) {
+      return $this->error([], 'Incidente no encontrado', 404);
+    }
+
+    return $this->success($incident);
+  }
+
   public function createIncident(): Response
   {
     $params = $this->request->getAllPost();

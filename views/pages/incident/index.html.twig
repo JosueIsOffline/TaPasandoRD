@@ -1,5 +1,7 @@
 {% extends "layout.html.twig" %}
-
+{%block body_class%}
+  validation-report-body
+{% endblock %}
 {% block styles %}
 {{parent()}}
 <style>
@@ -51,6 +53,8 @@
 {% endblock %}
 
 {% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
+
         {% if message %}
             <div id="toast-message" class="toast-message">
               {{ message }}
@@ -93,30 +97,14 @@
                                     <div class="mb-3">
                                         <label class="form-label">Tipo de Incidencia</label>
                                         <div class="row">
+                                          {% for category in categories%}
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" value="1" type="checkbox" name="category_id" id="accidente">
-                                                    <label class="form-check-label" for="accidente">Accidente</label>
+                                                    <input class="form-check-input" value="{{category.id}}" type="checkbox" name="category_id" id="accidente">
+                                                    <label class="form-check-label" for="accidente">{{category.name}}</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" value="2" type="checkbox" name="category_id" id="pelea">
-                                                    <label class="form-check-label" for="pelea">Pelea</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" value="3" type="checkbox" name="category_id" id="robo">
-                                                    <label class="form-check-label" for="robo">Robo</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" value="4" type="checkbox" name="category_id" id="desastre">
-                                                    <label class="form-check-label" for="desastre">Desastre</label>
-                                                </div>
-                                            </div>
+                                          {% endfor %}
                                         </div>
                                     </div>
 
@@ -131,10 +119,9 @@
                                                 <label class="form-label">Provincia</label>
                                                 <select class="form-select" name="province_id">
                                                     <option value="">Seleccionar provincia</option>
-                                                    <option value=1>Distrito Nacional</option>
-                                                    <option value=2>Santo Domingo</option>
-                                                    <option value=3>Santiago</option>
-                                                    <option value=4>La Vega</option>
+                                                    {% for province in provinces%}
+                                                      <option value="{{province.id}}">{{province.name}}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
@@ -143,9 +130,9 @@
                                                 <label class="form-label">Municipio</label>
                                                 <select class="form-select" name="municipality_id">
                                                     <option value="">Seleccionar municipio</option>
-                                                    <option value=1>Santo Domingo Este</option>
-                                                    <option value=2>Santo Domingo Norte</option>
-                                                    <option value=3>Santo Domingo Oeste</option>
+                                                   {% for municipality in municipalities%}
+                                                     <option value="{{municipality.id}}">{{municipality.name}}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
@@ -154,9 +141,9 @@
                                                 <label class="form-label">Barrio</label>
                                                 <select class="form-select" name="neighborhood_id">
                                                     <option value="">Seleccionar Barrio</option>
-                                                    <option value=1>Santo Domingo Ese</option>
-                                                    <option value=2>Santo Domingo Norte</option>
-                                                    <option value=3>Santo Domingo Oeste</option>
+                                                    {% for neighborhood in neighborhoods%}
+                                                     <option value="{{neighborhood.id}}">{{neighborhood.name}}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
