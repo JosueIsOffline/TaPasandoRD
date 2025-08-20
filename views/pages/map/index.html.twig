@@ -21,11 +21,19 @@
                         <div class="col-md-3">
                             <label class="form-label" for="filterProvincia">Provincia</label>
                             <select class="form-select" id="filterProvincia">
+                            <option value="">Seleccione una provincia</option>
+                            {% for provincia in provinces %}
+                                <option value="{{ provincia.id }}">{{ provincia.name }}</option>
+                            {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label" for="filterTipo">Tipo de Incidencia</label>
                             <select class="form-select" id="filterTipo">
+                            <option value="">Seleccione un tipo</option>
+                            {% for categoria in categories %}
+                                <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                            {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -71,46 +79,55 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row g-4">
                     <!-- Columna izquierda -->
                     <div class="col-md-8">
-                        <div class="mb-3">
-                            <h4 id="incidentTitle"></h4>
-                            <div class="d-flex gap-2 mb-2">
-                                <span class="incident-type-badge bg-danger text-white" id="incidentType"></span>
-                                <span class="badge bg-secondary" id="incidentStatus"></span>
+                        <div class="mb-4 pb-3 border-bottom">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <i class="fas fa-exclamation-circle fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 id="incidentTitle" class="mb-1 fw-bold"></h4>
+                                    <div class="d-flex gap-2">
+                                        <span class="incident-type-badge bg-danger text-white px-2 py-1 rounded" id="incidentType"></span>
+                                        <span class="badge bg-secondary" id="incidentStatus"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="text-muted" id="locationInfo">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                            </p>
-                            <p class="text-muted" id="timeInfo">
-                                <i class="fas fa-clock me-1"></i>
-                            </p>
+                            <div class="d-flex flex-wrap gap-3 text-muted small mb-2">
+                                <span id="locationInfo">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                </span>
+                                <span id="timeInfo">
+                                    <i class="fas fa-clock me-1"></i>
+                                </span>
+                            </div>
                         </div>
 
                         <div class="mb-4">
-                            <h6>Descripción</h6>
-                            <p id="incidentDescription"></p>
+                            <h6 class="fw-semibold text-primary mb-2">Descripción</h6>
+                            <div class="bg-light rounded p-3 border" id="incidentDescription"></div>
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-4 text-center">
-                                <div class="border rounded p-3">
-                                    <i class="fas fa-skull text-danger fa-2x mb-2"></i>
+                        <div class="row mb-4 text-center">
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-danger bg-opacity-10">
+                                    <i class="fas fa-skull text-danger fa-2x mb-1"></i>
                                     <h5 class="text-danger mb-0" id="deathCount"></h5>
                                     <small class="text-muted">Muertos</small>
                                 </div>
                             </div>
-                            <div class="col-4 text-center">
-                                <div class="border rounded p-3">
-                                    <i class="fas fa-user-injured text-warning fa-2x mb-2"></i>
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-warning bg-opacity-10">
+                                    <i class="fas fa-user-injured text-warning fa-2x mb-1"></i>
                                     <h5 class="text-warning mb-0" id="injuredCount"></h5>
                                     <small class="text-muted">Heridos</small>
                                 </div>
                             </div>
-                            <div class="col-4 text-center">
-                                <div class="border rounded p-3">
-                                    <i class="fas fa-dollar-sign text-info fa-2x mb-2"></i>
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-info bg-opacity-10">
+                                    <i class="fas fa-dollar-sign text-info fa-2x mb-1"></i>
                                     <h5 class="text-info mb-0" id="lossAmount"></h5>
                                     <small class="text-muted">Pérdidas</small>
                                 </div>
@@ -118,27 +135,45 @@
                         </div>
 
                         <div class="mb-4">
-                            <h6>Coordenadas</h6>
-                            <p class="text-muted" id="coordinatesDisplay"></p>
-                            <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-map me-1"></i> Ver en Mapa
-                            </button>
+                            <h6 class="fw-semibold text-primary mb-2">Coordenadas</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted" id="coordinatesDisplay"></span>
+                                <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm ms-2">
+                                    <i class="fas fa-map me-1"></i> Ver en Mapa
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mb-4">
-                            <h6>Referencias</h6>
-                            <div id="referencias-container"></div>
+                            <h6 class="fw-semibold text-primary mb-2">Referencias</h6>
+                            <div id="referencias-container" class="bg-light rounded p-2 border"></div>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <h6 class="fw-semibold text-primary mb-2">Comentarios</h6>
+                            <div id="comments-container" class="mb-3 bg-light rounded p-2 border" style="max-height: 180px; overflow-y: auto;">
+                                <!-- Aquí se mostrarán los comentarios existentes -->
+                            </div>
+                            <form id="commentForm" class="d-flex flex-column gap-2">
+                                <textarea class="form-control" id="commentText" rows="2" placeholder="Escribe un comentario..."></textarea>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-paper-plane me-1"></i> Agregar Comentario
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
                     <!-- Columna derecha -->
                     <div class="col-md-4">
-                        <div class="mb-3">
-                            <img id="incidentPhoto" class="img-fluid rounded" alt="Foto de la incidencia">
+                        <div class="mb-4">
+                            <div class="ratio ratio-4x3 rounded shadow-sm overflow-hidden border">
+                                <img id="incidentPhoto" class="img-fluid object-fit-cover" alt="Foto de la incidencia" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <h6>Información del Reporte</h6>
+                        <div class="mb-4 bg-light rounded p-3 border">
+                            <h6 class="fw-semibold text-primary mb-2">Información del Reporte</h6>
                             <p class="mb-1"><strong>Reportado por:</strong> <span id="reportedBy"></span></p>
                             <p class="mb-1"><strong>Fecha de reporte:</strong> <span id="reportDate"></span></p>
                             <p class="mb-0"><strong>Estado:</strong> <span id="reportStatus"></span></p>

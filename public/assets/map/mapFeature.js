@@ -133,42 +133,40 @@ document.addEventListener("DOMContentLoaded", function () {
       return names[categoryId];
     };
 
-    // Cargar las provincias y tipos de incidencia
-    async function loadFilters() {
-      try {
-        const response = await fetch("http://localhost:8000/api/provinces");
-        if (!response.ok) throw new Error("Error al obtener provincias");
+  // Función para obtener provincias y categorías desde el backend por una API
+    // // Cargar las provincias y tipos de incidencia
+    // async function loadFilters() {
+    //   try {
+    //   const response = await fetch("http://localhost:8000/api/provinces");
+    //   if (!response.ok) throw new Error("Error al obtener provincias");
 
-        const provinces = await response.json();
-        const provinceSelect = document.getElementById("filterProvincia");
-        provinceSelect.innerHTML = '<option value="">Todas las provincias</option>';
-        provinces.forEach((province) => {
-          const option = document.createElement("option");
-          option.value = province.id;
-          option.textContent = province.name;
-          provinceSelect.appendChild(option);
-        });
+    //   const provinces = await response.json();
+    //   const provinceSelect = document.getElementById("filterProvincia");
+    //   provinceSelect.innerHTML = '<option value="">Todas las provincias</option>';
+    //   provinces.forEach((province) => {
+    //     const option = document.createElement("option");
+    //     option.value = province.id;
+    //     option.textContent = province.name;
+    //     provinceSelect.appendChild(option);
+    //   });
 
-        const categoryResponse = await fetch("http://localhost:8000/api/categories");
-        if (!categoryResponse.ok) throw new Error("Error al obtener categorías");
+    //   const categoryResponse = await fetch("http://localhost:8000/api/categories");
+    //   if (!categoryResponse.ok) throw new Error("Error al obtener categorías");
 
-        const categories = await categoryResponse.json();
-        const tipoSelect = document.getElementById("filterTipo");
-        tipoSelect.innerHTML = '<option value="">Todos los tipos</option>';
-        categories.forEach((category) => {
-          const option = document.createElement("option");
-          option.value = category.id;
-          option.textContent = category.name;
-          tipoSelect.appendChild(option);
-        });
-      } catch (error) {
-        console.error("Error al cargar filtros:", error);
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        loadFilters();
-      });
-    }
+    //   const categories = await categoryResponse.json();
+    //   const tipoSelect = document.getElementById("filterTipo");
+    //   tipoSelect.innerHTML = '<option value="">Todos los tipos</option>';
+    //   categories.forEach((category) => {
+    //     const option = document.createElement("option");
+    //     option.value = category.id;
+    //     option.textContent = category.name;
+    //     tipoSelect.appendChild(option);
+    //   });
+    //   } catch (error) {
+    //   console.error("Error al cargar filtros:", error);
+    //   }
+    // }
+    // await loadFilters();
 
     async function loadIncidencias() {
 
