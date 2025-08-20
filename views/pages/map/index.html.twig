@@ -17,36 +17,42 @@
 
                 <!-- Filters -->
                 <div class="filter-panel">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label" for="filterProvincia">Provincia</label>
+                            <label class="form-label" for="filterProvincia">
+                                <i class="fas fa-map-marker-alt me-2"></i>Provincia
+                            </label>
                             <select class="form-select" id="filterProvincia">
-                            <option value="">Seleccione una provincia</option>
-                            {% for provincia in provinces %}
-                                <option value="{{ provincia.id }}">{{ provincia.name }}</option>
-                            {% endfor %}
+                                <option value="">Seleccione una provincia</option>
+                                {% for provincia in provinces %}
+                                    <option value="{{ provincia.id }}">{{ provincia.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label" for="filterTipo">Tipo de Incidencia</label>
+                            <label class="form-label" for="filterTipo">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Tipo de Incidencia
+                            </label>
                             <select class="form-select" id="filterTipo">
-                            <option value="">Seleccione un tipo</option>
-                            {% for categoria in categories %}
-                                <option value="{{ categoria.id }}">{{ categoria.name }}</option>
-                            {% endfor %}
+                                <option value="">Seleccione un tipo</option>
+                                {% for categoria in categories %}
+                                    <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Rango de Fecha</label>
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt me-2"></i>Rango de Fecha
+                            </label>
                             <div class="input-group">
-                                <input type="date" class="form-control" id="filterFechaInicio">
+                                <input type="date" class="form-control" id="filterFechaInicio" placeholder="Fecha inicio">
                                 <span class="input-group-text">a</span>
-                                <input type="date" class="form-control" id="filterFechaFin">
+                                <input type="date" class="form-control" id="filterFechaFin" placeholder="Fecha fin">
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button id="btnFiltrar" class="btn btn-primary w-100">
-                                <i class="fas fa-search me-1"></i> Filtrar
+                                <i class="fas fa-search me-2"></i> Filtrar
                             </button>
                         </div>
                     </div>
