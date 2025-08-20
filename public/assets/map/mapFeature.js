@@ -112,6 +112,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
         contenedor.appendChild(boton);
       }
+      async function loadComments(id) {
+        const commentsCont = document.getElementById("comments-container");
+        let counter = document.getElementById("commentsCount");
+
+        try {
+          const res = await fetch(`/api/comment/${id}`);
+          const comments = await res.json();
+          console.log(comments);
+          counter.innerText = comments.length;
+
+          commentsCont.innerHTML = comments
+            .map(
+              (comment) =>
+                `
+      <div class="comment mb-3 p-3 bg-light border rounded shadow-sm">
+        <div class="d-flex align-items-center mb-2">
+          <img src="${comment.user_photo}" alt="User Avatar" class="avatar rounded-circle me-2" width="40" height="40">
+          <div>
+            <strong class="d-block text-dark">${comment.user_name}</strong>
+            <small class="text-muted">${timeAgo(comment.created_at)}</small>
+          </div>
+        </div>
+       <p class="mb-0 text-dark">${comment.content}</p>
+    </div>
+`,
+            )
+            .join("");
+        } catch (error) {
+          console.error("Something went wrong loading comments", error);
+        }
+      }
 
       await loadComments(incident.id);
       document
@@ -262,30 +293,4 @@ function timeAgo(dateString) {
   if (diff < 2592000) return `Hace ${Math.floor(diff / 86400)} días`;
 
   return date.toLocaleDateString();
-}
-
-async function loadComments(id) {
-  const commentsCont = document.getElementById("comments-container");
-
-  try {
-    const res = await fetch(`/api/comment/${id}`);
-    const comments = await res.json();
-
-    commentsCont.innerHTML = comments
-      .map(
-        (comment) =>
-          `
-      <div class="comment mb-3 p-3 bg-light rounded">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-             <strong>${comment.user_name}</strong>
-             <small class="text-muted">${timeAgo(comment.created_at)}</small>
-          </div>
-          <p class="mb-0">${comment.content}</p>
-      </div>
-`,
-      )
-      .join("");
-  } catch (error) {
-    console.error("Something went wrong loading comments", error);
-  }
 }
