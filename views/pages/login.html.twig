@@ -1,0 +1,190 @@
+{% extends "base.html.twig" %}
+
+{% block styles %}
+ <style>
+  .login-container {
+     min-height: 100vh;
+     background: linear-gradient(135deg, #232946 0%, #1e3a8a 100%, #fff 100%);
+     display: flex;
+     align-items: flex-end;
+     justify-content: center;
+     padding-bottom: 0px;
+ }
+
+        .login-card {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .social-btn {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary-color);
+            background-color: #f8fafc;
+        } 
+
+ @media (min-width: 768px) {
+     .login-container {
+         align-items: center;
+         padding-bottom: 0;
+     }
+     .login-card {
+         border-radius: 20px;
+     }
+ }
+
+.toast-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: #38a169;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateY(-30px);
+    font-size: 1rem;
+    min-width: 220px;
+    max-width: 90vw;
+    text-align: center;
+}
+.toast-message.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+@media (max-width: 600px) {
+    .toast-message {
+        right: 50%;
+        top: 1rem;
+        left: 50%;
+        transform: translate(-50%, -30px);
+        min-width: 80vw;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+    .toast-message.show {
+        transform: translate(-50%, 0);
+    }
+}
+ </style>
+{% endblock %}
+ 
+{% block body %}
+
+<div class="page-section" id="login">
+              <div class="login-container">
+                <div class="login-card">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-exclamation-triangle text-primary" style="font-size: 3rem;"></i>
+                        <h2 class="mt-3">TaPasandoRD</h2>
+                        <p class="text-muted">Inicia sesión para continuar</p>
+                    </div> 
+                    
+                    <form method="POST" action="/api/login">
+
+                        {# Mostrar error.message solo si NO hay errores individuales #}
+                        {% if error.message and (not error.details.email and not error.details.password) %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error.message }}
+                        </div>
+                        {% endif %}
+
+                        {% if message %}
+                            <div id="toast-message" class="toast-message">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-gray-700">Email</label>
+                            <input type="text"
+                                class="form-control {% if error.details.email %}is-invalid{% endif %}"
+                                name="email"
+                                placeholder="jhondoe@example.com"
+                                value="{{ error.details.emailPersist }}">
+                            {% if error.details.email %}
+                            <div class="invalid-feedback">
+                                {{ error.details.email }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-gray-700">Contraseña</label>
+                            <input type="password"
+                                class="form-control {% if error.details.password %}is-invalid{% endif %}"
+                                name="password"
+                                placeholder="Ingrese su contraseña">
+                            {% if error.details.password %}
+                            <div class="invalid-feedback">
+                                {{ error.details.password }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Iniciar Sesión
+                        </button>
+                    </form>
+
+                    
+                    <div class="text-center mt-3">
+                        <a href="/register" onclick="showSection('login')" class="text-muted">
+                            <!-- <i class="fas fa-user me-1"></i> --> No tienes una cuenta? Registrate!
+                        </a>
+                    </div>
+                    
+                   <div class="text-center my-3">
+                        <span class="text-muted">o</span>
+                   </div>
+                    
+                   <a href="/auth/google" class="social-btn" onclick="">
+                        <i class="fab fa-google text-danger me-2"></i>
+                        Continuar con Google
+                    </a>
+                    
+                    <a href="/auth/microsoft" class="social-btn" onclick="">
+                        <i class="fab fa-microsoft text-primary me-2"></i>
+                        Continuar con Office 365
+                    </a>
+                </div>
+            </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% if message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toast = document.getElementById('toast-message');
+            if (toast) {
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+    {% endif %}
+{% endblock %}
+
+

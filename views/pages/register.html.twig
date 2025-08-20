@@ -1,0 +1,238 @@
+{% extends "base.html.twig" %}
+{% block styles %}
+ <style>
+  body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-y: auto;
+  }
+  .login-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #232946 0%, #1e3a8a 100%, #fff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      max-width: 450px;
+      width: 100%;
+  }
+        .social-btn {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .social-btn:hover {
+            border-color: var(--primary-color);
+            background-color: #f8fafc;
+        }
+        .form-select {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+        }
+        .terms-text {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .terms-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+        .social-btn.office365 {
+            white-space: nowrap;
+        }
+        @media (max-width: 480px) {
+            .social-btn.office365 {
+                font-size: 0.95rem;
+                padding-left: 6px;
+                padding-right: 6px;
+                white-space: nowrap;
+            }
+        }
+        .form-error {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+  .error-message {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+  }
+  .alert {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+  }
+  .alert-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+  }
+
+  /* Toast de error */
+  .toast-error {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      background: #dc2626;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s, transform 0.4s;
+      transform: translateY(-30px);
+      font-size: 1rem;
+      min-width: 280px;
+      max-width: 90vw;
+      text-align: center;
+      border-left: 4px solid #991b1b;
+  }
+  .toast-error.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+  }
+  @media (max-width: 600px) {
+      .toast-error {
+          right: 50%;
+          top: 1rem;
+          left: 50%;
+          transform: translate(-50%, -30px);
+          min-width: 85vw;
+          padding: 0.75rem 1rem;
+          font-size: 0.95rem;
+      }
+      .toast-error.show {
+          transform: translate(-50%, 0);
+      }
+  }
+
+ </style>
+{% endblock %}
+{% block body %}
+<div class="page-section" id="register">
+            <div class="login-container min-h-screen flex items-center justify-center p-4">
+                <div class="login-card bg-white rounded-2xl p-8 shadow-xl max-w-md w-full">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-user-plus text-primary text-5xl"></i>
+                        <h2 class="mt-3 text-2xl font-bold">Únete a TaPasandoRD</h2>
+                    </div> 
+                    
+                    <!-- Toast de error -->
+                    {% if error.message %}
+                        <div id="toast-error" class="toast-error">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {{ error.message }}
+                        </div>
+                    {% endif %}
+            
+                    <form method="POST" action="/api/register">
+                        <div class="flex flex-col md:flex-row md:gap-4">
+                            <div class="mb-4 w-full md:w-1/2">
+                                <label class="form-label text-gray-700 block text-sm font-medium mb-1">Nombre Completo</label>
+                                <input type="text" name="nombre" value="{{error.details.preservedData.name}}" class="form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="John Doe" required>
+                            </div>
+                            <div class="mb-4 w-full md:w-1/2">
+                                <label class="form-label text-gray-700 block text-sm font-medium mb-1">Email</label>
+                                <input type="email" name="email" value="{{error.details.preservedData.email}}" class="form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="doe@correo.com" required>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-gray-700 block text-sm font-medium mb-1">Rol</label>
+                            <select name="rol"  class="form-select block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <option value="">Seleccione un rol</option>
+                                <option value="reportero">Reportero - Reportar incidencias</option>
+                                <option value="validador">Validador - Revisar y validar reportes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row md:gap-4">
+                            <div class="mb-4 w-full md:w-1/2">
+                                <label class="form-label text-gray-700 block text-sm font-medium mb-1">Contraseña</label>
+                                <input type="password" name="password" class="form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Mínimo 8 caracteres" required>
+                            </div>
+                            <div class="mb-4 w-full md:w-1/2">
+                                <label class="form-label text-gray-700 block text-sm font-medium mb-1">Confirmar Contraseña</label>
+                                <input type="password" name="password_confirm" class="form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Repita su contraseña" required>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mb-6">
+                            <div class="form-check flex items-start space-x-2 mb-4">
+                                <input class="form-check-input border border-gray-900 mt-1" type="checkbox" id="acepta_terminos" required>
+                                <label class="form-check-label terms-text text-gray-700 text-sm leading-snug" for="acepta_terminos">
+                                    Acepto los <a href="/terminos" class="terms-link text-blue-600 hover:underline">Términos y Condiciones</a> 
+                                    y la <a href="/privacidad" class="terms-link text-blue-600 hover:underline">Política de Privacidad</a>
+                                </label>
+                            </div>
+                        </div>
+
+                        
+                        <button type="submit" class="btn btn-primary w-100 w-full py-3 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Crear Cuenta
+                        </button> 
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/login"  class="text-muted text-gray-500 hover:underline">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            ¿Ya tienes una cuenta? Inicia sesión
+                        </a>
+                    </div>
+                    
+                   <div class="text-center my-4 text-gray-500">
+                        <span class="text-muted">o regístrate con</span>
+                   </div>
+                    
+                   <a href="/auth/google" class="social-btn w-full py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-gray-50 transition-all duration-300">
+                        <i class="fab fa-google text-danger text-red-600 me-2"></i>
+                        Registrarse con Google
+                    </a>
+                    
+                    <a href="/auth/microsoft" class="social-btn office365 w-full py-3 px-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-gray-50 transition-all duration-300">
+                        <i class="fab fa-microsoft text-primary text-blue-600 me-2"></i>
+                        Registrarse con Office 365
+                    </a>
+                </div>
+            </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% if error.message %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toast = document.getElementById('toast-error');
+            if (toast) {
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 5000); // Mostrar por 5 segundos
+            }
+        });
+    </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,138 @@
+/* Scope del Home Section Main */
+.home-body {
+    min-height: 100vh;
+    position: relative;
+    color: var(--text-color);
+  }
+  
+  /* Sección hero */
+  .home-hero {
+    position: relative;
+    z-index: 10;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    padding-block: 5rem;
+  }
+  @media (min-width: 768px) {   
+    .home-hero { padding-block: 7rem; }
+  }
+  @media (min-width: 1024px) {
+    .home-hero { padding-block: 9rem; }
+  }
+  
+  .home-hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .home-body .background-canvas {
+    filter: saturate(1) brightness(0.85);
+  }
+  .home-body .background-canvas::after {
+    background: radial-gradient(1200px circle at 50% 50%, transparent 35%, rgba(0, 0, 0, 0.35) 100%);
+  }
+  
+  .home-hero__title {
+    color: #fff;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.75rem);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Logo dentro del título */
+  .home-hero__logo {
+    width: clamp(42px, 7vw, 58px);
+    height: clamp(42px, 7vw, 58px);
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  /* Tamaño del logo en pantallas grandes */
+  @media (min-width: 1024px) {
+    .home-hero__logo {
+
+      width: clamp(68px, 10vw, 82px);
+      height: clamp(68px, 10vw, 82px);
+    }
+  }
+  
+  /* Slogan */
+  .home-hero__desc {
+    margin-top: 2rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    font-size: clamp(1rem, 1vw + 0.75rem, 1.375rem);
+    max-width: 64rem;
+  }
+  
+  /* Grupo de botones */
+  .home-hero__actions {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+  }
+  
+  /* Botones */
+  .home-btn {
+    display: inline-flex;
+    flex: 1 1 auto; 
+    padding: 0.6rem 0.8rem; 
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+    will-change: transform;
+    border: 1px solid transparent;
+  }
+  @media (min-width: 640px) {
+    .home-btn { padding: 1rem 2rem; font-size: 1rem; }
+  }
+  .home-btn:hover { transform: translateY(-2px); }
+  
+  /* Primario*/
+  .home-btn--primary {
+    background: #fff;
+    color: #111827;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+  }
+  .home-btn--primary:hover {
+    box-shadow: 0 16px 32px rgba(0,0,0,.3);
+  }
+  
+  /* Secundario */
+  .home-btn--secondary {
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    border-color: rgba(255,255,255,0.15);
+    backdrop-filter: saturate(1.1) blur(6px);
+  }
+  .home-btn--secondary:hover {
+    background: rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.25);
+  }
+  
+  /* Ícono flecha del botón principal */
+  .home-btn--primary i {
+    transition: transform .2s ease;
+  }
+  .home-btn--primary:hover i {
+    transform: translateX(2px);
+  }

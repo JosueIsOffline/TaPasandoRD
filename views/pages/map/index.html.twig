@@ -1,0 +1,200 @@
+{% extends "layout.html.twig" %}
+{%block body_class%}
+  validation-report-body
+{% endblock %}
+
+{% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
+
+<div class="page-section" >
+            <div class="container-fluid p-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="h3 mb-0">Mapa de Incidencias</h1>
+                        <p class="text-muted">Visualización de incidencias en tiempo real</p>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-panel">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterProvincia">
+                                <i class="fas fa-map-marker-alt me-2"></i>Provincia
+                            </label>
+                            <select class="form-select" id="filterProvincia">
+                                <option value="">Seleccione una provincia</option>
+                                {% for provincia in provinces %}
+                                    <option value="{{ provincia.id }}">{{ provincia.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="filterTipo">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Tipo de Incidencia
+                            </label>
+                            <select class="form-select" id="filterTipo">
+                                <option value="">Seleccione un tipo</option>
+                                {% for categoria in categories %}
+                                    <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt me-2"></i>Rango de Fecha
+                            </label>
+                            <div class="input-group">
+                                <input type="date" class="form-control" id="filterFechaInicio" placeholder="Fecha inicio">
+                                <span class="input-group-text">a</span>
+                                <input type="date" class="form-control" id="filterFechaFin" placeholder="Fecha fin">
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button id="btnFiltrar" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i> Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Container -->
+                <div class="map-container mt-5">
+                    <!-- Loading indicator -->
+                    <div id="map-loading" class="map-loading">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando mapa...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Inicializando mapa...</p>
+                    </div>
+                    <!-- Map -->
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+
+<!-- Incident Detail Modal -->
+<div class="modal fade incident-modal" id="incidentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <h5 class="modal-title text-dark">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Detalle de Incidencia
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <!-- Columna izquierda -->
+                    <div class="col-md-8">
+                        <div class="mb-4 pb-3 border-bottom">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <i class="fas fa-exclamation-circle fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 id="incidentTitle" class="mb-1 fw-bold"></h4>
+                                    <div class="d-flex gap-2">
+                                        <span class="incident-type-badge bg-danger text-white px-2 py-1 rounded" id="incidentType"></span>
+                                        <span class="badge bg-secondary" id="incidentStatus"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-3 text-muted small mb-2">
+                                <span id="locationInfo">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                </span>
+                                <span id="timeInfo">
+                                    <i class="fas fa-clock me-1"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-semibold text-primary mb-2">Descripción</h6>
+                            <div class="bg-light rounded p-3 border text-dark" id="incidentDescription"></div>
+                        </div>
+
+                        <div class="row mb-4 text-center">
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-danger bg-opacity-10">
+                                    <i class="fas fa-skull text-danger fa-2x mb-1"></i>
+                                    <h5 class="text-danger mb-0" id="deathCount"></h5>
+                                    <small class="text-muted">Muertos</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-warning bg-opacity-10">
+                                    <i class="fas fa-user-injured text-warning fa-2x mb-1"></i>
+                                    <h5 class="text-warning mb-0" id="injuredCount"></h5>
+                                    <small class="text-muted">Heridos</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-info bg-opacity-10">
+                                    <i class="fas fa-dollar-sign text-info fa-2x mb-1"></i>
+                                    <h5 class="text-info mb-0" id="lossAmount" style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></h5>
+                                    <small class="text-muted">Pérdidas</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-semibold text-primary mb-2">Coordenadas</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted" id="coordinatesDisplay"></span>
+                                <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm ms-2" id="viewOnMapBtn">
+                                    <i class="fas fa-map me-1"></i> Ver en Mapa
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-semibold text-primary mb-2">Referencias</h6>
+                            <div id="referencias-container" class="bg-light rounded p-2 border"></div>
+                        </div>
+                        
+                        <div class="mb-2">
+
+                            <h6 class="fw-semibold text-primary mb-2">Comentarios (<span id="commentsCount">0</span>)</h6>
+                            <div id="comments-container" class="mb-3 bg-light rounded p-2 border" style="max-height: 450px; overflow-y: auto;">
+                                <!-- Aquí se mostrarán los comentarios existentes -->
+                            </div>
+                            <form id="commentForm" class="d-flex flex-column gap-2">
+                                <textarea class="form-control" id="commentText" rows="2" placeholder="Escribe un comentario..."></textarea>
+
+                                <input type="hidden">
+                               <div class="text-end">
+                                    <button type="button"  id="postComment" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-paper-plane me-1"></i> Agregar Comentario
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha -->
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <div class="ratio ratio-4x3 rounded shadow-sm overflow-hidden border">
+                                <img id="incidentPhoto" class="img-fluid object-fit-cover" alt="Foto de la incidencia" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                        </div>
+                        <div class="mb-4 bg-light rounded p-3 border">
+                            <h6 class="fw-semibold text-primary mb-2">Información del Reporte</h6>
+                            <p class="mb-1 text-dark"><strong>Reportado por:</strong> <span id="reportedBy"></span></p>
+                            <p class="mb-1 text-dark"><strong>Fecha de reporte:</strong> <span id="reportDate"></span></p>
+                            <p class="mb-0 text-dark"><strong>Estado:</strong> <span id="reportStatus"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

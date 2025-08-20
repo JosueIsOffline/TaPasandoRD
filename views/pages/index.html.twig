@@ -1,0 +1,83 @@
+{% extends "layout.html.twig" %}
+
+{% block body_class %}home-body{% endblock %}
+
+{% block content %}
+  <div class="background-canvas" aria-hidden="true"></div>
+
+  {# Header #}
+  <header class="site-header" id="siteHeader" role="banner">
+    <div class="site-header__inner">
+      <a href="/" class="site-header__brand" id="headerBrand" aria-label="TaPasandoRD">
+        <img src="/favicon.png" alt="" class="site-header__logo" aria-hidden="true" />
+        <span class="site-header__title">TaPasandoRD</span>
+      </a>
+      
+      <!-- <button class="mobile-hamburger-button" id="mobile-hamburger-button"> -->
+      <!--   <!-- Hamburger icon -->
+      <!--   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg> -->
+      <!-- </button> -->
+    </div>
+  </header>
+
+  <section class="home-hero">
+    <div class="home-hero__inner">
+      <h1 class="home-hero__title" id="heroTitle">
+        <img src="/favicon.png" alt="Logo TaPasandoRD" class="home-hero__logo" />
+        TaPasandoRD
+      </h1>
+
+      <p class="home-hero__desc">
+        Plataforma colaborativa para reportar, validar y visualizar incidencias recientes en tiempo real, fortaleciendo la transparencia y seguridad en República Dominicana.
+      </p>
+
+      <div class="home-hero__actions">
+        <a href="#" class="home-btn home-btn--primary">
+          Ir al Mapa
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+        <a href="/report-incident" class="home-btn home-btn--secondary">
+          Reportar Nueva incidencia
+        </a>
+      </div>
+
+      {# scroll to bottom #}
+      <button class="scroll-arrow" id="scrollArrow" aria-label="Desplazarse a la siguiente sección">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+    </div>
+  </section>
+
+  </section>
+
+  {# Sección de Nuevos Reportes #}
+  <section class="nuevos-reportes" id="nuevosReportes">
+    <div class="nuevos-reportes__inner">
+      <div class="nuevos-reportes__header">
+        <h2 class="nuevos-reportes__title">Nuevos Reportes</h2>
+        <p class="nuevos-reportes__subtitle">
+          Últimas incidencias reportadas por la comunidad. Mantente informado sobre lo que está pasando en tu área.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  </section>
+
+  {# Sección de ejemplo #}
+  <section class="next-section" id="nextSection" style="min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; text-align: center;">
+    <div>
+      <h2 style="font-size: 3rem; margin-bottom: 20px;">Próxima Sección</h2>
+      <p style="font-size: 1.5rem; max-width: 600px; margin: 0 auto;">
+        Esta es la siguiente sección a la que te llevará el botón de flecha. 
+        Aquí puedes agregar el contenido de tu próxima sección.
+      </p>
+    </div>
+  </section>
+
+  {# Carga del JS #}
+      <script src="/assets/homePage/headerFeatures.js" defer></script>
+  <script src="/assets/js/scrollToBottom.js" defer></script>
+{% endblock %}

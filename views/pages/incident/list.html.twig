@@ -1,0 +1,119 @@
+{% extends "layout.html.twig" %}
+{%block body_class%}
+  validation-report-body
+{% endblock %}
+{% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
+
+<div class="container-fluid p-4">
+
+<div id="list" class="row">
+ {% for incident in incidents %}
+    <div class="col-md-6 col-lg-4 mb-4">
+       <div class="incident-card card h-100">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23dc3545'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='12'%3EAccidente%3C/text%3E%3C/svg%3E" class="incident-image" alt="Incidencia">
+          <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="incident-type-badge bg-danger text-white">{{incident.title}}</span>
+                  <small class="text-muted">Hace 2 horas</small>
+              </div>
+              <h5 class="card-title">Accidente de tránsito en Av. Churchill</h5>
+              <p class="text-muted">Santo Domingo Este, Distrito Nacional</p>
+              <p class="card-text">Colisión múltiple involucra 3 vehículos en la intersección con Av. 27 de Febrero...</p>
+                                <div class="row text-center border-top pt-2">
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Muertos</small>
+                                        <strong class="text-danger">2</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Heridos</small>
+                                        <strong class="text-warning">5</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Pérdidas</small>
+                                        <strong class="text-info">$50K</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <button class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#incidentModal">
+                                    <i class="fas fa-eye me-1"></i> Ver Detalles
+                                </button>
+                            </div>
+                        </div>
+ {% endfor %}
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{parent()}}
+  <script>
+  function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = (now - date) / 1000; 
+
+  if (diff < 60) return `Hace ${Math.floor(diff)} segundos`;
+  if (diff < 3600) return `Hace ${Math.floor(diff / 60)} minutos`;
+  if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} horas`;
+  if (diff < 2592000) return `Hace ${Math.floor(diff / 86400)} días`;
+
+  return date.toLocaleDateString(); 
+}
+    async function loadIncidents() {
+      const container = document.getElementById("list")
+       const res = await fetch("http://localhost:8000/api/valid-incident")
+       const incidents = await res.json()
+
+         container.innerHTML = incidents
+    .map(
+      (incident) => `
+                 <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="incident-card card h-100">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23dc3545'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='12'%3EAccidente%3C/text%3E%3C/svg%3E" class="incident-image" alt="Incidencia">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="incident-type-badge bg-danger text-white">Accidente</span>
+                                    <small class="text-muted">${timeAgo(incident.updated_at)}</small>
+                                </div>
+                                <h5 class="card-title">${incident.title}</h5>
+                                <p class="text-muted">${incident.municipality_id}, ${incident.province_id}</p>
+                                <p class="card-text">${incident.description}</p>
+                                <div class="row text-center border-top pt-2">
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Muertos</small>
+
+                                        <strong class="text-danger">${incident.deaths || 0}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Heridos</small>
+                                        <strong class="text-warning">${incident.injuries || 0}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Pérdidas</small>
+                                        <strong class="text-info">$${incident.estimated_loss || 0}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <button class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#incidentModal">
+                                    <i class="fas fa-eye me-1"></i> Ver Detalles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+`,
+    )
+    .join("");
+
+
+       
+    }
+
+    loadIncidents()
+  </script>
+   
+  
+{% endblock %}
+

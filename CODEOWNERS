@@ -1,0 +1,5 @@
+CODEOWNERS @JosueIsOffline
+.github/CODEOWNERS @JosueIsOffline
+.github/ @JosueIsOffline
+.gitignore @JosueIsOffline
+* @JosueIsOffline
