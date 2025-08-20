@@ -144,6 +144,60 @@ document.addEventListener("DOMContentLoaded", function () {
 
           contenedor.appendChild(boton);
       }
+      
+      async function loadComments(id) {
+        const commentsCont = document.getElementById("comments-container");
+        let counter = document.getElementById("commentsCount");
+
+        try {
+          const res = await fetch(`/api/comment/${id}`);
+          const comments = await res.json();
+          console.log(comments);
+          counter.innerText = comments.length;
+
+          commentsCont.innerHTML = comments
+            .map(
+              (comment) =>
+                `
+      <div class="comment mb-3 p-3 bg-light border rounded shadow-sm">
+        <div class="d-flex align-items-center mb-2">
+          <img src="${comment.user_photo}" alt="User Avatar" class="avatar rounded-circle me-2" width="40" height="40">
+          <div>
+            <strong class="d-block text-dark">${comment.user_name}</strong>
+            <small class="text-muted">${timeAgo(comment.created_at)}</small>
+          </div>
+        </div>
+       <p class="mb-0 text-dark">${comment.content}</p>
+    </div>
+`,
+            )
+            .join("");
+        } catch (error) {
+          console.error("Something went wrong loading comments", error);
+        }
+      }
+
+      await loadComments(incident.id);
+      document
+        .getElementById("postComment")
+        .addEventListener("click", async () => {
+          const content = document.getElementById("commentText");
+          const data = new FormData();
+
+          data.append("incident_id", incident.id);
+          data.append("content", content.value);
+
+          console.log(data.get("content"));
+          const res = await fetch("/api/comment", {
+            method: "POST",
+            body: data,
+          });
+
+          await loadComments(incident.id);
+          content.value = "";
+        });
+      
+      
 
 
         new bootstrap.Modal(document.getElementById("incidentModal")).show();
@@ -272,3 +326,15 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
 });
 
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = (now - date) / 1000;
+
+  if (diff < 60) return `Hace ${Math.floor(diff)} segundos`;
+  if (diff < 3600) return `Hace ${Math.floor(diff / 60)} minutos`;
+  if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} horas`;
+  if (diff < 2592000) return `Hace ${Math.floor(diff / 86400)} días`;
+
+  return date.toLocaleDateString();
+}

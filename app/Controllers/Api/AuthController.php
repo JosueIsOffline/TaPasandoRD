@@ -165,7 +165,8 @@ class AuthController extends AbstractController
       'email' => $params['email'],
       'role_id' => $this->getRoleId($params['rol']),
       'supplier_auth' => 'local',
-      'password' => password_hash($params['password'], PASSWORD_DEFAULT)
+      'password' => password_hash($params['password'], PASSWORD_DEFAULT),
+      'photo_url' => "https://avatar.iran.liara.run/username?username=$params[nombre]&length=1"
     ];
 
     try {
@@ -212,4 +213,3 @@ class AuthController extends AbstractController
     return $roles[$role];
   }
 }
-
