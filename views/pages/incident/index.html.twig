@@ -63,7 +63,7 @@
                           {% for category in categories%}
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" value="{{category.id}}" type="checkbox" name="category_id" id="category_{{category.id}}" required>
+                                    <input class="form-check-input" value="{{category.id}}" type="radio" name="category_id" id="category_{{category.id}}" required>
                                     <label class="form-check-label" for="category_{{category.id}}">{{category.name}}</label>
                                 </div>
                             </div>
