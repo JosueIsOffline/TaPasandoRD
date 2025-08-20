@@ -17,36 +17,42 @@
 
                 <!-- Filters -->
                 <div class="filter-panel">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label" for="filterProvincia">Provincia</label>
+                            <label class="form-label" for="filterProvincia">
+                                <i class="fas fa-map-marker-alt me-2"></i>Provincia
+                            </label>
                             <select class="form-select" id="filterProvincia">
-                            <option value="">Seleccione una provincia</option>
-                            {% for provincia in provinces %}
-                                <option value="{{ provincia.id }}">{{ provincia.name }}</option>
-                            {% endfor %}
+                                <option value="">Seleccione una provincia</option>
+                                {% for provincia in provinces %}
+                                    <option value="{{ provincia.id }}">{{ provincia.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label" for="filterTipo">Tipo de Incidencia</label>
+                            <label class="form-label" for="filterTipo">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Tipo de Incidencia
+                            </label>
                             <select class="form-select" id="filterTipo">
-                            <option value="">Seleccione un tipo</option>
-                            {% for categoria in categories %}
-                                <option value="{{ categoria.id }}">{{ categoria.name }}</option>
-                            {% endfor %}
+                                <option value="">Seleccione un tipo</option>
+                                {% for categoria in categories %}
+                                    <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Rango de Fecha</label>
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt me-2"></i>Rango de Fecha
+                            </label>
                             <div class="input-group">
-                                <input type="date" class="form-control" id="filterFechaInicio">
+                                <input type="date" class="form-control" id="filterFechaInicio" placeholder="Fecha inicio">
                                 <span class="input-group-text">a</span>
-                                <input type="date" class="form-control" id="filterFechaFin">
+                                <input type="date" class="form-control" id="filterFechaFin" placeholder="Fecha fin">
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button id="btnFiltrar" class="btn btn-primary w-100">
-                                <i class="fas fa-search me-1"></i> Filtrar
+                                <i class="fas fa-search me-2"></i> Filtrar
                             </button>
                         </div>
                     </div>
@@ -72,7 +78,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
+                    <h5 class="modal-title text-dark">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Detalle de Incidencia
                 </h5>
@@ -128,7 +134,7 @@
                             <div class="col-4">
                                 <div class="border rounded-3 p-3 bg-info bg-opacity-10">
                                     <i class="fas fa-dollar-sign text-info fa-2x mb-1"></i>
-                                    <h5 class="text-info mb-0" id="lossAmount"></h5>
+                                    <h5 class="text-info mb-0" id="lossAmount" style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></h5>
                                     <small class="text-muted">Pérdidas</small>
                                 </div>
                             </div>
@@ -138,7 +144,7 @@
                             <h6 class="fw-semibold text-primary mb-2">Coordenadas</h6>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-muted" id="coordinatesDisplay"></span>
-                                <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm ms-2">
+                                <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm ms-2" id="viewOnMapBtn">
                                     <i class="fas fa-map me-1"></i> Ver en Mapa
                                 </button>
                             </div>
@@ -150,12 +156,14 @@
                         </div>
                         
                         <div class="mb-2">
+
                             <h6 class="fw-semibold text-primary mb-2">Comentarios (<span id="commentsCount">0</span>)</h6>
                             <div id="comments-container" class="mb-3 bg-light rounded p-2 border" style="max-height: 450px; overflow-y: auto;">
                                 <!-- Aquí se mostrarán los comentarios existentes -->
                             </div>
                             <form id="commentForm" class="d-flex flex-column gap-2">
                                 <textarea class="form-control" id="commentText" rows="2" placeholder="Escribe un comentario..."></textarea>
+
                                 <input type="hidden">
                                <div class="text-end">
                                     <button type="button"  id="postComment" class="btn btn-primary btn-sm">
@@ -175,9 +183,9 @@
                         </div>
                         <div class="mb-4 bg-light rounded p-3 border">
                             <h6 class="fw-semibold text-primary mb-2">Información del Reporte</h6>
-                            <p class="mb-1"><strong>Reportado por:</strong> <span id="reportedBy"></span></p>
-                            <p class="mb-1"><strong>Fecha de reporte:</strong> <span id="reportDate"></span></p>
-                            <p class="mb-0"><strong>Estado:</strong> <span id="reportStatus"></span></p>
+                            <p class="mb-1 text-dark"><strong>Reportado por:</strong> <span id="reportedBy"></span></p>
+                            <p class="mb-1 text-dark"><strong>Fecha de reporte:</strong> <span id="reportDate"></span></p>
+                            <p class="mb-0 text-dark"><strong>Estado:</strong> <span id="reportStatus"></span></p>
                         </div>
                     </div>
                 </div>

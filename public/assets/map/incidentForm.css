@@ -1,0 +1,327 @@
+/* Estilos para el formulario de reporte de incidentes */
+
+/* Estilos generales del formulario */
+.form-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-section h6 {
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.form-section p {
+    color: #e2e8f0;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* Estilos para inputs y selects */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(10px);
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #007bff;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.form-label {
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+/* Estilos para checkboxes de categorías */
+.form-check-input {
+    background: transparent;
+    border: 1px solid #6b7280;
+}
+
+.form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.form-check-label {
+    color: #e2e8f0;
+}
+
+/* Estilos para las opciones */
+.form-select option {
+    background-color: #fff;
+    color: #000;
+}
+
+.form-select option:hover {
+    background-color: #f3f4f6;
+}
+
+/* Estilos para el botón del mapa */
+.btn-map {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #3b82f6;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn-map:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn-map:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #3b82f6;
+    color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Estilos para el botón de envío */
+.btn-submit {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+    min-width: 200px;
+}
+
+.btn-submit:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-submit:focus {
+    background: rgba(59, 130, 246, 0.4);
+    border-color: rgba(59, 130, 246, 0.6);
+    color: #1d4ed8;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Estilos para inputs numéricos (eliminar completamente los controles) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    display: none;
+}
+
+/* Para Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Estilos para el modal del mapa */
+.modal-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.modal-header {
+    border: none;
+    background: transparent;
+    padding: 0;
+    position: relative;
+}
+
+.modal-title {
+    color: #333;
+    font-weight: 600;
+}
+
+.btn-close {
+    position: absolute;
+    top: -0.5rem;
+    left: -3.5rem;
+    z-index: 1050;
+    background: none;
+    border: none;
+    font-size: 3.5rem;
+    color: #3b82f6;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: none;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+    color: #e2e8f0;
+    background: none;
+    transform: none;
+}
+
+.modal-body {
+    padding: 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+}
+
+.modal-map {
+    height: 80vh;
+    width: 100%;
+    border: none;
+    border-radius: 0;
+}
+
+.modal-footer {
+    display: none;
+}
+
+/* Estilos para el toast de confirmación de ubicación */
+.location-toast {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10000;
+    background: rgba(255, 255, 255, 0.1);
+    color: hsl(0, 0%, 100%);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 300px;
+    backdrop-filter: blur(20px);
+}
+
+.location-toast .btn-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.location-toast .btn {
+    width: 3rem;
+    height: 1.75rem;
+    border-radius: 1rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.location-toast .btn-success {
+    background: rgba(34, 197, 94, 0.2);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+}
+
+.location-toast .btn-success:hover {
+    background: rgba(34, 197, 94, 0.3);
+    color: #15803d;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.location-toast .btn-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.location-toast .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #b91c1c;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Estilos para el toast de mensajes */
+.toast-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: #38a169;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateY(-30px);
+    font-size: 1rem;
+    min-width: 220px;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.toast-message.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .toast-message, .location-toast {
+        right: 50%;
+        top: 1rem;
+        left: 50%;
+        transform: translate(-50%, -30px);
+        min-width: 80vw;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .toast-message.show, .location-toast.show {
+        transform: translate(-50%, 0);
+    }
+    
+    .form-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-map, .btn-submit {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
