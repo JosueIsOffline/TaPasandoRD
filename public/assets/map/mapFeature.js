@@ -1,125 +1,340 @@
-document.addEventListener('DOMContentLoaded', function () {
-    (async function initMap() {
-        const defaultCoords = [18.7357, -70.1627];
-        const defaultZoom = 8;
+document.addEventListener("DOMContentLoaded", function () {
+  (async function initMap() {
+    const defaultCoords = [18.7357, -70.1627];
+    const defaultZoom = 8;
 
-        const map = L.map('map').setView(defaultCoords, defaultZoom);
-        const markerCluster = L.markerClusterGroup();
+    const map = L.map("map").setView(defaultCoords, defaultZoom);
+    const markerCluster = L.markerClusterGroup();
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
 
-        document.getElementById('map-loading').style.display = 'none';
+    document.getElementById("map-loading").style.display = "none";
 
-        const incidentIcons = {
-            'Accidente': L.divIcon({ 
-                className: 'incident-marker accident', 
-                html: '<i class="fas fa-car-crash"></i>', 
-                iconSize: [50, 50], 
-                iconAnchor: [36, 62] }),
+    const incidentIcons = {
+      1: L.divIcon({
+        className: "incident-marker accident",
+        html: '<i class="fas fa-car-crash"></i>',
+        iconSize: [50, 50],
+        iconAnchor: [36, 62],
+      }),
 
-            'Robo': L.divIcon({ 
-                className: 'incident-marker robbery', 
-                html: '<i class="fas fa-mask"></i>', 
-                iconSize: [50, 50], 
-                iconAnchor: [36, 62] }),
+      2: L.divIcon({
+        className: "incident-marker disaster",
+        html: '<i class="fa-solid fa-house-flood-water"></i>',
+        iconSize: [50, 50],
+        iconAnchor: [36, 62],
+      }),
 
-            'Pelea': L.divIcon({ 
-                className: 'incident-marker fight', 
-                html: '<i class="fa-solid fa-hand-fist"></i>', 
-                iconSize: [50, 50], 
-                iconAnchor: [36, 62] }),
+      3: L.divIcon({
+        className: "incident-marker fire",
+        html: '<i class="fa-solid fa-fire"></i>',
+        iconSize: [50, 50],
+        iconAnchor: [36, 62],
+      }),
 
-            'Desastre': L.divIcon({ 
-                className: 'incident-marker disaster', 
-                html: '<i class="fa-solid fa-house-flood-water"></i>', 
-                iconSize: [50, 50], 
-                iconAnchor: [36, 62] }),
+      4: L.divIcon({
+        className: "incident-marker robbery",
+        html: '<i class="fas fa-mask"></i>',
+        iconSize: [50, 50],
+        iconAnchor: [36, 62],
+      }),
 
-            'Incendio': L.divIcon({ 
-                className: 'incident-marker fire', 
-                html: '<i class="fa-solid fa-fire"></i>', 
-                iconSize: [50, 50], 
-                iconAnchor: [36, 62] }),
+      5: L.divIcon({
+        className: "incident-marker fight",
+        html: '<i class="fa-solid fa-hand-fist"></i>',
+        iconSize: [50, 50],
+        iconAnchor: [36, 62],
+      }),
 
-            'default': L.divIcon({ 
-                className: 'incident-marker default', 
-                html: '<i class="fa-solid fa-triangle-exclamation"></i>', 
-                iconSize: [50, 50], 
-                iconAnchor: [36, 62] })
+      default: L.divIcon({
+        className: "incident-marker default",
+        html: '<i class="fa-solid fa-triangle-exclamation"></i>',
+        iconSize: [50, 50],
+        iconAnchor: [36, 62],
+      }),
+    };
+
+    function abrirModal(incident) {
+        document.getElementById("incidentTitle").textContent =
+            incident.title || "";
+
+        document.getElementById("incidentType").textContent =
+            getCategoryName(incident.category_id) || "Sin categoría";
+
+        document.getElementById("incidentStatus").textContent =
+            incident.status || "Pendiente";
+
+        const provinceNames = {
+          1: "Santo Domingo",
+          2: "Santiago",
+          3: "La Vega",
+          4: "Provincia 4",
         };
 
-        function abrirModal(incident) {
-            document.getElementById('incidentTitle').textContent = incident.title || '';
-            document.getElementById('incidentType').textContent = incident.type || '';
-            document.getElementById('incidentStatus').textContent = incident.status || 'Pendiente';
-            document.getElementById('locationInfo').innerHTML = `<i class="fas fa-map-marker-alt me-1"></i> ${incident.location || ''}`;
-            document.getElementById('timeInfo').innerHTML = `<i class="fas fa-clock me-1"></i> ${incident.date || ''}`;
-            document.getElementById('incidentDescription').textContent = incident.description || '';
-            document.getElementById('deathCount').textContent = incident.deaths || 0;
-            document.getElementById('injuredCount').textContent = incident.injured || 0;
-            document.getElementById('lossAmount').textContent = incident.loss || '$0';
-            document.getElementById('coordinatesDisplay').textContent = `Latitud: ${incident.lat} | Longitud: ${incident.lng}`;
-            document.getElementById('reportedBy').textContent = incident.reportedBy || 'Desconocido';
-            document.getElementById('reporterEmail').textContent = incident.reporterEmail || '-';
-            document.getElementById('reportDate').textContent = incident.reportDate || '-';
-            document.getElementById('reportStatus').textContent = incident.reportStatus || 'Pendiente';
-            new bootstrap.Modal(document.getElementById('incidentModal')).show();
+        const municipioNames = {
+          1: "Santo Domingo Este",
+          2: "Santo Domingo Oeste",
+          3: "Santiago de los Caballeros",
+          4: "Jarabacoa",
+        };
+
+        document.getElementById("locationInfo").innerHTML =
+            `<i class="fas fa-map-marker-alt me-1"></i> <span class="fw-bold">Provincia: </span> ${provinceNames[incident.province_id] || incident.province_id}<br> 
+             <i class="fas fa-map-marker-alt me-1"></i> <span class="fw-bold"> Municipio: </span> ${municipioNames[incident.municipality_id] || incident.municipality_id}`;
+            
+
+        document.getElementById("timeInfo").innerHTML =
+            `<i class="fas fa-clock me-1"></i> ${incident.occurrence_date || ""}`;
+
+        document.getElementById("incidentDescription").textContent =
+            incident.description || "";
+
+        document.getElementById("deathCount").textContent =
+            incident.deaths ?? 0;
+
+        document.getElementById("injuredCount").textContent =
+            incident.injuries ?? 0;
+
+        document.getElementById("lossAmount").textContent =
+            `RD$${incident.estimated_loss || "0"}`;
+
+        document.getElementById("coordinatesDisplay").textContent =
+            `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
+
+        document.getElementById("reportedBy").textContent =
+            `Usuario ${incident.reported_by || "Desconocido"}`;
+
+        document.getElementById("reportDate").textContent =
+            incident.created_at || "-";
+
+        document.getElementById("reportStatus").textContent =
+            incident.status || "Pendiente";
+
+        document.getElementById("coordinatesDisplay").textContent =
+        `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
+
+        const viewOnMapBtn = document.getElementById("viewOnMapBtn");
+        if (viewOnMapBtn) {
+            viewOnMapBtn.onclick = function () {
+                // Centra el mapa en las coordenadas del incidente y hace zoom
+                map.setView([incident.latitude, incident.longitude], 16);
+                // Opcional: cerrar el modal si quieres
+                const modal = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
+                if (modal) modal.hide();
+            };
         }
 
-        async function loadIncidencias() {
-            const provincia = document.getElementById('filterProvincia').value;
-            const tipo = document.getElementById('filterTipo').value;
-            const fechaInicio = document.getElementById('filterFechaInicio').value;
-            const fechaFin = document.getElementById('filterFechaFin').value;
-
-            let query = `?provincia=${encodeURIComponent(provincia)}&tipo=${encodeURIComponent(tipo)}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-            try {
-                const response = await fetch(`/api/incidencias${query}`);
-                if (!response.ok) throw new Error("Error al obtener incidencias");
-
-                const incidents = await response.json();
-
-                markerCluster.clearLayers();
-
-                incidents.forEach(incident => {
-                    const icon = incidentIcons[incident.type] || incidentIcons['default'];
-                    const marker = L.marker([incident.lat, incident.lng], { icon })
-                        .bindPopup(`
-                            <h6>${incident.title}</h6>
-                            <p><strong>Tipo:</strong> ${incident.type}</p>
-                            <button class="btn btn-sm btn-primary view-detail" data-id="${incident.id}">Ver detalles</button>
-                        `);
-                    marker.incidentData = incident;
-                    markerCluster.addLayer(marker);
-                });
-
-                map.addLayer(markerCluster);
-
-                if (incidents.length > 0) {
-                    map.fitBounds(markerCluster.getBounds());
-                }
-
-            } catch (error) {
-                console.error("Error al cargar incidencias:", error);
-            }
+        // Imagen
+        if (incident.photo_url) {
+            document.getElementById("incidentPhoto").src = incident.photo_url;
         }
 
-        map.on('popupopen', function (e) {
-            const popup = e.popup;
-            const button = popup.getElement().querySelector('.view-detail');
-            if (button) {
-                button.addEventListener('click', function () {
-                    const incidentId = this.getAttribute('data-id');
-                    const marker = markerCluster.getLayers().find(m => m.incidentData.id == incidentId);
-                    if (marker) abrirModal(marker.incidentData);
-                });
-            }
+       if (incident.social_media_url) {
+
+          const contenedor = document.getElementById("referencias-container");
+          contenedor.innerHTML = "";
+
+          const boton = document.createElement("a");
+          boton.href = incident.social_media_url;
+          boton.target = "_blank";
+          boton.className = "btn btn-outline-primary btn-sm me-2";
+          boton.textContent = "Ver publicación";
+
+          contenedor.appendChild(boton);
+      }
+      
+      async function loadComments(id) {
+        const commentsCont = document.getElementById("comments-container");
+        let counter = document.getElementById("commentsCount");
+
+        try {
+          const res = await fetch(`/api/comment/${id}`);
+          const comments = await res.json();
+          console.log(comments);
+          counter.innerText = comments.length;
+
+          commentsCont.innerHTML = comments
+            .map(
+              (comment) =>
+                `
+      <div class="comment mb-3 p-3 bg-light border rounded shadow-sm">
+        <div class="d-flex align-items-center mb-2">
+          <img src="${comment.user_photo}" alt="User Avatar" class="avatar rounded-circle me-2" width="40" height="40">
+          <div>
+            <strong class="d-block text-dark">${comment.user_name}</strong>
+            <small class="text-muted">${timeAgo(comment.created_at)}</small>
+          </div>
+        </div>
+       <p class="mb-0 text-dark">${comment.content}</p>
+    </div>
+`,
+            )
+            .join("");
+        } catch (error) {
+          console.error("Something went wrong loading comments", error);
+        }
+      }
+
+      await loadComments(incident.id);
+      document
+        .getElementById("postComment")
+        .addEventListener("click", async () => {
+          const content = document.getElementById("commentText");
+          const data = new FormData();
+
+          data.append("incident_id", incident.id);
+          data.append("content", content.value);
+
+          console.log(data.get("content"));
+          const res = await fetch("/api/comment", {
+            method: "POST",
+            body: data,
+          });
+
+          await loadComments(incident.id);
+          content.value = "";
+        });
+      
+      
+
+
+        new bootstrap.Modal(document.getElementById("incidentModal")).show();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
+        modal.hide();
+}
+
+
+    const getCategoryName = (categoryId) => {
+      const names = {
+        1: "Accidente de Tráfico",
+        2: "Inundación",
+        3: "Incendio",
+        4: "Robo",
+      };
+
+      return names[categoryId];
+    };
+
+  // Función para obtener provincias y categorías desde el backend por una API
+    // // Cargar las provincias y tipos de incidencia
+    // async function loadFilters() {
+    //   try {
+    //   const response = await fetch("http://localhost:8000/api/provinces");
+    //   if (!response.ok) throw new Error("Error al obtener provincias");
+
+    //   const provinces = await response.json();
+    //   const provinceSelect = document.getElementById("filterProvincia");
+    //   provinceSelect.innerHTML = '<option value="">Todas las provincias</option>';
+    //   provinces.forEach((province) => {
+    //     const option = document.createElement("option");
+    //     option.value = province.id;
+    //     option.textContent = province.name;
+    //     provinceSelect.appendChild(option);
+    //   });
+
+    //   const categoryResponse = await fetch("http://localhost:8000/categories");
+    //   if (!categoryResponse.ok) throw new Error("Error al obtener categorías");
+
+    //   const categories = await categoryResponse.json();
+    //   const tipoSelect = document.getElementById("filterTipo");
+    //   tipoSelect.innerHTML = '<option value="">Todos los tipos</option>';
+    //   categories.forEach((category) => {
+    //     const option = document.createElement("option");
+    //     option.value = category.id;
+    //     option.textContent = category.name;
+    //     tipoSelect.appendChild(option);
+    //   });
+    //   } catch (error) {
+    //   console.error("Error al cargar filtros:", error);
+    //   }
+    // }
+    // await loadFilters();
+
+    async function loadIncidencias() {
+
+      try {
+        const provinciaId = document.getElementById("filterProvincia").value;
+        const tipoId = document.getElementById("filterTipo").value;
+
+
+        let url = new URL("http://localhost:8000/api/valid-incident");
+        if (provinciaId) url.searchParams.append("province_id", provinciaId);
+        if (tipoId) url.searchParams.append("category_id", tipoId);
+
+        // console.log("URL de la API:", url.toString()); // <-- Línea de depuración
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Error al obtener incidencias");
+        const incidents = await response.json();
+
+        markerCluster.clearLayers();
+
+        incidents.forEach((incident) => {
+          const icon =
+            incidentIcons[incident.category_id] || incidentIcons["default"];
+            const marker = L.marker([incident.latitude, incident.longitude], {
+            icon,
+            }).bindPopup(`
+              <div class="incident-popup">
+                <h5 class="mb-1 fw-bold">${incident.title || "Incidente"}</h5>
+                <p class="mb-1">
+                <span class="badge bg-info text-dark">${getCategoryName(incident.category_id) || "Sin categoría"}</span>
+                </p>
+                <p class="mb-1 text-muted" style="font-size: 0.95em;">
+                <i class="fas fa-clock me-1"></i> ${incident.occurrence_date || ""}
+                </p>
+                <button class="btn btn-sm btn-outline-primary view-detail mt-2" data-id="${incident.id}">
+                <i class="fas fa-eye me-1"></i> Ver detalles
+                </button>
+              </div>
+            `);
+          marker.incidentData = incident;
+          markerCluster.addLayer(marker);
         });
 
-        document.getElementById('btnFiltrar').addEventListener('click', loadIncidencias);
+        map.addLayer(markerCluster);
 
-        await loadIncidencias();
-    })();
+        if (incidents.length > 0) {
+          map.fitBounds(markerCluster.getBounds());
+        }
+      } catch (error) {
+        console.error("Error al cargar incidencias:", error);
+      }
+    }
+
+    map.on("popupopen", function (e) {
+      const popup = e.popup;
+      const button = popup.getElement().querySelector(".view-detail");
+      if (button) {
+        button.addEventListener("click", function () {
+          const incidentId = this.getAttribute("data-id");
+          const marker = markerCluster
+            .getLayers()
+            .find((m) => m.incidentData.id == incidentId);
+          if (marker) abrirModal(marker.incidentData);
+        });
+      }
+    });
+
+    document
+      .getElementById("btnFiltrar")
+      .addEventListener("click", loadIncidencias);
+
+    await loadIncidencias();
+  })();
 });
+
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = (now - date) / 1000;
+
+  if (diff < 60) return `Hace ${Math.floor(diff)} segundos`;
+  if (diff < 3600) return `Hace ${Math.floor(diff / 60)} minutos`;
+  if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} horas`;
+  if (diff < 2592000) return `Hace ${Math.floor(diff / 86400)} días`;
+
+  return date.toLocaleDateString();
+}

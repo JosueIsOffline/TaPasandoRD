@@ -39,7 +39,7 @@ function clearCommentForm() {
   if (textarea) {
     textarea.value = "";
   }
-  
+
   // También limpiar mensajes
   hideCommentMessage();
 }
@@ -103,12 +103,12 @@ async function viewDetails(incidentId) {
         document.getElementById("modal-description").textContent =
           incident.description || "Sin descripción disponible";
 
-// ------------------------------------------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
 
         // TODO: Implementar carga de comentarios de validación existentes
         // await loadValidationComments(incidentId);
-// ------------------------------------------------------------------------------------------
-        
+        // ------------------------------------------------------------------------------------------
+
         // Mostrar mensaje estático
         showStaticCommentsMessage();
       } else {
@@ -140,7 +140,6 @@ async function viewDetails(incidentId) {
 // TODO: Función para cargar comentarios de validación existentes
 // PODEMOS UTILIZAR EL STATUS = PENDIENTE PARA MOSTRAR LOS COMENTARIOS DE LOS INCIDENTES QUE NO HAN SIDO VALIDADOS Y ESTÁN PENDIENTES DE VALIDACIÓN
 
-
 // async function loadValidationComments(incidentId) {
 //   try {
 //     const response = await fetch(`/api/validator/comments/${incidentId}`);
@@ -149,12 +148,12 @@ async function viewDetails(incidentId) {
 //       displayValidationComments(comments);
 //     } else {
 //       console.error("Error al cargar comentarios de validación");
-//       document.getElementById("modal-comments").innerHTML = 
+//       document.getElementById("modal-comments").innerHTML =
 //         '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
 //     }
 //   } catch (error) {
 //     console.error("Error al cargar comentarios de validación:", error);
-//     document.getElementById("modal-comments").innerHTML = 
+//     document.getElementById("modal-comments").innerHTML =
 //       '<p class="text-muted">No se pudieron cargar los comentarios de validación.</p>';
 //   }
 // }
@@ -162,7 +161,7 @@ async function viewDetails(incidentId) {
 // TODO: Función para mostrar comentarios de validación en el modal
 // function displayValidationComments(comments) {
 //   const commentsContainer = document.getElementById("modal-comments");
-//   
+//
 //   if (!comments || comments.length === 0) {
 //     commentsContainer.innerHTML = `
 //       <div class="no-comments">
@@ -175,11 +174,11 @@ async function viewDetails(incidentId) {
 
 //   let commentsHTML = '';
 //   comments.forEach(comment => {
-//     const statusClass = comment.status === 'Aprovado' ? 'success' : 
+//     const statusClass = comment.status === 'Aprovado' ? 'success' :
 //                        comment.status === 'Rechazado' ? 'danger' : 'warning';
-//     const statusIcon = comment.status === 'Aprovado' ? 'check' : 
+//     const statusIcon = comment.status === 'Aprovado' ? 'check' :
 //                       comment.status === 'Rechazado' ? 'times' : 'clock';
-    
+
 //     const commentDate = comment.created_at ? new Date(comment.created_at).toLocaleDateString('es-ES', {
 //       year: 'numeric',
 //       month: 'long',
@@ -187,7 +186,7 @@ async function viewDetails(incidentId) {
 //       hour: '2-digit',
 //       minute: '2-digit'
 //     }) : 'Fecha no disponible';
-    
+
 //     commentsHTML += `
 //       <div class="comment-item mb-3 p-3 border rounded">
 //         <div class="d-flex justify-content-between align-items-start mb-2">
@@ -207,12 +206,11 @@ async function viewDetails(incidentId) {
 //       </div>
 //     `;
 //   }
-  
+
 //   commentsContainer.innerHTML = commentsHTML;
 // }
 
 // ------------------------------------------------------------------------------------------
-
 
 // Función para mostrar mensaje estático de comentarios
 function showStaticCommentsMessage() {
@@ -352,6 +350,7 @@ function applyFilters() {
   allVisibleRows = [];
   tableRows.forEach((row) => {
     let showRow = true;
+    row.style.display = "none";
 
     // Filtro por fecha
     if (currentDateFilter !== "all") {
@@ -531,34 +530,37 @@ function initializePagination() {
 }
 
 // Función para mostrar mensajes de comentarios
-function showCommentMessage(message, type = 'info') {
-  const messageElement = document.getElementById('comment-message');
+function showCommentMessage(message, type = "info") {
+  const messageElement = document.getElementById("comment-message");
   if (messageElement) {
     messageElement.textContent = message;
     messageElement.className = `comment-message mt-2 ${type}`;
-    messageElement.style.display = 'block';
-    
+    messageElement.style.display = "block";
+
     // Ocultar el mensaje después de 5 segundos
     setTimeout(() => {
-      messageElement.style.display = 'none';
+      messageElement.style.display = "none";
     }, 5000);
   }
 }
 
 // Función para ocultar mensajes de comentarios
 function hideCommentMessage() {
-  const messageElement = document.getElementById('comment-message');
+  const messageElement = document.getElementById("comment-message");
   if (messageElement) {
-    messageElement.style.display = 'none';
+    messageElement.style.display = "none";
   }
 }
 
 // Función para aprobar incidente con comentario personalizado
 async function approveWithComment() {
   const commentText = document.getElementById("new-comment").value.trim();
-  
+
   if (!commentText) {
-    showCommentMessage("Por favor, escribe un comentario antes de aprobar el incidente.", "error");
+    showCommentMessage(
+      "Por favor, escribe un comentario antes de aprobar el incidente.",
+      "error",
+    );
     return;
   }
 
@@ -580,7 +582,9 @@ async function approveWithComment() {
 
     if (res.ok) {
       // Cerrar el modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById("incidentDetailsModal"));
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("incidentDetailsModal"),
+      );
       modal.hide();
 
       // Mostrar cambio de estatus visualmente
@@ -593,16 +597,22 @@ async function approveWithComment() {
     }
   } catch (e) {
     console.error("Error al aprobar incidente:", e);
-    showCommentMessage("Error al aprobar el incidente. Por favor, intenta de nuevo.", "error");
+    showCommentMessage(
+      "Error al aprobar el incidente. Por favor, intenta de nuevo.",
+      "error",
+    );
   }
 }
 
 // Función para rechazar incidente con comentario personalizado
 async function rejectWithComment() {
   const commentText = document.getElementById("new-comment").value.trim();
-  
+
   if (!commentText) {
-    showCommentMessage("Por favor, escribe un comentario antes de rechazar el incidente.", "error");
+    showCommentMessage(
+      "Por favor, escribe un comentario antes de rechazar el incidente.",
+      "error",
+    );
     return;
   }
 
@@ -624,7 +634,9 @@ async function rejectWithComment() {
 
     if (res.ok) {
       // Cerrar el modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById("incidentDetailsModal"));
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("incidentDetailsModal"),
+      );
       modal.hide();
 
       // Mostrar cambio de estatus visualmente
@@ -637,7 +649,10 @@ async function rejectWithComment() {
     }
   } catch (e) {
     console.error("Error al rechazar incidente:", e);
-    showCommentMessage("Error al rechazar el incidente. Por favor, intenta de nuevo.", "error");
+    showCommentMessage(
+      "Error al rechazar el incidente. Por favor, intenta de nuevo.",
+      "error",
+    );
   }
 }
 

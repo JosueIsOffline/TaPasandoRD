@@ -39,10 +39,9 @@
                 </button>
                 <div class="filter-dropdown-menu" id="category-filter-menu">
                     <div class="filter-option" data-value="all">Todas las Categorías</div>
-                    <div class="filter-option" data-value="accident">Accidentes</div>
-                    <div class="filter-option" data-value="natural_disaster">Desastres Naturales</div>
-                    <div class="filter-option" data-value="crime">Delitos</div>
-                    <div class="filter-option" data-value="infrastructure">Infraestructura</div>
+                    {% for category in categories%}
+                      <div class="filter-option" data-value="{{category.name|lower}}">{{category.name}}</div>
+                    {% endfor %}
                     <div class="filter-option" data-value="other">Otros</div>
                 </div>
             </div>
@@ -77,7 +76,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                                                 {% for incident in pendingIncidents %}
+                          {% for incident in pendingIncidents %}
                              <tr data-incident-id="{{ incident.id }}">
                                 <td class="date-column">
                                     <div>{{ incident.occurrence_date|date('d/m/Y') }}</div>

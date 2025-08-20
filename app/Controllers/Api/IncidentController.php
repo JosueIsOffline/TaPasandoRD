@@ -25,6 +25,15 @@ class IncidentController extends AbstractController
   public function getValidatedIncidents(): Response
   {
     $incidents = $this->iRepo->getValidIncident();
+    $queryParams = $this->getQueryParams();
+
+    // condition if params exist then filter incident with those params
+    if ($queryParams) {
+      // filter method
+      $result = $this->iRepo->getFilteredIncident($queryParams);
+
+      return $this->success($result);
+    }
 
     return $this->success($incidents);
   }

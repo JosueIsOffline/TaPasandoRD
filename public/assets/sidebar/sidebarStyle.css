@@ -396,7 +396,7 @@
 /* Mobile Hamburger Button */
 .mobile-hamburger-button {
   position: fixed;
-  top: 1rem;
+  top: 0.5rem;
   left: 1rem;
   width: 2.5rem;
   height: 2.5rem;

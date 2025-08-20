@@ -1,6 +1,7 @@
 {% extends "base.html.twig" %}
 {% block styles %}
 <link href="/assets/sidebar/sidebarStyle.css" rel="stylesheet">
+<link href="/assets/map/mapFeature.css" rel="stylesheet">
 {{ block('validation_report_styles') }}
 {% endblock %}
 {% block validation_report_styles %}
@@ -19,8 +20,7 @@
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <img src={% if auth_user().photo_url%}"{{ auth_user().photo_url}}"{%else%}"https://avatar.iran.liara.run/username?username={{auth_user().name}}&length=1"{% endif %}alt="User Avatar" class="avatar">
-
+        <img src="{{auth_user().photo_url}}" alt="User Avatar" class="avatar">
         <div class="user-info">
             <span id="spanRole" class="user-role">role</span>
             <span class="user-name">{{ auth_user().name }}</span>
@@ -146,6 +146,7 @@
 
 {% block scripts %}
 <script src="/assets/sidebar/sidebarFeatures.js"></script>
+<script src="/assets/map/mapFeature.js"></script>
 <script>
 function setActiveMenuItem() {
     const currentPath = window.location.pathname;

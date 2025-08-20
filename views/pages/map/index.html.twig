@@ -1,6 +1,11 @@
 {% extends "layout.html.twig" %}
+{%block body_class%}
+  validation-report-body
+{% endblock %}
 
 {% block content %}
+<div class="background-canvas" aria-hidden="true"></div>
+
 <div class="page-section" >
             <div class="container-fluid p-4">
                 <div class="row mb-4">
@@ -12,39 +17,42 @@
 
                 <!-- Filters -->
                 <div class="filter-panel">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label" id="filterProvincia">Provincia</label>
-                            <select class="form-select">
-                                <option>Todas las provincias</option>
-                                <option>Distrito Nacional</option>
-                                <option>Santo Domingo</option>
-                                <option>Santiago</option>
-                                <option>La Vega</option>
+                            <label class="form-label" for="filterProvincia">
+                                <i class="fas fa-map-marker-alt me-2"></i>Provincia
+                            </label>
+                            <select class="form-select" id="filterProvincia">
+                                <option value="">Seleccione una provincia</option>
+                                {% for provincia in provinces %}
+                                    <option value="{{ provincia.id }}">{{ provincia.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label" id="filterTipo">Tipo de Incidencia</label>
-                            <select class="form-select">
-                                <option>Todos los tipos</option>
-                                <option>Accidente</option>
-                                <option>Incendio</option>
-                                <option>Robo</option>
-                                <option>Pelea</option>
-                                <option>Desastre</option>
+                            <label class="form-label" for="filterTipo">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Tipo de Incidencia
+                            </label>
+                            <select class="form-select" id="filterTipo">
+                                <option value="">Seleccione un tipo</option>
+                                {% for categoria in categories %}
+                                    <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Rango de Fecha</label>
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt me-2"></i>Rango de Fecha
+                            </label>
                             <div class="input-group">
-                                <input type="date" class="form-control" id="filterFechaInicio">
+                                <input type="date" class="form-control" id="filterFechaInicio" placeholder="Fecha inicio">
                                 <span class="input-group-text">a</span>
-                                <input type="date" class="form-control" id="filterFechaFin">
+                                <input type="date" class="form-control" id="filterFechaFin" placeholder="Fecha fin">
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button id="btnFiltrar" class="btn btn-primary w-100">
-                                <i class="fas fa-search me-1"></i> Filtrar
+                                <i class="fas fa-search me-2"></i> Filtrar
                             </button>
                         </div>
                     </div>
@@ -70,179 +78,123 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">
+                    <h5 class="modal-title text-dark">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Detalle de Incidencia
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row g-4">
+                    <!-- Columna izquierda -->
                     <div class="col-md-8">
-                        <div class="mb-3">
-                            <h4 id="incidentTitle">Accidente de tránsito en Av. Churchill</h4>
-                            <div class="d-flex gap-2 mb-2">
-                                <span class="incident-type-badge bg-danger text-white" id="incidentType">Accidente</span>
-                                <span class="badge bg-secondary" id="incidentStatus">Validado</span>
+                        <div class="mb-4 pb-3 border-bottom">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <i class="fas fa-exclamation-circle fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h4 id="incidentTitle" class="mb-1 fw-bold"></h4>
+                                    <div class="d-flex gap-2">
+                                        <span class="incident-type-badge bg-danger text-white px-2 py-1 rounded" id="incidentType"></span>
+                                        <span class="badge bg-secondary" id="incidentStatus"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="text-muted" id="locationInfo">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                Santo Domingo Este, Distrito Nacional - Villa Duarte
-                            </p>
-                            <p class="text-muted" id="timeInfo">
-                                <i class="fas fa-clock me-1"></i>
-                                31 de julio de 2025, 2:30 PM
-                            </p>
+                            <div class="d-flex flex-wrap gap-3 text-muted small mb-2">
+                                <span id="locationInfo">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                </span>
+                                <span id="timeInfo">
+                                    <i class="fas fa-clock me-1"></i>
+                                </span>
+                            </div>
                         </div>
 
                         <div class="mb-4">
-                            <h6>Descripción</h6>
-                            <p id="incidentDescription">Colisión múltiple que involucra 3 vehículos en la intersección de Av. Churchill con Av. 27 de Febrero. El accidente se produjo durante las horas pico de la tarde debido a condiciones de lluvia que afectaron la visibilidad de los conductores.</p>
+                            <h6 class="fw-semibold text-primary mb-2">Descripción</h6>
+                            <div class="bg-light rounded p-3 border text-dark" id="incidentDescription"></div>
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-4 text-center">
-                                <div class="border rounded p-3">
-                                    <i class="fas fa-skull text-danger fa-2x mb-2"></i>
-                                    <h5 class="text-danger mb-0" id="deathCount">2</h5>
+                        <div class="row mb-4 text-center">
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-danger bg-opacity-10">
+                                    <i class="fas fa-skull text-danger fa-2x mb-1"></i>
+                                    <h5 class="text-danger mb-0" id="deathCount"></h5>
                                     <small class="text-muted">Muertos</small>
                                 </div>
                             </div>
-                            <div class="col-4 text-center">
-                                <div class="border rounded p-3">
-                                    <i class="fas fa-user-injured text-warning fa-2x mb-2"></i>
-                                    <h5 class="text-warning mb-0" id="injuredCount">5</h5>
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-warning bg-opacity-10">
+                                    <i class="fas fa-user-injured text-warning fa-2x mb-1"></i>
+                                    <h5 class="text-warning mb-0" id="injuredCount"></h5>
                                     <small class="text-muted">Heridos</small>
                                 </div>
                             </div>
-                            <div class="col-4 text-center">
-                                <div class="border rounded p-3">
-                                    <i class="fas fa-dollar-sign text-info fa-2x mb-2"></i>
-                                    <h5 class="text-info mb-0" id="lossAmount">$50K</h5>
+                            <div class="col-4">
+                                <div class="border rounded-3 p-3 bg-info bg-opacity-10">
+                                    <i class="fas fa-dollar-sign text-info fa-2x mb-1"></i>
+                                    <h5 class="text-info mb-0" id="lossAmount" style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></h5>
                                     <small class="text-muted">Pérdidas</small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <h6>Coordenadas</h6>
-                            <p class="text-muted" id="coordinatesDisplay">Latitud: 18.4861 | Longitud: -69.9312</p>
-                            <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-map me-1"></i> Ver en Mapa
-                            </button>
+                            <h6 class="fw-semibold text-primary mb-2">Coordenadas</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted" id="coordinatesDisplay"></span>
+                                <button id="viewOnMapBtn" class="btn btn-outline-primary btn-sm ms-2" id="viewOnMapBtn">
+                                    <i class="fas fa-map me-1"></i> Ver en Mapa
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mb-4">
-                            <h6>Referencias</h6>
-                            <a href="#" class="btn btn-outline-info btn-sm me-2">
-                                <i class="fab fa-twitter me-1"></i> Ver en Twitter
-                            </a>
-                            <a href="#" class="btn btn-outline-primary btn-sm">
-                                <i class="fab fa-facebook me-1"></i> Ver en Facebook
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23dc3545'/%3E%3Ctext x='150' y='105' text-anchor='middle' fill='white' font-size='16'%3EFoto del Accidente%3C/text%3E%3C/svg%3E" class="img-fluid rounded" alt="Foto de la incidencia">
+                            <h6 class="fw-semibold text-primary mb-2">Referencias</h6>
+                            <div id="referencias-container" class="bg-light rounded p-2 border"></div>
                         </div>
                         
-                        <div class="mb-3">
-                            <h6>Información del Reporte</h6>
-                            <p class="mb-1"><strong>Reportado por:</strong> <span id="reportedBy">Juan Pérez</span></p>
-                            <p class="mb-1"><strong>Email:</strong> <span id="reporterEmail">juan.perez@gmail.com</span></p>
-                            <p class="mb-1"><strong>Fecha de reporte:</strong> <span id="reportDate">31/07/2025 3:15 PM</span></p>
-                            <p class="mb-0"><strong>Estado:</strong> <span class="status-approved" id="reportStatus">Aprobado</span></p>
-                        </div>
-                    </div>
-                </div>
+                        <div class="mb-2">
 
-                <!-- Correction Form -->
-                <div class="mt-4 border-top pt-4">
-                    <h6 class="mb-3">
-                        <i class="fas fa-edit me-1"></i>
-                        Sugerir Corrección
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Muertos</label>
-                                <input type="number" class="form-control" value="2" id="correctionDeaths">
+                            <h6 class="fw-semibold text-primary mb-2">Comentarios (<span id="commentsCount">0</span>)</h6>
+                            <div id="comments-container" class="mb-3 bg-light rounded p-2 border" style="max-height: 450px; overflow-y: auto;">
+                                <!-- Aquí se mostrarán los comentarios existentes -->
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Heridos</label>
-                                <input type="number" class="form-control" value="5" id="correctionInjured">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Pérdida Estimada (RD$)</label>
-                                <input type="number" class="form-control" value="50000" id="correctionLoss">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Provincia</label>
-                                <select class="form-select" id="correctionProvince">
-                                    <option selected>Distrito Nacional</option>
-                                    <option>Santo Domingo</option>
-                                    <option>Santiago</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Comentario de la corrección</label>
-                        <textarea class="form-control" rows="2" placeholder="Explica por qué sugieres esta corrección..." id="correctionComment"></textarea>
-                    </div>
-                    <button class="btn btn-warning">
-                        <i class="fas fa-paper-plane me-1"></i>
-                        Enviar Corrección
-                    </button>
-                </div>
+                            <form id="commentForm" class="d-flex flex-column gap-2">
+                                <textarea class="form-control" id="commentText" rows="2" placeholder="Escribe un comentario..."></textarea>
 
-                <!-- Comments Section -->
-                <div class="mt-4 border-top pt-4">
-                    <h6 class="mb-3">
-                        <i class="fas fa-comments me-1"></i>
-                        Comentarios (3)
-                    </h6>
-                    
-                    <div class="comment mb-3 p-3 bg-light rounded">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <strong>María García</strong>
-                            <small class="text-muted">Hace 2 horas</small>
+                                <input type="hidden">
+                               <div class="text-end">
+                                    <button type="button"  id="postComment" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-paper-plane me-1"></i> Agregar Comentario
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <p class="mb-0">Fui testigo del accidente. Efectivamente fueron 3 vehículos involucrados. Los paramédicos tardaron unos 15 minutos en llegar.</p>
-                    </div>
-                    
-                    <div class="comment mb-3 p-3 bg-light rounded">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <strong>Carlos Rodríguez</strong>
-                            <small class="text-muted">Hace 1 hora</small>
-                        </div>
-                        <p class="mb-0">Confirmo que había mucho tráfico en la zona. Las autoridades cerraron un carril por casi 2 horas.</p>
                     </div>
 
-                    <div class="mb-3">
-                        <textarea class="form-control" rows="3" placeholder="Agregar un comentario..."></textarea>
+                    <!-- Columna derecha -->
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <div class="ratio ratio-4x3 rounded shadow-sm overflow-hidden border">
+                                <img id="incidentPhoto" class="img-fluid object-fit-cover" alt="Foto de la incidencia" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                        </div>
+                        <div class="mb-4 bg-light rounded p-3 border">
+                            <h6 class="fw-semibold text-primary mb-2">Información del Reporte</h6>
+                            <p class="mb-1 text-dark"><strong>Reportado por:</strong> <span id="reportedBy"></span></p>
+                            <p class="mb-1 text-dark"><strong>Fecha de reporte:</strong> <span id="reportDate"></span></p>
+                            <p class="mb-0 text-dark"><strong>Estado:</strong> <span id="reportStatus"></span></p>
+                        </div>
                     </div>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-comment me-1"></i>
-                        Comentar
-                    </button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-share me-1"></i>
-                    Compartir
-                </button>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

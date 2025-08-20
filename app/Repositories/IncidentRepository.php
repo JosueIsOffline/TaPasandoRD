@@ -31,6 +31,21 @@ class IncidentRepository
     return $this->success($incident);
   }
 
+ public function getFilteredIncident(array $params): ?array
+  {
+      $incident = new Incident();
+      $filtered = [];
+
+      foreach ($params as $key => $value) {
+          $results = $incident->query()->where($key, $value)->get();
+          foreach ($results as $item) {
+              $filtered[$item['id']] = $item; // Usa el id como clave para evitar duplicados
+          }
+      }
+
+      return array_values($filtered); // Devuelve solo los valores (sin las claves)
+  }
+
   public function getPendingIncidents(): ?array
   {
     $sql = "
