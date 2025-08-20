@@ -4,6 +4,7 @@
 {% endblock %}
 {% block styles %}
 {{parent()}}
+<link rel="stylesheet" href="/assets/map/incidentForm.css">
 <style>
   .map{
     height: 400px;  
@@ -11,255 +12,242 @@
     align-items: center; 
     justify-content: center;
   }
-  .toast-message {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    z-index: 9999;
-    background: #38a169;
-    color: #fff;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s, transform 0.4s;
-    transform: translateY(-30px);
-    font-size: 1rem;
-    min-width: 220px;
-    max-width: 90vw;
-    text-align: center;
-}
-.toast-message.show {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-}
-@media (max-width: 600px) {
-    .toast-message {
-        right: 50%;
-        top: 1rem;
-        left: 50%;
-        transform: translate(-50%, -30px);
-        min-width: 80vw;
-        padding: 0.75rem 1rem;
-        font-size: 0.95rem;
-    }
-    .toast-message.show {
-        transform: translate(-50%, 0);
-    }
-}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="background-canvas" aria-hidden="true"></div>
 
-        {% if message %}
-            <div id="toast-message" class="toast-message">
-              {{ message }}
-            </div>
-        {% endif %}
-            <div class="container-fluid p-4">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h1 class="mb-0">Reportar Incidencia</h1>
-                        <p class="text-muted">Registra una nueva incidencia en el sistema</p>
+{% if message %}
+    <div id="toast-message" class="toast-message">
+      {{ message }}
+    </div>
+{% endif %}
+
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-0">Reportar Incidencia</h1>
+            <p class="text-muted">Registra una nueva incidencia en el sistema</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <form method="POST" action="/api/incident" enctype="multipart/form-data">
+                <input type="hidden" name="reported_by" value={{auth_user().id}} />
+                <input type="hidden" name="status" value="pendiente" />
+                
+                <!-- Primera sección: Información principal de la incidencia -->
+                <div class="form-section">
+                    <h6><i class="fas fa-info-circle me-2"></i>Información Principal de la Incidencia</h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" class="form-control" name="title" placeholder="Título descriptivo" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Ocurrencia</label>
+                                <input type="datetime-local" class="form-control" name="occurrence_date" style="width: 200px;" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Incidencia</label>
+                        <div class="row">
+                          {% for category in categories%}
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" value="{{category.id}}" type="checkbox" name="category_id" id="category_{{category.id}}" required>
+                                    <label class="form-check-label" for="category_{{category.id}}">{{category.name}}</label>
+                                </div>
+                            </div>
+                          {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" rows="4" name="description" placeholder="Describe los detalles de la incidencia..." required></textarea>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card incident-card">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">Información de la Incidencia</h5>
+                <!-- Segunda sección: Información adicional -->
+                <div class="form-section">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Información Adicional</h6>
+                    <p>Si sabes donde acaba de ocurrir, reporta la ubicación</p>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Provincia</label>
+                                <select class="form-select" name="province_id" id="provinceSelect" required>
+                                    <option value="">Seleccionar provincia</option>
+                                    {% for province in provinces%}
+                                      <option value="{{province.id}}">{{province.name}}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                            <div class="card-body">
-                                <form method="POST" action="/api/incident">
-                                    <input type="hidden" name="reported_by" value={{auth_user().id}} />
-
-                                    <input type="hidden" name="status" value="pendiente" />
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Fecha de Ocurrencia</label>
-                                                <input type="datetime-local" class="form-control" name="occurrence_date">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Título</label>
-                                                <input type="text" class="form-control" name="title" placeholder="Título descriptivo">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Tipo de Incidencia</label>
-                                        <div class="row">
-                                          {% for category in categories%}
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" value="{{category.id}}" type="checkbox" name="category_id" id="accidente">
-                                                    <label class="form-check-label" for="accidente">{{category.name}}</label>
-                                                </div>
-                                            </div>
-                                          {% endfor %}
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Descripción</label>
-                                        <textarea class="form-control" rows="4" name="description" placeholder="Describe los detalles de la incidencia..."></textarea>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Provincia</label>
-                                                <select class="form-select" name="province_id">
-                                                    <option value="">Seleccionar provincia</option>
-                                                    {% for province in provinces%}
-                                                      <option value="{{province.id}}">{{province.name}}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Municipio</label>
-                                                <select class="form-select" name="municipality_id">
-                                                    <option value="">Seleccionar municipio</option>
-                                                   {% for municipality in municipalities%}
-                                                     <option value="{{municipality.id}}">{{municipality.name}}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Barrio</label>
-                                                <select class="form-select" name="neighborhood_id">
-                                                    <option value="">Seleccionar Barrio</option>
-                                                    {% for neighborhood in neighborhoods%}
-                                                     <option value="{{neighborhood.id}}">{{neighborhood.name}}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Latitud</label>
-                                                <input type="number" id="latitude" class="form-control" name="latitude" placeholder="18.4861" step="any">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Longitud</label>
-                                                <input type="number" id="longitude" class="form-control" name="longitude" placeholder="-69.9312" step="any">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Muertos</label>
-                                                <input type="number" class="form-control" name="deaths" placeholder="0" min="0">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Heridos</label>
-                                                <input type="number" class="form-control" name="injuries" placeholder="0" min="0">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Pérdida Estimada</label>
-                                                <input type="number" class="form-control" name="estimated_loss" placeholder="0" min="0">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Link a Redes Sociales</label>
-                                        <input type="url" class="form-control" name="social_media_url" placeholder="https://...">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Foto del Hecho</label>
-                                        <input type="file" class="form-control" name="photo_url" accept="image/*">
-                                    </div>
-
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-primary btn-lg">
-                                            <i class="fas fa-paper-plane me-2"></i>
-                                            Enviar Reporte
-                                        </button>
-                                    </div>
-                                </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Municipio</label>
+                                <select class="form-select" name="municipality_id" id="municipalitySelect" required>
+                                    <option value="">Seleccionar municipio</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Barrio</label>
+                                <select class="form-select" name="neighborhood_id" id="neighborhoodSelect" required>
+                                    <option value="">Seleccionar Barrio</option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card incident-card mt-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">Seleccionar Ubicación</h5>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="map" id="map">
-                                    <!-- <div class="text-center"> -->
-                                    <!--     <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i> -->
-                                    <!--     <p class="text-muted">Haz clic en el mapa para seleccionar la ubicación exacta</p> -->
-                                    <!-- </div> -->
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="card incident-card mt-3">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">Información</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Tu reporte será revisado por un validador antes de ser publicado.
-                                </div>
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Asegúrate de que toda la información sea veraz y precisa.
-                                </div>
-                                <div class="alert alert-success">
-                                    <i class="fas fa-map-marker-alt me-2"></i>
-                                    Haz clic en el mapa para seleccionar la ubicación exacta o ingresa las coordenadas manualmente.
-                                </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-map" id="btnOpenMap">
+                            <i class="fas fa-map me-2"></i>Abrir Mapa
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Latitud</label>
+                                <input type="number" id="latitude" class="form-control" name="latitude" placeholder="18.4861" step="any" required>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Longitud</label>
+                                <input type="number" id="longitude" class="form-control" name="longitude" placeholder="-69.9312" step="any" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Muertos</label>
+                                <input type="number" class="form-control" name="deaths" placeholder="0" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Heridos</label>
+                                <input type="number" class="form-control" name="injuries" placeholder="0" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Pérdida Estimada</label>
+                                <input type="number" class="form-control" name="estimated_loss" placeholder="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Link a Redes Sociales</label>
+                        <input type="url" class="form-control" name="social_media_url" placeholder="https://...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Foto del Hecho</label>
+                        <input type="file" class="form-control" name="photo_url" accept="image/*">
                     </div>
                 </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-submit btn-lg">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Enviar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal del Mapa -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">
+                    <i class="fas fa-map-marker-alt me-2"></i>Seleccionar Ubicación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <div class="modal-body p-0">
+                <div id="modalMap" class="modal-map"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmLocation">Confirmar Ubicación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast de confirmación de ubicación -->
+<div id="locationToast" class="location-toast" style="display: none;">
+    <div class="d-flex align-items-center">
+        <i class="fas fa-question-circle me-2 text-warning"></i>
+        <span id="toastMessage">¿Estás seguro de que este es el lugar correcto?</span>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-success btn-sm" id="confirmToast">
+            <i class="fas fa-check"></i>
+        </button>
+        <button type="button" class="btn btn-danger btn-sm" id="cancelToast">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{parent()}}
-  <script>
+<script>
     var map;
+    var modalMap;
     var marker;
+    var selectedLocation = null;
     var latInput = document.getElementById('latitude');
     var lngInput = document.getElementById('longitude');
     
-    map = L.map('map').setView([18.7357, -70.1627], 8);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    // Inicializar mapa del modal
+    function initModalMap() {
+        modalMap = L.map('modalMap').setView([18.7357, -70.1627], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(modalMap);
+        
+        modalMap.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            
+            selectedLocation = { lat: lat, lng: lng };
+            updateModalMarker(lat, lng);
+            
+            // Mostrar toast de confirmación
+            showLocationToast();
+        });
+    }
     
-    function updateMarker(lat, lng) {
+    function updateModalMarker(lat, lng) {
         if (marker) {
-            map.removeLayer(marker);
+            modalMap.removeLayer(marker);
         }
         
         marker = L.marker([lat, lng], {
@@ -271,7 +259,7 @@
                 popupAnchor: [1, -34],
                 shadowSize: [41, 41]
             })
-        }).addTo(map);
+        }).addTo(modalMap);
         
         marker.bindPopup(`
             <b>Ubicación Seleccionada</b><br>
@@ -280,16 +268,102 @@
         `).openPopup();
     }
     
-    map.on('click', function(e) {
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
-        
-        latInput.value = lat.toFixed(6);
-        lngInput.value = lng.toFixed(6);
-        
-        updateMarker(lat, lng);
+    function showLocationToast() {
+        const toast = document.getElementById('locationToast');
+        const message = document.getElementById('toastMessage');
+        message.textContent = '¿Estás seguro de que este es el lugar correcto?';
+        toast.style.display = 'block';
+        toast.classList.add('show');
+    }
+    
+    // Event listeners para el toast
+    document.getElementById('confirmToast').addEventListener('click', function() {
+        if (selectedLocation) {
+            latInput.value = selectedLocation.lat.toFixed(6);
+            lngInput.value = selectedLocation.lng.toFixed(6);
+            
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
+            modal.hide();
+            
+            // Ocultar toast
+            document.getElementById('locationToast').style.display = 'none';
+            document.getElementById('locationToast').classList.remove('show');
+        }
     });
     
+    document.getElementById('cancelToast').addEventListener('click', function() {
+        const message = document.getElementById('toastMessage');
+        message.textContent = 'Debes reportar donde fue el incidente';
+        
+        // No cerrar el toast, solo cambiar el mensaje
+    });
+    
+    // Botón para abrir el mapa
+    document.getElementById('btnOpenMap').addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('mapModal'));
+        modal.show();
+        
+        // Inicializar el mapa cuando se abre el modal
+        setTimeout(() => {
+            if (!modalMap) {
+                initModalMap();
+            } else {
+                modalMap.invalidateSize();
+            }
+        }, 300);
+    });
+    
+    // Cargar municipios cuando se selecciona provincia
+    document.getElementById('provinceSelect').addEventListener('change', function() {
+        const provinceId = this.value;
+        const municipalitySelect = document.getElementById('municipalitySelect');
+        const neighborhoodSelect = document.getElementById('neighborhoodSelect');
+        
+        // Limpiar opciones
+        municipalitySelect.innerHTML = '<option value="">Seleccionar municipio</option>';
+        neighborhoodSelect.innerHTML = '<option value="">Seleccionar Barrio</option>';
+        
+        if (provinceId) {
+            fetch(`/api/municipalities?province_id=${provinceId}`)
+                .then(response => response.json())
+                .then(municipalities => {
+                    municipalities.forEach(municipality => {
+                        const option = document.createElement('option');
+                        option.value = municipality.id;
+                        option.textContent = municipality.name;
+                        municipalitySelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+    
+    // Cargar barrios cuando se selecciona municipio
+    document.getElementById('municipalitySelect').addEventListener('change', function() {
+        const municipalityId = this.value;
+        const neighborhoodSelect = document.getElementById('neighborhoodSelect');
+        
+        // Limpiar opciones
+        neighborhoodSelect.innerHTML = '<option value="">Seleccionar Barrio</option>';
+        
+        if (municipalityId) {
+            // Aquí deberías hacer una llamada AJAX para obtener los barrios
+            fetch(`/api/neighborhoods?municipality_id=${municipalityId}`)
+                .then(response => response.json())
+                .then(neighborhoods => {
+                    neighborhoods.forEach(neighborhood => {
+                        const option = document.createElement('option');
+                        option.value = neighborhood.id;
+                        option.textContent = neighborhood.name;
+                        neighborhoodSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+    
+    // Función para actualizar coordenadas desde inputs
     function updateMapFromInputs() {
         var lat = parseFloat(latInput.value);
         var lng = parseFloat(lngInput.value);
@@ -298,9 +372,10 @@
             lat >= -90 && lat <= 90 && 
             lng >= -180 && lng <= 180) {
             
-            map.setView([lat, lng], 13);
-            
-            updateMarker(lat, lng);
+            if (modalMap) {
+                modalMap.setView([lat, lng], 13);
+                updateModalMarker(lat, lng);
+            }
         }
     }
     
@@ -319,28 +394,29 @@
         }
     });
     
-    // Función opcional para limpiar la selección
+    // Función para limpiar la selección
     function clearLocation() {
         if (marker) {
-            map.removeLayer(marker);
+            modalMap.removeLayer(marker);
             marker = null;
         }
         latInput.value = '';
         lngInput.value = '';
-    } 
-  </script>
+        selectedLocation = null;
+    }
+</script>
 
-   {% if message %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var toast = document.getElementById('toast-message');
-            if (toast) {
-                toast.classList.add('show');
-                setTimeout(function() {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
-        });
-    </script>
-    {% endif %}
+{% if message %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var toast = document.getElementById('toast-message');
+        if (toast) {
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    });
+</script>
+{% endif %}
 {% endblock %}
