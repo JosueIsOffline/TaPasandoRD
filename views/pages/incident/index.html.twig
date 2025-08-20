@@ -181,19 +181,12 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="mapModalLabel">
-                    <i class="fas fa-map-marker-alt me-2"></i>Seleccionar Ubicación
-                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body p-0">
                 <div id="modalMap" class="modal-map"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmLocation">Confirmar Ubicación</button>
             </div>
         </div>
     </div>
@@ -312,6 +305,25 @@
                 modalMap.invalidateSize();
             }
         }, 300);
+    });
+    
+    // Event listener para cuando se cierra el modal
+    document.getElementById('mapModal').addEventListener('hidden.bs.modal', function() {
+        // Cerrar el toast cuando se cierra el modal
+        const locationToast = document.getElementById('locationToast');
+        if (locationToast) {
+            locationToast.style.display = 'none';
+            locationToast.classList.remove('show');
+        }
+        
+        // Limpiar la ubicación seleccionada
+        selectedLocation = null;
+        
+        // Remover el marcador del mapa
+        if (marker && modalMap) {
+            modalMap.removeLayer(marker);
+            marker = null;
+        }
     });
     
     // Cargar municipios cuando se selecciona provincia
