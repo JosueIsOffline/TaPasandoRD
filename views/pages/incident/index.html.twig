@@ -99,6 +99,9 @@
                                 <label class="form-label">Municipio</label>
                                 <select class="form-select" name="municipality_id" id="municipalitySelect" required>
                                     <option value="">Seleccionar municipio</option>
+                                    {% for municipality in municipalities %}
+                                      <option value="{{municipality.id}}">{{municipality.name}}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -107,6 +110,9 @@
                                 <label class="form-label">Barrio</label>
                                 <select class="form-select" name="neighborhood_id" id="neighborhoodSelect" required>
                                     <option value="">Seleccionar Barrio</option>
+                                    {% for neighborhood in neighborhoods %}
+                                      <option value="{{neighborhood.id}}">{{neighborhood.name}}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -323,53 +329,53 @@
     });
     
     // Cargar municipios cuando se selecciona provincia
-    document.getElementById('provinceSelect').addEventListener('change', function() {
-        const provinceId = this.value;
-        const municipalitySelect = document.getElementById('municipalitySelect');
-        const neighborhoodSelect = document.getElementById('neighborhoodSelect');
-        
-        // Limpiar opciones
-        municipalitySelect.innerHTML = '<option value="">Seleccionar municipio</option>';
-        neighborhoodSelect.innerHTML = '<option value="">Seleccionar Barrio</option>';
-        
-        if (provinceId) {
-            fetch(`/api/municipalities?province_id=${provinceId}`)
-                .then(response => response.json())
-                .then(municipalities => {
-                    municipalities.forEach(municipality => {
-                        const option = document.createElement('option');
-                        option.value = municipality.id;
-                        option.textContent = municipality.name;
-                        municipalitySelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    });
-    
-    // Cargar barrios cuando se selecciona municipio
-    document.getElementById('municipalitySelect').addEventListener('change', function() {
-        const municipalityId = this.value;
-        const neighborhoodSelect = document.getElementById('neighborhoodSelect');
-        
-        // Limpiar opciones
-        neighborhoodSelect.innerHTML = '<option value="">Seleccionar Barrio</option>';
-        
-        if (municipalityId) {
-            // Aquí deberías hacer una llamada AJAX para obtener los barrios
-            fetch(`/api/neighborhoods?municipality_id=${municipalityId}`)
-                .then(response => response.json())
-                .then(neighborhoods => {
-                    neighborhoods.forEach(neighborhood => {
-                        const option = document.createElement('option');
-                        option.value = neighborhood.id;
-                        option.textContent = neighborhood.name;
-                        neighborhoodSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    });
+    // document.getElementById('provinceSelect').addEventListener('change', function() {
+    //     const provinceId = this.value;
+    //     const municipalitySelect = document.getElementById('municipalitySelect');
+    //     const neighborhoodSelect = document.getElementById('neighborhoodSelect');
+    //     
+    //     // Limpiar opciones
+    //     municipalitySelect.innerHTML = '<option value="">Seleccionar municipio</option>';
+    //     neighborhoodSelect.innerHTML = '<option value="">Seleccionar Barrio</option>';
+    //     
+    //     if (provinceId) {
+    //         fetch(`/api/municipalities?province_id=${provinceId}`)
+    //             .then(response => response.json())
+    //             .then(municipalities => {
+    //                 municipalities.forEach(municipality => {
+    //                     const option = document.createElement('option');
+    //                     option.value = municipality.id;
+    //                     option.textContent = municipality.name;
+    //                     municipalitySelect.appendChild(option);
+    //                 });
+    //             })
+    //             .catch(error => console.error('Error:', error));
+    //     }
+    // });
+    // 
+    // // Cargar barrios cuando se selecciona municipio
+    // document.getElementById('municipalitySelect').addEventListener('change', function() {
+    //     const municipalityId = this.value;
+    //     const neighborhoodSelect = document.getElementById('neighborhoodSelect');
+    //     
+    //     // Limpiar opciones
+    //     neighborhoodSelect.innerHTML = '<option value="">Seleccionar Barrio</option>';
+    //     
+    //     if (municipalityId) {
+    //         // Aquí deberías hacer una llamada AJAX para obtener los barrios
+    //         fetch(`/api/neighborhoods?municipality_id=${municipalityId}`)
+    //             .then(response => response.json())
+    //             .then(neighborhoods => {
+    //                 neighborhoods.forEach(neighborhood => {
+    //                     const option = document.createElement('option');
+    //                     option.value = neighborhood.id;
+    //                     option.textContent = neighborhood.name;
+    //                     neighborhoodSelect.appendChild(option);
+    //                 });
+    //             })
+    //             .catch(error => console.error('Error:', error));
+    //     }
+    // });
     
     // Función para actualizar coordenadas desde inputs
     function updateMapFromInputs() {
