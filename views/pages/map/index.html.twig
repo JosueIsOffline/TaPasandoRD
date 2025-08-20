@@ -150,14 +150,15 @@
                         </div>
                         
                         <div class="mb-2">
-                            <h6 class="fw-semibold text-primary mb-2">Comentarios</h6>
+                            <h6 class="fw-semibold text-primary mb-2">Comentarios (<span id="commentsCount">0</span>)</h6>
                             <div id="comments-container" class="mb-3 bg-light rounded p-2 border" style="max-height: 180px; overflow-y: auto;">
                                 <!-- Aquí se mostrarán los comentarios existentes -->
                             </div>
                             <form id="commentForm" class="d-flex flex-column gap-2">
                                 <textarea class="form-control" id="commentText" rows="2" placeholder="Escribe un comentario..."></textarea>
-                                <div class="text-end">
-                                    <button type="submit" class="btn btn-primary btn-sm">
+                                <input type="hidden">
+                               <div class="text-end">
+                                    <button type="button"  id="postComment" class="btn btn-primary btn-sm">
                                         <i class="fas fa-paper-plane me-1"></i> Agregar Comentario
                                     </button>
                                 </div>
