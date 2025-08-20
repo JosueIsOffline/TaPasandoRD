@@ -56,95 +56,94 @@ document.addEventListener("DOMContentLoaded", function () {
       }),
     };
 
-    function abrirModal(incident) {
-        document.getElementById("incidentTitle").textContent =
-            incident.title || "";
+    async function abrirModal(incident) {
+      document.getElementById("incidentTitle").textContent =
+        incident.title || "";
 
-        document.getElementById("incidentType").textContent =
-            getCategoryName(incident.category_id) || "Sin categoría";
+      document.getElementById("incidentType").textContent =
+        getCategoryName(incident.category_id) || "Sin categoría";
 
-        document.getElementById("incidentStatus").textContent =
-            incident.status || "Pendiente";
+      document.getElementById("incidentStatus").textContent =
+        incident.status || "Pendiente";
 
-        const provinceNames = {
-          1: "Santo Domingo",
-          2: "Santiago",
-          3: "La Vega",
-          4: "Provincia 4",
-        };
+      const provinceNames = {
+        1: "Santo Domingo",
+        2: "Santiago",
+        3: "La Vega",
+        4: "Provincia 4",
+      };
 
-        const municipioNames = {
-          1: "Santo Domingo Este",
-          2: "Santo Domingo Oeste",
-          3: "Santiago de los Caballeros",
-          4: "Jarabacoa",
-        };
+      const municipioNames = {
+        1: "Santo Domingo Este",
+        2: "Santo Domingo Oeste",
+        3: "Santiago de los Caballeros",
+        4: "Jarabacoa",
+      };
 
-        document.getElementById("locationInfo").innerHTML =
-            `<i class="fas fa-map-marker-alt me-1"></i> <span class="fw-bold">Provincia: </span> ${provinceNames[incident.province_id] || incident.province_id}<br> 
+      document.getElementById("locationInfo").innerHTML =
+        `<i class="fas fa-map-marker-alt me-1"></i> <span class="fw-bold">Provincia: </span> ${provinceNames[incident.province_id] || incident.province_id}<br> 
              <i class="fas fa-map-marker-alt me-1"></i> <span class="fw-bold"> Municipio: </span> ${municipioNames[incident.municipality_id] || incident.municipality_id}`;
-            
 
-        document.getElementById("timeInfo").innerHTML =
-            `<i class="fas fa-clock me-1"></i> ${incident.occurrence_date || ""}`;
+      document.getElementById("timeInfo").innerHTML =
+        `<i class="fas fa-clock me-1"></i> ${incident.occurrence_date || ""}`;
 
-        document.getElementById("incidentDescription").textContent =
-            incident.description || "";
+      document.getElementById("incidentDescription").textContent =
+        incident.description || "";
 
-        document.getElementById("deathCount").textContent =
-            incident.deaths ?? 0;
+      document.getElementById("deathCount").textContent = incident.deaths ?? 0;
 
-        document.getElementById("injuredCount").textContent =
-            incident.injuries ?? 0;
+      document.getElementById("injuredCount").textContent =
+        incident.injuries ?? 0;
 
-        document.getElementById("lossAmount").textContent =
-            `RD$${incident.estimated_loss || "0"}`;
+      document.getElementById("lossAmount").textContent =
+        `RD$${incident.estimated_loss || "0"}`;
 
-        document.getElementById("coordinatesDisplay").textContent =
-            `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
-
-        document.getElementById("reportedBy").textContent =
-            `Usuario ${incident.reported_by || "Desconocido"}`;
-
-        document.getElementById("reportDate").textContent =
-            incident.created_at || "-";
-
-        document.getElementById("reportStatus").textContent =
-            incident.status || "Pendiente";
-
-        document.getElementById("coordinatesDisplay").textContent =
+      document.getElementById("coordinatesDisplay").textContent =
         `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
 
-        const viewOnMapBtn = document.getElementById("viewOnMapBtn");
-        if (viewOnMapBtn) {
-            viewOnMapBtn.onclick = function () {
-                // Centra el mapa en las coordenadas del incidente y hace zoom
-                map.setView([incident.latitude, incident.longitude], 16);
-                // Opcional: cerrar el modal si quieres
-                const modal = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
-                if (modal) modal.hide();
-            };
-        }
+      document.getElementById("reportedBy").textContent =
+        `Usuario ${incident.reported_by || "Desconocido"}`;
 
-        // Imagen
-        if (incident.photo_url) {
-            document.getElementById("incidentPhoto").src = incident.photo_url;
-        }
+      document.getElementById("reportDate").textContent =
+        incident.created_at || "-";
 
-       if (incident.social_media_url) {
+      document.getElementById("reportStatus").textContent =
+        incident.status || "Pendiente";
 
-          const contenedor = document.getElementById("referencias-container");
-          contenedor.innerHTML = "";
+      document.getElementById("coordinatesDisplay").textContent =
+        `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
 
-          const boton = document.createElement("a");
-          boton.href = incident.social_media_url;
-          boton.target = "_blank";
-          boton.className = "btn btn-outline-primary btn-sm me-2";
-          boton.textContent = "Ver publicación";
-
-          contenedor.appendChild(boton);
+      const viewOnMapBtn = document.getElementById("viewOnMapBtn");
+      if (viewOnMapBtn) {
+        viewOnMapBtn.onclick = function () {
+          // Centra el mapa en las coordenadas del incidente y hace zoom
+          map.setView([incident.latitude, incident.longitude], 16);
+          // Opcional: cerrar el modal si quieres
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("incidentModal"),
+          );
+          if (modal) modal.hide();
+        };
       }
-      
+
+      // Imagen
+      if (incident.photo_url) {
+        document.getElementById("incidentPhoto").src = incident.photo_url;
+      }
+
+      if (incident.social_media_url) {
+        const contenedor = document.getElementById("referencias-container");
+        contenedor.innerHTML = "";
+
+        const boton = document.createElement("a");
+        boton.href = incident.social_media_url;
+        boton.target = "_blank";
+        boton.className = "btn btn-outline-primary btn-sm me-2";
+        boton.textContent = "Ver publicación";
+
+        contenedor.appendChild(boton);
+      }
+
       async function loadComments(id) {
         const commentsCont = document.getElementById("comments-container");
         let counter = document.getElementById("commentsCount");
@@ -196,15 +195,13 @@ document.addEventListener("DOMContentLoaded", function () {
           await loadComments(incident.id);
           content.value = "";
         });
-      
-      
 
-
-        new bootstrap.Modal(document.getElementById("incidentModal")).show();
-        const modal = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
-        modal.hide();
-}
-
+      new bootstrap.Modal(document.getElementById("incidentModal")).show();
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("incidentModal"),
+      );
+      modal.hide();
+    }
 
     const getCategoryName = (categoryId) => {
       const names = {
@@ -217,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return names[categoryId];
     };
 
-  // Función para obtener provincias y categorías desde el backend por una API
+    // Función para obtener provincias y categorías desde el backend por una API
     // // Cargar las provincias y tipos de incidencia
     // async function loadFilters() {
     //   try {
@@ -253,18 +250,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // await loadFilters();
 
     async function loadIncidencias() {
-
       try {
         const provinciaId = document.getElementById("filterProvincia").value;
         const tipoId = document.getElementById("filterTipo").value;
-
 
         let url = new URL("http://localhost:8000/api/valid-incident");
         if (provinciaId) url.searchParams.append("province_id", provinciaId);
         if (tipoId) url.searchParams.append("category_id", tipoId);
 
         // console.log("URL de la API:", url.toString()); // <-- Línea de depuración
-        
+
         const response = await fetch(url);
         if (!response.ok) throw new Error("Error al obtener incidencias");
         const incidents = await response.json();
@@ -274,9 +269,9 @@ document.addEventListener("DOMContentLoaded", function () {
         incidents.forEach((incident) => {
           const icon =
             incidentIcons[incident.category_id] || incidentIcons["default"];
-            const marker = L.marker([incident.latitude, incident.longitude], {
+          const marker = L.marker([incident.latitude, incident.longitude], {
             icon,
-            }).bindPopup(`
+          }).bindPopup(`
               <div class="incident-popup">
                 <h5 class="mb-1 fw-bold">${incident.title || "Incidente"}</h5>
                 <p class="mb-1">
@@ -338,3 +333,4 @@ function timeAgo(dateString) {
 
   return date.toLocaleDateString();
 }
+
