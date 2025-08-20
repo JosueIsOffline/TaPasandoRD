@@ -112,6 +112,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("reportStatus").textContent =
             incident.status || "Pendiente";
 
+        document.getElementById("coordinatesDisplay").textContent =
+        `Latitud: ${incident.latitude} | Longitud: ${incident.longitude}`;
+
+        const viewOnMapBtn = document.getElementById("viewOnMapBtn");
+        if (viewOnMapBtn) {
+            viewOnMapBtn.onclick = function () {
+                // Centra el mapa en las coordenadas del incidente y hace zoom
+                map.setView([incident.latitude, incident.longitude], 16);
+                // Opcional: cerrar el modal si quieres
+                const modal = bootstrap.Modal.getInstance(document.getElementById('incidentModal'));
+                if (modal) modal.hide();
+            };
+        }
+
         // Imagen
         if (incident.photo_url) {
             document.getElementById("incidentPhoto").src = incident.photo_url;
@@ -195,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (provinciaId) url.searchParams.append("province_id", provinciaId);
         if (tipoId) url.searchParams.append("category_id", tipoId);
 
-        // console.log("URL de la API:", url.toString()); // <-- Agrega esto
+        // console.log("URL de la API:", url.toString()); // <-- Línea de depuración
         
         const response = await fetch(url);
         if (!response.ok) throw new Error("Error al obtener incidencias");
