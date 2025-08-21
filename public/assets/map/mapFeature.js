@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const map = L.map("map").setView(defaultCoords, defaultZoom);
     const markerCluster = L.markerClusterGroup();
+    let globalId;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
@@ -144,57 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
         contenedor.appendChild(boton);
       }
 
-      async function loadComments(id) {
-        const commentsCont = document.getElementById("comments-container");
-        let counter = document.getElementById("commentsCount");
-
-        try {
-          const res = await fetch(`/api/comment/${id}`);
-          const comments = await res.json();
-          console.log(comments);
-          counter.innerText = comments.length;
-
-          commentsCont.innerHTML = comments
-            .map(
-              (comment) =>
-                `
-      <div class="comment mb-3 p-3 bg-light border rounded shadow-sm">
-        <div class="d-flex align-items-center mb-2">
-          <img src="${comment.user_photo}" alt="User Avatar" class="avatar rounded-circle me-2" width="40" height="40">
-          <div>
-            <strong class="d-block text-dark">${comment.user_name}</strong>
-            <small class="text-muted">${timeAgo(comment.created_at)}</small>
-          </div>
-        </div>
-       <p class="mb-0 text-dark">${comment.content}</p>
-    </div>
-`,
-            )
-            .join("");
-        } catch (error) {
-          console.error("Something went wrong loading comments", error);
-        }
-      }
-
       await loadComments(incident.id);
-      document
-        .getElementById("postComment")
-        .addEventListener("click", async () => {
-          const content = document.getElementById("commentText");
-          const data = new FormData();
-
-          data.append("incident_id", incident.id);
-          data.append("content", content.value);
-
-          console.log(data.get("content"));
-          const res = await fetch("/api/comment", {
-            method: "POST",
-            body: data,
-          });
-
-          await loadComments(incident.id);
-          content.value = "";
-        });
 
       new bootstrap.Modal(document.getElementById("incidentModal")).show();
       const modal = bootstrap.Modal.getInstance(
@@ -266,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         markerCluster.clearLayers();
 
-        incidents.forEach((incident) => {
+        incidents.forEach(async (incident) => {
           const icon =
             incidentIcons[incident.category_id] || incidentIcons["default"];
           const marker = L.marker([incident.latitude, incident.longitude], {
@@ -304,7 +255,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const button = popup.getElement().querySelector(".view-detail");
       if (button) {
         button.addEventListener("click", function () {
+          console.log(markerCluster.getLayers());
           const incidentId = this.getAttribute("data-id");
+          globalId = incidentId;
           const marker = markerCluster
             .getLayers()
             .find((m) => m.incidentData.id == incidentId);
@@ -316,6 +269,26 @@ document.addEventListener("DOMContentLoaded", function () {
     document
       .getElementById("btnFiltrar")
       .addEventListener("click", loadIncidencias);
+
+    document
+      .getElementById("postComment")
+      .addEventListener("click", async () => {
+        const content = document.getElementById("commentText");
+        if (content.value === "")
+          throw new Error("No puedes enviar comentarios vacios");
+        const data = new FormData();
+
+        data.append("incident_id", globalId);
+        data.append("content", content.value);
+
+        const res = await fetch("/api/comment", {
+          method: "POST",
+          body: data,
+        });
+
+        await loadComments(globalId);
+        content.value = "";
+      });
 
     await loadIncidencias();
   })();
@@ -334,3 +307,40 @@ function timeAgo(dateString) {
   return date.toLocaleDateString();
 }
 
+async function loadComments(id) {
+  const commentsCont = document.getElementById("comments-container");
+  let counter = document.getElementById("commentsCount");
+
+  try {
+    const res = await fetch(`/api/comment/${id}`);
+    if (!res.ok) {
+      throw new Error("Comments not found");
+    }
+    const comments = await res.json();
+    counter.innerText = comments.length || 0;
+
+    if (comments.message) {
+      commentsCont.innerHTML = `<strong class="text-dark">${comments.message}</strong>`;
+    } else {
+      commentsCont.innerHTML = comments
+        .map(
+          (comment) =>
+            `
+      <div class="comment mb-3 p-3 bg-light border rounded shadow-sm">
+        <div class="d-flex align-items-center mb-2">
+          <img src="${comment.user_photo}" alt="User Avatar" class="avatar rounded-circle me-2" width="40" height="40">
+          <div>
+            <strong class="d-block text-dark">${comment.user_name}</strong>
+            <small class="text-muted">${timeAgo(comment.created_at)}</small>
+          </div>
+        </div>
+       <p class="mb-0 text-dark">${comment.content}</p>
+    </div>
+`,
+        )
+        .join("");
+    }
+  } catch (error) {
+    console.error("Something went wrong loading comments", error);
+  }
+}

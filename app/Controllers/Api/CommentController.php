@@ -22,6 +22,11 @@ class CommentController extends AbstractController
   {
     $comments = $this->cRepo->getAll($id);
 
+    if (empty($comments)) {
+      return $this->success([
+        'message' => 'No hay comentarios'
+      ]);
+    }
     return $this->success($comments);
   }
 
