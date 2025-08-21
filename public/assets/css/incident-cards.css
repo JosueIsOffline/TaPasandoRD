@@ -1,0 +1,180 @@
+/* Estilos para las cards de incidentes con glassmorfismo */
+.incident-card {
+  width: 300px;
+  height: 180px;
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+
+  /* Glassmorfismo */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.incident-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.incident-card .category-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.8);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 1rem;
+  text-align: center;
+  z-index: 10;
+}
+
+/* Estilos para el contenedor de las cards */
+.incidents-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cards por fila */
+  gap: 2rem;
+  padding: 2rem;
+  justify-items: center;
+}
+
+/* Wrapper para cada incidente */
+.incident-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  gap: 0.5rem;
+}
+
+/* Estilos para la información debajo de la card */
+.incident-info {
+  width: 100%;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.incident-info .title {
+  font-size: 1.125rem;
+  color: #f9fafb;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.incident-info time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.incident-info .separator {
+  margin: 0 0.5rem;
+  opacity: 0.5;
+}
+
+.incident-info .description {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.incident-card {
+  order: 1 !important; /* Forzar que la card esté arriba */
+  width: 100%;
+}
+
+/* Responsive */
+@media (min-width: 1201px) {
+  .incident-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .incident-card {
+    order: 1 !important;
+    margin-bottom: 1rem;
+  }
+  
+  .incident-info {
+    order: 2;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .incidents-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .incident-wrapper {
+    flex-direction: column;
+    align-items: center;
+    max-width: 300px;
+  }
+  
+  .incident-info {
+    order: 2;
+  }
+  
+  .incident-card {
+    order: 1 !important;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .incidents-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+}
+
+.incident-card {
+  color: white;
+}
+
+/* Efecto de brillo en hover */
+.incident-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.incident-card:hover::before {
+  opacity: 1;
+}
+
