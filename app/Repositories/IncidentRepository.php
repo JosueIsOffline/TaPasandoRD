@@ -10,14 +10,53 @@ class IncidentRepository
 {
   public function getAll(): ?array
   {
-    $incident = new Incident();
-    $incidents = $incident->query()->get();
-    return $incidents;
+    $sql = "
+      SELECT i.*, 
+            p.name as province_name,
+            m.name as municipality_name,
+            n.name as neighborhood_name,
+            c.name as category_name,
+            c.icon_color as category_color,
+            reporter.name as reporter_name,
+            reporter.email as reporter_email,
+            reporter.role_id as reporter_role
+      FROM incidents i
+      LEFT JOIN provinces p ON i.province_id = p.id
+      LEFT JOIN municipalities m ON i.municipality_id = m.id
+      LEFT JOIN neighborhoods n ON i.neighborhood_id = n.id
+      LEFT JOIN categories c ON i.category_id = c.id
+      LEFT JOIN users reporter ON i.reported_by = reporter.id
+      ORDER BY i.occurrence_date DESC
+    ";
+
+    $stmt = DB::raw($sql);
+    return $results = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: null;
   }
 
   public function getValidIncident(): ?array
   {
-    return Incident::query()->where('status', 'validado')->get();
+    $sql = "
+      SELECT i.*, 
+            p.name as province_name,
+            m.name as municipality_name,
+            n.name as neighborhood_name,
+            c.name as category_name,
+            c.icon_color as category_color,
+            reporter.name as reporter_name,
+            reporter.email as reporter_email,
+            reporter.role_id as reporter_role
+      FROM incidents i
+      LEFT JOIN provinces p ON i.province_id = p.id
+      LEFT JOIN municipalities m ON i.municipality_id = m.id
+      LEFT JOIN neighborhoods n ON i.neighborhood_id = n.id
+      LEFT JOIN categories c ON i.category_id = c.id
+      LEFT JOIN users reporter ON i.reported_by = reporter.id
+      WHERE i.status = 'validado'
+      ORDER BY i.occurrence_date DESC
+    ";
+
+    $stmt = DB::raw($sql);
+    return $results = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: null;
   }
 
   public function getIncidentById(int $id): Response
@@ -43,7 +82,7 @@ class IncidentRepository
           }
       }
 
-      return array_values($filtered); // Devuelve solo los valores (sin las claves)
+      return array_values($filtered);
   }
 
   public function getPendingIncidents(): ?array
@@ -54,6 +93,7 @@ class IncidentRepository
             m.name as municipality_name,
             n.name as neighborhood_name,
             c.name as category_name,
+            c.icon_color as category_color,
             reporter.name as reporter_name,
             reporter.email as reporter_email,
             reporter.role_id as reporter_role
