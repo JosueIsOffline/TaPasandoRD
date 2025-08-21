@@ -266,9 +266,26 @@ Este proyecto está licenciado bajo la Licencia MIT. Ver el archivo LICENSE para
 
 ## Autores
 
-**Josué R. Hernández Montero**
+**Josué R. Hernández Montero** -Backend Dev
 - Email: josuehernandez2314@gmail.com
 - GitHub: [@JosueIsOffline](https://github.com/JosueIsOffline)
+
+**Ronny De León** -Frontend Dev
+- Email: dleonabreuronny@gmail.com
+- GitHub: [@Ronny-Abreu](https://github.com/Ronny-Abreu)
+
+**Jheinel Brown** -Backend Dev
+- Email: jheinelbrown@gmail.com
+- Github: [@Black-Brown](https://github.com/Black-Brown)
+
+**Keison Jafel** -Backend Dev
+- Email: key112806@gmail.com
+- Github: [@Keison28](https://github.com/Keison28)
+
+**Edudardo Guzman** -Backend Dev
+- Email: eduardo04guz@icloud.com
+- Github: [@Keison28](https://github.com/Eduardo04alv)
+
 
 ## Agradecimientos
 
